@@ -6,6 +6,9 @@ using UnityEngine.Rendering;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour, IDamagiable
 {
+    [Header("Conecciones")]
+    [SerializeField] private PauseMenu _pauseMenu;
+
     [Header("Player")]
     [SerializeField] private float _maxHealth;
     [SerializeField] private float _currentHealth;
@@ -75,6 +78,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     private Color _originalMaterialColor1;
     private Color _originalMaterialColor2;
     private bool _colorsSaved = false; // Para asegurar que guardamos los colores solo una vez
+
 
 
     public bool IsInvisible
@@ -225,7 +229,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
             HandleLevitatingObject();
         }
 
-        if ((Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Q)) && CanWeaponChange)
+        if ((Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Q)) && CanWeaponChange && !_pauseMenu.isPaused)
         {
             CanWeaponChange = false;
             _weaponSelected.GetComponent<IModules>().PowerElement();
