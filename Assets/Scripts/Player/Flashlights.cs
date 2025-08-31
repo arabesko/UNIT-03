@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class Flashlights : MonoBehaviour
 {
+    [Header("Conecciones")]
+    [SerializeField] private PauseMenu _pauseMenu; 
+
     [Header("Lights (Linternas)")]
     [SerializeField] private Light linternaIzquierda;
     [SerializeField] private Light linternaDerecha;
@@ -67,7 +70,7 @@ public class Flashlights : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(KeyCode.F) && !_pauseMenu.isPaused)
         {
             ToggleLuces();
         }
