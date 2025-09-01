@@ -55,14 +55,14 @@ public class PauseMenu : MonoBehaviour
 
     public void Options()
     {
-        optionsPanel.SetActive(false);
-        pausePanel.SetActive(true);
+        pausePanel.SetActive(false);
+        optionsPanel.SetActive(true);
     }
 
     public void CloseOptions()
     {
-        pausePanel.SetActive(false);
-        optionsPanel.SetActive(true);
+        optionsPanel.SetActive(false);
+        pausePanel.SetActive(true);
     }
 
     public void GoToMainMenu()
