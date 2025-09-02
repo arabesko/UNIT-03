@@ -19,6 +19,11 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     public float sprintMultiplier = 1.5f;
     public float rotationSpeed = 10f;
 
+    [Header("Levitation Sphere Settings")]
+    [Tooltip("Prefab de la esfera que se spawnea alrededor del objeto")]
+    [SerializeField] private GameObject levitationSpherePrefab;
+    private GameObject levitationSphereInstance;
+    
     [Header("Levitation Settings")]
     public float levitationAmplitude = 0.2f;
     public float levitationFrequency = 1f;
@@ -196,8 +201,6 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         // Levitar objetos
         if (Input.GetKeyDown(KeyCode.R) && CollectWeapon() && _elementLevitated == null)
         {
-
-
             _elementLevitated = _elementDetected;
             IPuzzlesElements myPuzzle = _elementLevitated.GetComponent<IPuzzlesElements>();
             if (myPuzzle == null)
@@ -209,13 +212,24 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
             Rigidbody rb = _elementLevitated.GetComponent<Rigidbody>();
             if (rb != null)
             {
-                rb.useGravity = false; // DESACTIVA GRAVEDAD
+                rb.useGravity = false;
                 rb.isKinematic = false;
                 rb.freezeRotation = true;
             }
 
             levitationOffset = 0f;
             myPuzzle.Activate();
+
+            // Instanciar esfera
+            if (levitationSpherePrefab != null)
+            {
+                levitationSphereInstance = Instantiate(
+                    levitationSpherePrefab,
+                    _elementLevitated.transform.position,
+                    Quaternion.identity
+                );
+                levitationSphereInstance.transform.SetParent(_elementLevitated.transform, false);
+            }
         }
         // Soltar objeto
         else if (Input.GetKeyDown(KeyCode.R) && _elementLevitated != null)
@@ -227,6 +241,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         if (_elementLevitated != null)
         {
             HandleLevitatingObject();
+            HandleLevitationSphere();
         }
 
         if ((Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Q)) && CanWeaponChange && !_pauseMenu.isPaused)
@@ -292,6 +307,21 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         }
     }
 
+    private void HandleLevitationSphere()
+    {
+        if (levitationSphereInstance == null) return;
+
+        // Seguir la posición del objeto (ya que la esfera es hija del objeto, basta esto)
+        levitationSphereInstance.transform.position = _elementLevitated.transform.position;
+
+        // Rotar suavemente igual que el objeto, o más lento si quieres un efecto diferente
+        levitationSphereInstance.transform.Rotate(
+            Vector3.up,
+            levitationRotationSpeed * 0.5f * Time.deltaTime,
+            Space.World
+        );
+    }
+
     public void NoLevitate()
     {
         if (_elementLevitated == null) return;
@@ -299,14 +329,22 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         Rigidbody rb = _elementLevitated.GetComponent<Rigidbody>();
         if (rb != null)
         {
-            rb.useGravity = true; // ACTIVA GRAVEDAD AL SOLTAR
+            rb.useGravity = true;
             rb.isKinematic = false;
             rb.freezeRotation = false;
         }
 
         _elementLevitated.GetComponent<IPuzzlesElements>()?.Desactivate();
         _elementLevitated = null;
+
+        //  Destruir la esfera
+        if (levitationSphereInstance != null)
+        {
+            Destroy(levitationSphereInstance);
+            levitationSphereInstance = null;
+        }
     }
+
 
     public void AddModules(Transform _position)
     {

@@ -6,6 +6,7 @@ public class PauseMenu : MonoBehaviour
 {
     public GameObject pausePanel;
     public bool isPaused = false;
+    public GameObject optionsPanel;
 
     void Update()
     {
@@ -50,6 +51,18 @@ public class PauseMenu : MonoBehaviour
         // Ocultar cursor
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+    }
+
+    public void Options()
+    {
+        pausePanel.SetActive(false);
+        optionsPanel.SetActive(true);
+    }
+
+    public void CloseOptions()
+    {
+        optionsPanel.SetActive(false);
+        pausePanel.SetActive(true);
     }
 
     public void GoToMainMenu()
