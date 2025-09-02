@@ -5,6 +5,7 @@ public class MenuManager : MonoBehaviour
 {
     public GameObject panelMenu;
     public GameObject panelControles;
+    public GameObject panelOpciones;
 
     public void Jugar()
     {
@@ -15,6 +16,18 @@ public class MenuManager : MonoBehaviour
     {
         panelMenu.SetActive(false);
         panelControles.SetActive(true);
+    }
+
+    public void Options()
+    {
+        panelMenu.SetActive(false);
+        panelOpciones.SetActive(true);
+    }
+
+    public void CloseOptions()
+    {
+        panelOpciones.SetActive(false);
+        panelMenu.SetActive(true);
     }
 
     public void VolverAlMenu()
