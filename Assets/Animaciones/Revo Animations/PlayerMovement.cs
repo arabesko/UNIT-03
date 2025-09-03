@@ -417,6 +417,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     // Método para soltar un módulo aleatorio
     public GameObject DropRandomModule()
     {
+        return null;
         if (_inventory.MyItemsCount() <= 1) return null;
 
         int randomIndex = UnityEngine.Random.Range(1, _inventory.MyItemsCount());
