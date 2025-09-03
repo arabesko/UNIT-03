@@ -70,6 +70,16 @@ public class Scavanger : MonoBehaviour, IDamagiable
 
     private void Update()
     {
+        if (_playerScript._isDeath)
+        {
+            ResetAnimatorParameters();
+            _anim.SetBool("isWalking", true);
+            _dir = (_movPoints[_indexMovPoints].transform.position - transform.position).normalized;
+            _currentState = WalkingArround;
+            _canShase = true;
+            _canAttack = true;
+            return;
+        }
         // Si estoy stunneado, no ejecuto ninguna otra lógica
         if (_isStunned)
             return;
@@ -89,7 +99,7 @@ public class Scavanger : MonoBehaviour, IDamagiable
                 if (Vector3.Distance(transform.position, _playerScript.transform.position) <= _distAttackDamage)
                 {
                     //Lo alcance, debo atacar
-                    if (_canAttack)
+                    if (_canAttack && !_playerScript.IsInvisible)
                     {
                         ResetAnimatorParameters();
                         _anim.SetBool("isAttacking", true);
