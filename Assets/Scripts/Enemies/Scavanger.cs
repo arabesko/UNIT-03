@@ -99,13 +99,24 @@ public class Scavanger : MonoBehaviour, IDamagiable
                 if (Vector3.Distance(transform.position, _playerScript.transform.position) <= _distAttackDamage)
                 {
                     //Lo alcance, debo atacar
-                    if (_canAttack && !_playerScript.IsInvisible)
+                    if (_canAttack)
                     {
-                        ResetAnimatorParameters();
-                        _anim.SetBool("isAttacking", true);
-                        _currentState = LookToAttack;
-                        _canShase = true;
-                        _canAttack = false;
+                        if (!_playerScript.IsInvisible)
+                        {
+                            ResetAnimatorParameters();
+                            _anim.SetBool("isAttacking", true);
+                            _currentState = LookToAttack;
+                            _canShase = true;
+                            _canAttack = false;
+                        } else
+                        {
+                            ResetAnimatorParameters();
+                            _anim.SetBool("isWalking", true);
+                            _dir = (_movPoints[_indexMovPoints].transform.position - transform.position).normalized;
+                            _currentState = WalkingArround;
+                            _canShase = true;
+                            _canAttack = true;
+                        }
                     } 
                 }
                 else
@@ -134,7 +145,6 @@ public class Scavanger : MonoBehaviour, IDamagiable
         else
         {
             //Salio del rango de vision
-            print("Entro aca");
             if (!_canShase)
             {
                 ResetAnimatorParameters();
