@@ -23,7 +23,9 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     [Tooltip("Prefab de la esfera que se spawnea alrededor del objeto")]
     [SerializeField] private GameObject levitationSpherePrefab;
     private GameObject levitationSphereInstance;
-    
+    private Material sphereMaterial;
+    private Coroutine dissolveCoroutine;
+
     [Header("Levitation Settings")]
     public float levitationAmplitude = 0.2f;
     public float levitationFrequency = 1f;
@@ -229,6 +231,16 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
                     Quaternion.identity
                 );
                 levitationSphereInstance.transform.SetParent(_elementLevitated.transform, false);
+
+                // Obtener material y forzar _Disolve en 1 (disuelto) al inicio
+                Renderer rend = levitationSphereInstance.GetComponent<Renderer>();
+                if (rend != null)
+                {
+                    sphereMaterial = rend.material;
+                    sphereMaterial.SetFloat("_Disolve", 1f);
+                    if (dissolveCoroutine != null) StopCoroutine(dissolveCoroutine);
+                    dissolveCoroutine = StartCoroutine(DissolveSphere(1f, 0f, 0.5f, false));
+                }
             }
         }
         // Soltar objeto
@@ -311,10 +323,8 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     {
         if (levitationSphereInstance == null) return;
 
-        // Seguir la posición del objeto (ya que la esfera es hija del objeto, basta esto)
         levitationSphereInstance.transform.position = _elementLevitated.transform.position;
 
-        // Rotar suavemente igual que el objeto, o más lento si quieres un efecto diferente
         levitationSphereInstance.transform.Rotate(
             Vector3.up,
             levitationRotationSpeed * 0.5f * Time.deltaTime,
@@ -337,14 +347,33 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         _elementLevitated.GetComponent<IPuzzlesElements>()?.Desactivate();
         _elementLevitated = null;
 
-        //  Destruir la esfera
-        if (levitationSphereInstance != null)
+        // Disolver la esfera antes de destruirla
+        if (levitationSphereInstance != null && sphereMaterial != null)
         {
-            Destroy(levitationSphereInstance);
-            levitationSphereInstance = null;
+            if (dissolveCoroutine != null) StopCoroutine(dissolveCoroutine);
+            dissolveCoroutine = StartCoroutine(DissolveSphere(0f, 1f, 0.5f, true));
         }
     }
 
+    private IEnumerator DissolveSphere(float from, float to, float duration, bool destroyOnEnd)
+    {
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            float value = Mathf.Lerp(from, to, t);
+            sphereMaterial.SetFloat("_Disolve", value);
+            yield return null;
+        }
+
+        if (destroyOnEnd && levitationSphereInstance != null)
+        {
+            Destroy(levitationSphereInstance);
+            levitationSphereInstance = null;
+            sphereMaterial = null;
+        }
+    }
 
     public void AddModules(Transform _position)
     {
