@@ -45,14 +45,16 @@ Material:
     - _AlphaToMask: 0
     - _Blend: 2
     - _BlendModePreserveSpecular: 1
+    - _BordeFresnel: 3.79
     - _CastShadows: 1
     - _Cull: 2
-    - _DistorsionTime: 0.5
+    - _DistorsionTime: 0.29
     - _DstBlend: 1
     - _ElectricityAmount: 5
     - _ElectricityScale: 20
     - _ElectricityThickness: 0.58
-    - _NoiseScaleSurface: 0.1
+    - _FresnelPower: 2
+    - _NoiseScaleSurface: 0.16
     - _QueueControl: 0
     - _QueueOffset: 0
     - _ReceiveShadows: 1
@@ -64,8 +66,9 @@ Material:
     - _ZWrite: 0
     - _ZWriteControl: 0
     m_Colors:
-    - _Color: {r: 0, g: 256, b: 214.08453, a: 1}
+    - _Color: {r: 56.425945, g: 341.78006, b: 302.94293, a: 1}
     - _ElectricitySpeed: {r: 0, g: -1.04, b: 0, a: 0}
+    - _FresnelColor: {r: 9.735849, g: 16, b: 15.336737, a: 0}
     - _NoiseSpeed: {r: 0.2, g: -0.5, b: 0, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &5238209814104526122
