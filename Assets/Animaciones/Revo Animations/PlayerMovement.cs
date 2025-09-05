@@ -19,6 +19,20 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     public float sprintMultiplier = 1.5f;
     public float rotationSpeed = 10f;
 
+    [Header("Aiming / Bone Aim")]
+    [SerializeField] public Transform aimBone;            // Asigná el hueso de la cintura (o el que quieras) desde el inspector
+    [SerializeField] private float aimSmoothing = 12f;     // Mayor = más rápido
+    [SerializeField] private float minAimDistance = 0.1f;  // Si el mouse está demasiado cerca, no rotar
+    public enum RotationAxisOption { WorldUp, BoneLocalUp, BoneLocalRight, BoneLocalForward }
+    [SerializeField] private RotationAxisOption rotationAxis = RotationAxisOption.WorldUp;
+    [SerializeField] private bool drawAimDebug = true; // para ver rayos en scene view
+
+    private Quaternion aimBoneInitialLocalRot;             // Guardamos rotación local inicial del hueso
+    private bool aimBoneInitialized = false;
+
+    [Header("Shooting")]
+    [SerializeField] private LayerMask shootableLayers = ~0; // capas que la bala puede alcanzar (todo por defecto)
+
     [Header("Levitation Sphere Settings")]
     [Tooltip("Prefab de la esfera que se spawnea alrededor del objeto")]
     [SerializeField] private GameObject levitationSpherePrefab;
@@ -138,11 +152,18 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
 
         if (_animatorBasic != null)
             _animatorBasic._playerMovement = this;
+
+        if (aimBone != null)
+        {
+            aimBoneInitialLocalRot = aimBone.localRotation;
+            aimBoneInitialized = true;
+        }
     }
 
-    void Update()
+    void LateUpdate()
     {
         HandleTimers();
+        HandleAimBone();
 
         _animatorBasic.animator.SetBool("IsGrounded", Controller.isGrounded);
         _animatorBasic.animator.SetBool("IsStunned", false);
@@ -409,6 +430,19 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         if (index > _inventory.MyItemsCount() - 1) return;
         _weaponSelected = _inventory.SelectWeapon(index);
         _weaponSelected.GetComponent<Weapon>().MyStart();
+
+        // --- mostrar cursor si el arma es WeaponPulse ---
+        if (_weaponSelected.GetComponent<WeaponPulse>() != null)
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
+        else
+        {
+            // opcional: esconderlo para otras armas
+            // Cursor.visible = false;
+            // Cursor.lockState = CursorLockMode.Locked;
+        }
         _animatorBasic.animator = _inventory.MyCurrentAnimator();
     }
 
@@ -759,4 +793,110 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         globalVolume.weight = to;
     }
     #endregion
+
+    private void HandleAimBone()
+    {
+        if (!aimBoneInitialized || aimBone == null) return;
+
+        // Si no hay arma pulse, volver a initial
+        if (_weaponSelected == null || _weaponSelected.GetComponent<WeaponPulse>() == null)
+        {
+            aimBone.localRotation = Quaternion.Slerp(aimBone.localRotation, aimBoneInitialLocalRot, Time.deltaTime * aimSmoothing);
+            return;
+        }
+
+        if (!GetMouseWorldPointOnPlane(out Vector3 hitPoint)) return;
+
+        // Dirección deseada (mundo) proyectada en horizontal
+        Vector3 desiredDir = hitPoint - aimBone.position;
+        desiredDir.y = 0;
+        if (desiredDir.sqrMagnitude < 0.0001f) return;
+        desiredDir.Normalize();
+
+        // Forward actual del bone (mundo) proyectado horizontal
+        Vector3 currentForward = aimBone.forward;
+        currentForward.y = 0;
+        if (currentForward.sqrMagnitude < 0.0001f) return;
+        currentForward.Normalize();
+
+        // Ángulo firmado entre forward actual y direccion deseada (en grados), eje up world
+        float signedAngle = Vector3.SignedAngle(currentForward, desiredDir, Vector3.up);
+
+        // Suavizado: hacemos un paso proporcional al smoothing
+        float t = Mathf.Clamp01(Time.deltaTime * aimSmoothing);
+        float step = signedAngle * t; // cuanto rotar este frame (grados)
+
+        // Eje real en el que vamos a rotar (mundo)
+        Vector3 rotationAxisWorld;
+        switch (rotationAxis)
+        {
+            case RotationAxisOption.WorldUp:
+                rotationAxisWorld = Vector3.up;
+                break;
+            case RotationAxisOption.BoneLocalUp:
+                rotationAxisWorld = aimBone.TransformDirection(Vector3.up);
+                break;
+            case RotationAxisOption.BoneLocalRight:
+                rotationAxisWorld = aimBone.TransformDirection(Vector3.right);
+                break;
+            case RotationAxisOption.BoneLocalForward:
+                rotationAxisWorld = aimBone.TransformDirection(Vector3.forward);
+                break;
+            default:
+                rotationAxisWorld = Vector3.up;
+                break;
+        }
+
+        // Rotar el hueso alrededor del eje (en world) pasando por su pivot (posición del bone).
+        // Usamos Rotate con Space.World para que el pivote sea el transform mismo y el eje esté en world.
+        aimBone.Rotate(rotationAxisWorld, step, Space.World);
+
+        // Debug: dibujar rayos
+        if (drawAimDebug)
+        {
+            Debug.DrawLine(aimBone.position, aimBone.position + currentForward * 1.5f, Color.yellow);
+            Debug.DrawLine(aimBone.position, aimBone.position + desiredDir * 2f, Color.cyan);
+        }
+    }
+
+    // Helper para normalizar un ángulo en grados a rango [-180, 180] para LerpAngle robusto
+    private float NormalizeAngle(float angle)
+    {
+        angle = Mathf.Repeat(angle + 180f, 360f) - 180f;
+        return angle;
+    }
+
+    // Obtiene punto del mouse proyectado en un plano horizontal a la altura del bone
+    private bool GetMouseWorldPointOnPlane(out Vector3 hitPoint)
+    {
+        hitPoint = Vector3.zero;
+        Camera cam = Camera.main;
+        if (cam == null) cam = Camera.current;
+        if (cam == null) return false;
+
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        float planeY = (aimBone != null) ? aimBone.position.y : transform.position.y;
+        Plane plane = new Plane(Vector3.up, new Vector3(0, planeY, 0));
+
+        if (plane.Raycast(ray, out float enter))
+        {
+            hitPoint = ray.GetPoint(enter);
+            return true;
+        }
+        return false;
+    }
+
+    public Vector3 GetAimWorldPoint(float defaultDistance = 50f)
+    {
+        Camera cam = Camera.main;
+        if (cam == null) return transform.position + transform.forward * defaultDistance;
+
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit hit, defaultDistance, shootableLayers))
+        {
+            return hit.point;
+        }
+        // si no choca, devolvemos un punto a distancia fija en esa dirección
+        return ray.GetPoint(defaultDistance);
+    }
 }

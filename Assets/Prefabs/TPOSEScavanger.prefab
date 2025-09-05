@@ -361,7 +361,7 @@ GameObject:
   - component: {fileID: 6498489418559653603}
   - component: {fileID: 3348342009632275977}
   - component: {fileID: 3340849973227656088}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: TPOSEScavanger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -537,7 +537,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbec6cf5b2447e2448e3338e10793727, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxHealth: 50
+  _maxHealth: 15
   _currentHealth: 0
   _damage: 5
   _speed: 4
@@ -567,6 +567,9 @@ MonoBehaviour:
   _hitParticles: {fileID: 723507006006114632, guid: 6f21bb1ae50516a46a77efd77ab845f6, type: 3}
   _hitParticlePoint: {fileID: 7990187906723887279}
   _stunDuration: 1.5
+  _visionColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  _attackColor: {r: 1, g: 0, b: 0, a: 1}
+  _detectionOriginColor: {r: 0, g: 0, b: 1, a: 1}
 --- !u!1 &5154184705260951191
 GameObject:
   m_ObjectHideFlags: 0
