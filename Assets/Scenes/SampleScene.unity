@@ -65165,8 +65165,9 @@ GameObject:
   - component: {fileID: 1471389674}
   - component: {fileID: 1471389680}
   - component: {fileID: 1471389681}
+  - component: {fileID: 1471389682}
   m_Layer: 6
-  m_Name: WeaponProyector
+  m_Name: WeaponRadar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65279,7 +65280,7 @@ Transform:
   m_GameObject: {fileID: 1471389672}
   serializedVersion: 2
   m_LocalRotation: {x: -0.5, y: 0.5, z: -0.5, w: 0.5}
-  m_LocalPosition: {x: -183.64, y: 2.52, z: -43.46823}
+  m_LocalPosition: {x: -224.11, y: 3.28, z: -44.03}
   m_LocalScale: {x: 0.17193986, y: 0.17193986, z: 0.17193986}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -65404,6 +65405,26 @@ MonoBehaviour:
   _myLitMaterial: {fileID: 2100000, guid: 614ecf5e8b73e1149a223f2eff236e79, type: 2}
   _canRadar: 1
   _eagleVision: {fileID: 0}
+--- !u!114 &1471389682
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1471389672}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0eb8022f75ddcab4a9ca2f087a657706, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uiRadius: 5
+  particleRadius: 5
+  particleOffset: 2
+  interactKey: 101
+  pickupKey: 114
+  ParticlesPrefab: {fileID: 0}
+  InteractuableUI: {fileID: 1561917919}
+  lorePanel: {fileID: 0}
 --- !u!1 &1472081388
 GameObject:
   m_ObjectHideFlags: 0
@@ -99036,8 +99057,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5574189994558790655}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.061417785, y: -0.7043347, z: 0.061400253, w: 0.7045358}
-  m_LocalPosition: {x: 0.000061035156, y: 0, z: 0}
+  m_LocalRotation: {x: 0.061417196, y: -0.7043347, z: 0.061399665, w: 0.7045358}
+  m_LocalPosition: {x: 0.000030517578, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
