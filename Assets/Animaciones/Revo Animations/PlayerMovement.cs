@@ -277,7 +277,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
             HandleLevitationSphere();
         }
 
-        if ((Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Q)) && CanWeaponChange && !_pauseMenu.isPaused)
+        if ((Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Q)) && _inventory.MyItemsCount() > 0 && CanWeaponChange && !_pauseMenu.isPaused)
         {
             CanWeaponChange = false;
             _weaponSelected.GetComponent<IModules>().PowerElement();
