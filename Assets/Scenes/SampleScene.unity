@@ -4951,7 +4951,6 @@ GameObject:
   - component: {fileID: 111841754}
   - component: {fileID: 111841753}
   - component: {fileID: 111841758}
-  - component: {fileID: 111841759}
   m_Layer: 6
   m_Name: WeaponPulse
   m_TagString: Untagged
@@ -5091,26 +5090,6 @@ MonoBehaviour:
   _instancePoint: {fileID: 2074803358}
   _timeToShoot: 1
   _projectileSpeed: 30
---- !u!114 &111841759
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 111841751}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0eb8022f75ddcab4a9ca2f087a657706, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  uiRadius: 5
-  particleRadius: 5
-  particleOffset: 2
-  interactKey: 101
-  pickupKey: 114
-  ParticlesPrefab: {fileID: 0}
-  InteractuableUI: {fileID: 1561917919}
-  lorePanel: {fileID: 0}
 --- !u!1 &112689428
 GameObject:
   m_ObjectHideFlags: 0
@@ -15691,8 +15670,6 @@ GameObject:
   - component: {fileID: 420215915}
   - component: {fileID: 420215914}
   - component: {fileID: 420215919}
-  - component: {fileID: 420215920}
-  - component: {fileID: 420215921}
   m_Layer: 6
   m_Name: WeaponInvisible
   m_TagString: Untagged
@@ -15836,38 +15813,6 @@ MonoBehaviour:
   rightArmMat: {fileID: 2100000, guid: 094207a3e789f464081527b5a3e41228, type: 2}
   dissolveSpeed: 2
   invisibleDuration: 5
---- !u!114 &420215920
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 420215912}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: daa6d81e163a8b34182ab00e6f551fcc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &420215921
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 420215912}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0eb8022f75ddcab4a9ca2f087a657706, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  uiRadius: 5
-  particleRadius: 35
-  particleOffset: 3
-  interactKey: 101
-  pickupKey: 114
-  ParticlesPrefab: {fileID: 7745204478076125742, guid: 94cdbda8c534dcb43ba6999b9b19fbdb, type: 3}
-  InteractuableUI: {fileID: 1561917919}
-  lorePanel: {fileID: 0}
 --- !u!1001 &423662952
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -32763,7 +32708,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &608824776
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64571,6 +64516,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 16fa92ed3e0393a469119fba65de1cea, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1828910570}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 16fa92ed3e0393a469119fba65de1cea, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1828910571}
   m_SourcePrefab: {fileID: 100100000, guid: 16fa92ed3e0393a469119fba65de1cea, type: 3}
 --- !u!1 &1451327205
 GameObject:
@@ -65450,7 +65398,6 @@ GameObject:
   - component: {fileID: 1471389674}
   - component: {fileID: 1471389680}
   - component: {fileID: 1471389681}
-  - component: {fileID: 1471389682}
   m_Layer: 6
   m_Name: WeaponRadar
   m_TagString: Untagged
@@ -65690,26 +65637,6 @@ MonoBehaviour:
   _myLitMaterial: {fileID: 2100000, guid: 614ecf5e8b73e1149a223f2eff236e79, type: 2}
   _canRadar: 1
   _eagleVision: {fileID: 0}
---- !u!114 &1471389682
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1471389672}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0eb8022f75ddcab4a9ca2f087a657706, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  uiRadius: 5
-  particleRadius: 5
-  particleOffset: 2
-  interactKey: 101
-  pickupKey: 114
-  ParticlesPrefab: {fileID: 0}
-  InteractuableUI: {fileID: 1561917919}
-  lorePanel: {fileID: 0}
 --- !u!1 &1472081388
 GameObject:
   m_ObjectHideFlags: 0
@@ -81147,6 +81074,26 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1828910571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1828910567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0eb8022f75ddcab4a9ca2f087a657706, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uiRadius: 5
+  particleRadius: 8
+  particleOffset: 2
+  interactKey: 101
+  pickupKey: 114
+  ParticlesPrefab: {fileID: 0}
+  InteractuableUI: {fileID: 1561917919}
+  lorePanel: {fileID: 0}
 --- !u!1 &1830541429
 GameObject:
   m_ObjectHideFlags: 0
@@ -99543,7 +99490,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5574189994558790655}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.06142212, y: -0.70433426, z: 0.06140459, w: 0.70453537}
+  m_LocalRotation: {x: 0.061417237, y: -0.7043347, z: 0.061399706, w: 0.7045358}
   m_LocalPosition: {x: 0.000061035156, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

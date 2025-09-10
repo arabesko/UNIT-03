@@ -3,48 +3,42 @@
 public class InteractableUI : MonoBehaviour
 {
     [Header("Rangos de proximidad")]
-    [Tooltip("Distancia en la que aparece la UI.")]
     public float uiRadius = 3f;
-    [Tooltip("Distancia en la que comienzan las partículas.")]
     public float particleRadius = 8f;
-    [Tooltip("Offset adicional para apagar partículas (en unidades).")]
     public float particleOffset = 2f;
 
     [Header("Teclas de interacción")]
-    [Tooltip("Tecla para acciones/lore (E).")]
     public KeyCode interactKey = KeyCode.E;
-    [Tooltip("Tecla para pickup/levitar (R).")]
     public KeyCode pickupKey = KeyCode.R;
 
     [Header("Visuales")]
-    [Tooltip("Prefab de ParticleSystem.")]
     public ParticleSystem ParticlesPrefab;
     private ParticleSystem _particles;
-    [Tooltip("Panel UI (\"Presiona E\").")]
     public GameObject InteractuableUI;
 
     [Header("Lore (solo layer “Lore”)")]
-    [Tooltip("Asignar solo en objetos de layer “Lore”.")]
     public GameObject lorePanel;
 
     Transform _player;
+    PlayerMovement _playerMovement;
     bool _uiInRange;
     bool _loreOpen;
-    bool _consumed;
+    bool _consumed;          // uso: objeto consumido/permanente
     bool _isLoreObject;
     int _loreLayer;
 
     void Start()
     {
         _player = GameObject.FindGameObjectWithTag("Player")?.transform;
+        if (_player != null)
+            _playerMovement = _player.GetComponent<PlayerMovement>();
+
         _loreLayer = LayerMask.NameToLayer("Lore");
         _isLoreObject = (gameObject.layer == _loreLayer);
 
-        // Desactivar al inicio
         if (InteractuableUI) InteractuableUI.SetActive(false);
         if (_isLoreObject && lorePanel) lorePanel.SetActive(false);
 
-        // Instanciar partículas
         if (ParticlesPrefab)
         {
             _particles = Instantiate(
@@ -65,25 +59,20 @@ public class InteractableUI : MonoBehaviour
         float stopDist = uiRadius + particleOffset;
 
         // --- TOGGLE LORE FIRST (always allowed for Lore objects)
-        if (_isLoreObject && _uiInRange && Input.GetKeyDown(interactKey))
+        if (_isLoreObject && dist <= uiRadius && Input.GetKeyDown(interactKey))
         {
             ToggleLore();
-            return; // skip consumption or other logic this frame
-        }
-
-        // --- CONSUME on E (non-lore) or R
-        if (_uiInRange &&
-            (_isLoreObject == false && Input.GetKeyDown(interactKey)
-             || Input.GetKeyDown(pickupKey)))
-        {
-            Consume();
             return;
         }
+
+        // IMPORTANT: removimos la llamada a Consume() aquí.
+        // No queremos marcar como "consumido" cuando solo se levita (R).
+        // El Player debe llamar a MarkAsConsumedPermanent() cuando haya una recolección definitiva.
 
         if (_consumed)
             return;
 
-        // --- PARTÍCULAS en (stopDist, particleRadius]
+        // --- PARTICULAS
         if (_particles)
         {
             if (dist > stopDist && dist <= particleRadius)
@@ -96,18 +85,38 @@ public class InteractableUI : MonoBehaviour
             }
         }
 
-        // --- UI prompt dentro de uiRadius
+        // --- Lógica mostrar/ocultar prompt
         bool shouldShowUI = dist <= uiRadius;
+
+        // Si el player tiene este mismo objeto levitado => ocultar su UI
+        if (_playerMovement != null && _playerMovement.ElementLevitated == this.gameObject)
+        {
+            shouldShowUI = false;
+        }
+
+        // EXCEPCIÓN: si el player aprieta E y está en rango, forzamos mostrar la UI.
+        if (Input.GetKeyDown(interactKey) && dist <= uiRadius)
+        {
+            shouldShowUI = true;
+            if (InteractuableUI) InteractuableUI.SetActive(true);
+        }
+
         if (!_uiInRange && shouldShowUI) EnterUI();
         else if (_uiInRange && !shouldShowUI) ExitUI();
     }
 
-    void Consume()
+    // Llamar desde Player cuando se quiera marcar como consumido/permanente
+    public void MarkAsConsumedPermanent()
     {
         _consumed = true;
-        // Ocultar todo menos lore
         if (InteractuableUI) InteractuableUI.SetActive(false);
         if (_particles && _particles.isPlaying) _particles.Stop();
+    }
+
+    // Si querés volver a "reactivar" (útil para debugging)
+    public void ResetConsumed()
+    {
+        _consumed = false;
     }
 
     void EnterUI()
@@ -125,7 +134,6 @@ public class InteractableUI : MonoBehaviour
 
     void ToggleLore()
     {
-        // lorePanel debe existir si es objeto Lore
         _loreOpen = !_loreOpen;
         lorePanel.SetActive(_loreOpen);
         InteractuableUI.SetActive(!_loreOpen);
