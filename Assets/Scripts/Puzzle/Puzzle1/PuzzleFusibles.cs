@@ -47,11 +47,16 @@ public class PuzzleFusibles : MonoBehaviour
         }
 
         Rigidbody rb = fuse.GetComponent<Rigidbody>();
-        if (rb != null) rb.isKinematic = true;
+        if (rb != null)
+        {
+            rb.isKinematic = true;
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
 
-        fuse.transform.SetParent(slot);
-        fuse.transform.localPosition = Vector3.zero;
-        fuse.transform.localRotation = Quaternion.identity;
+        fuse.transform.SetParent(slot, true); // El true mantiene la posición mundial
+        fuse.transform.position = slot.position;
+        fuse.transform.rotation = slot.rotation;
         fuse.transform.localScale = Vector3.one;
 
         fuse.Desactivate();
