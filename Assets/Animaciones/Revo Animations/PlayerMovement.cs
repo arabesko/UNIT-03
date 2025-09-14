@@ -427,6 +427,10 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
 
     private void SelectModule(int index)
     {
+        // Si ya está seleccionado este módulo, no hacer nada
+        /*if (index == _inventory.WeaponSelected)
+            return;*/
+
         _animatorBasic.animator = _inventory.MyCurrentAnimator();
         _animatorBasic._playerMovement = this;
 
