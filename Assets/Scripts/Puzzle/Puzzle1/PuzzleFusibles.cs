@@ -5,7 +5,16 @@ using System.Collections;
 
 public class PuzzleFusibles : MonoBehaviour
 {
-    public List<Transform> fuseSlots;
+    [System.Serializable]
+    public class FuseAssignment
+    {
+        public string fuseID; // ID único del fusible
+        public Transform slotTransform; // Slot asignado a este fusible
+        public Transform placementPoint; // Punto de colocación exacto
+        public bool isOccupied = false;
+    }
+
+    public List<FuseAssignment> fuseAssignments = new List<FuseAssignment>();
     public TMP_Text percentText;
     public Transform door;
     public Transform doorOpenPosition;
@@ -15,37 +24,53 @@ public class PuzzleFusibles : MonoBehaviour
     public AudioClip fuseInsertSound;
     public float openSpeed = 1f;
 
+    private Dictionary<string, FuseAssignment> fuseDictionary = new Dictionary<string, FuseAssignment>();
     private List<GameObject> insertedFuses = new List<GameObject>();
     private int totalPercent = 0;
+    private bool isDoorOpen = false;
 
-    private void OnTriggerEnter(Collider other)
+    private void Start()
     {
-        ElementPuzzle fuse = other.GetComponent<ElementPuzzle>();
-
-        if (fuse != null && !insertedFuses.Contains(fuse.gameObject))
+        // Inicializar el diccionario de asignaciones
+        foreach (FuseAssignment assignment in fuseAssignments)
         {
-            foreach (Transform slot in fuseSlots)
+            if (!fuseDictionary.ContainsKey(assignment.fuseID))
             {
-                if (slot.childCount == 0)
-                {
-                    InsertFuse(fuse, slot);
-                    break;
-                }
+                fuseDictionary.Add(assignment.fuseID, assignment);
             }
         }
     }
 
-    private void InsertFuse(ElementPuzzle fuse, Transform slot)
+    private void OnTriggerEnter(Collider other)
     {
+        if (isDoorOpen) return;
+
+        ElementPuzzle fuse = other.GetComponent<ElementPuzzle>();
+        if (fuse == null || insertedFuses.Contains(fuse.gameObject)) return;
+
+        // Buscar la asignación específica para este fusible
+        if (fuseDictionary.TryGetValue(fuse.fuseID, out FuseAssignment assignment))
+        {
+            if (!assignment.isOccupied)
+            {
+                InsertFuse(fuse, assignment);
+            }
+        }
+    }
+
+    private void InsertFuse(ElementPuzzle fuse, FuseAssignment assignment)
+    {
+        assignment.isOccupied = true;
         insertedFuses.Add(fuse.gameObject);
 
-        PlayerMovement player = fuse._player;
-        if (player != null && player.colectables.Contains(fuse.gameObject))
+        // Liberar el fusible del jugador
+        if (fuse._player != null && fuse._player.colectables.Contains(fuse.gameObject))
         {
-            player.colectables.Remove(fuse.gameObject);
-            player.NoLevitate();
+            fuse._player.colectables.Remove(fuse.gameObject);
+            fuse._player.NoLevitate();
         }
 
+        // Desactivar física
         Rigidbody rb = fuse.GetComponent<Rigidbody>();
         if (rb != null)
         {
@@ -54,22 +79,42 @@ public class PuzzleFusibles : MonoBehaviour
             rb.angularVelocity = Vector3.zero;
         }
 
-        fuse.transform.SetParent(slot, true); // El true mantiene la posición mundial
-        fuse.transform.position = slot.position;
-        fuse.transform.rotation = slot.rotation;
+        // Desactivar collider
+        Collider fuseCollider = fuse.GetComponent<Collider>();
+        if (fuseCollider != null) fuseCollider.enabled = false;
+
+        // Posicionar el fusible en su slot asignado
+        fuse.transform.SetParent(assignment.slotTransform);
+
+        if (assignment.placementPoint != null)
+        {
+            fuse.transform.position = assignment.placementPoint.position;
+            fuse.transform.rotation = assignment.placementPoint.rotation;
+        }
+        else
+        {
+            fuse.transform.localPosition = Vector3.zero;
+            fuse.transform.localRotation = Quaternion.identity;
+        }
+
         fuse.transform.localScale = Vector3.one;
+
+        // Reactivar collider
+        if (fuseCollider != null) fuseCollider.enabled = true;
 
         fuse.Desactivate();
 
-        
+        // Sonido
         if (doorAudioSource != null && fuseInsertSound != null)
         {
             doorAudioSource.PlayOneShot(fuseInsertSound);
         }
 
+        // Actualizar porcentaje
         totalPercent += fuse.MyReturnNumber();
         percentText.text = totalPercent.ToString() + "%";
 
+        // Verificar si el puzzle está completo
         if (totalPercent >= 100)
         {
             StartCoroutine(OpenDoor());
@@ -78,6 +123,8 @@ public class PuzzleFusibles : MonoBehaviour
 
     private IEnumerator OpenDoor()
     {
+        isDoorOpen = true;
+
         if (doorAudioSource != null && doorOpenSound != null)
         {
             doorAudioSource.PlayOneShot(doorOpenSound);
@@ -92,6 +139,25 @@ public class PuzzleFusibles : MonoBehaviour
             t += Time.deltaTime * openSpeed;
             door.position = Vector3.Lerp(startPos, endPos, t);
             yield return null;
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        foreach (FuseAssignment assignment in fuseAssignments)
+        {
+            if (assignment.slotTransform != null)
+            {
+                Gizmos.color = assignment.isOccupied ? Color.red : Color.green;
+                if (assignment.placementPoint != null)
+                {
+                    Gizmos.DrawWireCube(assignment.placementPoint.position, Vector3.one * 0.1f);
+                }
+                else
+                {
+                    Gizmos.DrawWireCube(assignment.slotTransform.position, Vector3.one * 0.1f);
+                }
+            }
         }
     }
 }

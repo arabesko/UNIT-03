@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class ElementPuzzle : PuzzleMother
 {
+    public string fuseID;
     [SerializeField] private int _percent;
     public PlayerMovement _player;
     [SerializeField] private AudioSource _audioSource;
