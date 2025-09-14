@@ -7,13 +7,30 @@ public class PauseMenu : MonoBehaviour
     public GameObject pausePanel;
     public bool isPaused = false;
     public GameObject optionsPanel;
+    public PlayerMovement playerMovement; // Referencia al script del jugador
+
+    void Start()
+    {
+        // Buscar automáticamente el PlayerMovement si no está asignado
+        if (playerMovement == null)
+        {
+            playerMovement = FindObjectOfType<PlayerMovement>();
+        }
+    }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (isPaused) Resume();
-            else Pause();
+            if (optionsPanel.activeSelf)
+            {
+                CloseOptions();
+            }
+            else
+            {
+                if (isPaused) Resume();
+                else Pause();
+            }
         }
     }
 
@@ -23,34 +40,23 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 0f;
         isPaused = true;
 
+        // Forzar mostrar cursor al pausar
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-
-        // Agregar imagen para bloquear raycasts si no existe
-        if (!pausePanel.GetComponent<Image>())
-        {
-            Image bg = pausePanel.AddComponent<Image>();
-            bg.color = new Color(0, 0, 0, 0.01f);
-            bg.raycastTarget = true;
-        }
-
-        GraphicRaycaster raycaster = FindObjectOfType<GraphicRaycaster>();
-        if (raycaster != null)
-        {
-            raycaster.enabled = false;
-            raycaster.enabled = true;
-        }
     }
 
     public void Resume()
     {
         pausePanel.SetActive(false);
+        optionsPanel.SetActive(false);
         Time.timeScale = 1f;
         isPaused = false;
 
-        // Ocultar cursor
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        // Dejar que PlayerMovement maneje el estado del cursor
+        if (playerMovement != null)
+        {
+            playerMovement.UpdateCursorState();
+        }
     }
 
     public void Options()

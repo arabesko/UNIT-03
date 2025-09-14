@@ -374,6 +374,9 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
             if (dissolveCoroutine != null) StopCoroutine(dissolveCoroutine);
             dissolveCoroutine = StartCoroutine(DissolveSphere(0f, 1f, 0.5f, true));
         }
+
+        // Actualizar estado del cursor
+        UpdateCursorState();
     }
 
     private IEnumerator DissolveSphere(float from, float to, float duration, bool destroyOnEnd)
@@ -431,18 +434,9 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         _weaponSelected = _inventory.SelectWeapon(index);
         _weaponSelected.GetComponent<Weapon>().MyStart();
 
-        // --- mostrar cursor si el arma es WeaponPulse ---
-        if (_weaponSelected.GetComponent<WeaponPulse>() != null)
-        {
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
-        }
-        else
-        {
-            // opcional: esconderlo para otras armas
-            // Cursor.visible = false;
-            // Cursor.lockState = CursorLockMode.Locked;
-        }
+        // Actualizar estado del cursor
+        UpdateCursorState();
+
         _animatorBasic.animator = _inventory.MyCurrentAnimator();
     }
 
@@ -794,6 +788,21 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     }
     #endregion
 
+    public void UpdateCursorState()
+    {
+        // Mostrar cursor si está pausado o si tiene WeaponPulse equipado
+        if (FindObjectOfType<PauseMenu>().isPaused ||
+            (_weaponSelected != null && _weaponSelected.GetComponent<WeaponPulse>() != null))
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
+        else
+        {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+    }
     private void HandleAimBone()
     {
         if (!aimBoneInitialized || aimBone == null) return;
