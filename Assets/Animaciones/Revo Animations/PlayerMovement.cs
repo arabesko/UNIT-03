@@ -31,7 +31,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     private bool aimBoneInitialized = false;
 
     [Header("Shooting")]
-    [SerializeField] private LayerMask shootableLayers = ~0; // capas que la bala puede alcanzar (todo por defecto)
+    [SerializeField] private LayerMask shootableLayers = ~0; // capas que la bala puede alcanzar (todo por defecto)
 
     [Header("Levitation Sphere Settings")]
     [Tooltip("Prefab de la esfera que se spawnea alrededor del objeto")]
@@ -101,7 +101,6 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     private bool _colorsSaved = false; // Para asegurar que guardamos los colores solo una vez
 
 
-
     public bool IsInvisible
     {
         get { return _isInvisible; }
@@ -158,6 +157,8 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
             aimBoneInitialLocalRot = aimBone.localRotation;
             aimBoneInitialized = true;
         }
+
+
     }
 
     void LateUpdate()
@@ -301,7 +302,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         }
     }
 
-   
+
 
     private void HandleLevitatingObject()
     {
@@ -547,7 +548,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
 
     private void OnDrawGizmosSelected()
     {
-         Gizmos.color = Color.yellow;
+        Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, interactRadius);
 
         Gizmos.color = Color.cyan;
