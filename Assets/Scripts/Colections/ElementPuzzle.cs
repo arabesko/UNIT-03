@@ -31,7 +31,7 @@ public class ElementPuzzle : PuzzleMother
     {
         if (_activateRotation)
         {
-            transform.Rotate(2*_speedRotation * Time.deltaTime, _speedRotation * Time.deltaTime, _speedRotation * Time.deltaTime);
+            //transform.Rotate(2*_speedRotation * Time.deltaTime, _speedRotation * Time.deltaTime, _speedRotation * Time.deltaTime);
         }
     }
 
