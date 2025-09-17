@@ -6,19 +6,18 @@ public class PortableBattery : MonoBehaviour
     [SerializeField] private float chargeTime = 5f;
     [SerializeField] private float timer = 0f;
     private bool isCharging = false;
-    public bool isBeingMoved = false; // Nuevo flag para indicar que está siendo movida
+    public bool isBeingMoved = false;
 
     [Header("UI / SFX")]
-    public ChargingStation currentStation; // Referencia a la estación que la está cargando
+    public ChargingStation currentStation;
 
     [Header("Audio Clips")]
-    public AudioSource audioSource;            // Debes asignar aquí un AudioSource en el Inspector
-    public AudioClip chargingLoopClip;         // Sonido que suena en bucle mientras carga
-    public AudioClip chargedSound;             // Sonido que suena al terminar de cargar
+    public AudioSource audioSource;
+    public AudioClip chargingLoopClip;
+    public AudioClip chargedSound;
 
     private void Update()
     {
-        // Permitir que la carga continúe incluso si la batería se está moviendo
         if (isCharging && !isCharged)
         {
             timer += Time.deltaTime;
@@ -29,20 +28,18 @@ public class PortableBattery : MonoBehaviour
 
                 Debug.Log("Batería cargada completamente.");
 
-                // Detenemos el loop de carga (si estaba sonando)
                 if (audioSource != null && audioSource.isPlaying)
                 {
                     audioSource.Stop();
                 }
 
-                // Oculta el texto de carga en la estación y limpia la referencia
                 if (currentStation != null)
                 {
+                    currentStation.BatteryReadyForPickup(); // Notificar que está lista para recoger
                     currentStation.HideChargingText();
                     currentStation = null;
                 }
 
-                // Reproduce el sonido de batería cargada (solo una vez)
                 if (audioSource != null && chargedSound != null)
                 {
                     audioSource.PlayOneShot(chargedSound);
@@ -59,7 +56,6 @@ public class PortableBattery : MonoBehaviour
             timer = 0f;
             currentStation = station;
 
-            // Si tenemos AudioSource y clip de loop asignado, lo reproducimos en bucle
             if (audioSource != null && chargingLoopClip != null)
             {
                 audioSource.clip = chargingLoopClip;
@@ -71,7 +67,6 @@ public class PortableBattery : MonoBehaviour
 
     public void StopCharging()
     {
-        // Al detener la carga antes de tiempo, paramos el loop y reseteamos timer
         isCharging = false;
         timer = 0f;
 
@@ -81,21 +76,12 @@ public class PortableBattery : MonoBehaviour
         }
 
         currentStation = null;
-    }
 
-    // Añadir este método para ser llamado cuando el jugador recoge la batería
-    public void OnPickedUp()
-    {
-        isBeingMoved = false; // Restablecer el flag
-
-        if (currentStation != null)
-        {
-            currentStation.BatteryPickedUp();
-            currentStation = null;
-        }
-
-        // Reactivar la física
+        // Reactivar la física si se detiene la carga
         Rigidbody rb = GetComponent<Rigidbody>();
-        if (rb != null) rb.isKinematic = false;
+        if (rb != null)
+        {
+            rb.isKinematic = false;
+        }
     }
 }

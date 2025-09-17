@@ -926,4 +926,6 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         // si no choca, devolvemos un punto a distancia fija en esa dirección
         return ray.GetPoint(defaultDistance);
     }
+
+    
 }

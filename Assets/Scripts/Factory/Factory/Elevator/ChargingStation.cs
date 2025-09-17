@@ -40,27 +40,7 @@ public class ChargingStation : MonoBehaviour
     {
         if (currentWaypointIndex >= waypoints.Count || waypoints.Count == 0)
         {
-            Debug.LogError("No hay waypoints configurados o índice fuera de rango");
-            isMovingBattery = false;
-            return;
-        }
-
-        Transform target = waypoints[currentWaypointIndex];
-        Vector3 direction = (target.position - currentBattery.transform.position).normalized;
-
-        currentBattery.transform.position += direction * moveSpeed * Time.deltaTime;
-        RotateBatteryTowards(target.position);
-
-        float distance = Vector3.Distance(currentBattery.transform.position, target.position);
-
-        if (distance < 0.1f)
-        {
-            currentWaypointIndex++;
-        }
-
-        if (currentWaypointIndex >= waypoints.Count)
-        {
-            Debug.Log("Movimiento completado");
+            Debug.Log("Movimiento completado, iniciando carga");
             isMovingBattery = false;
             isMovementCompleted = true;
 
@@ -75,6 +55,26 @@ public class ChargingStation : MonoBehaviour
                 if (chargingPromptText != null)
                     chargingPromptText.text = "Cargando bateria...";
             }
+            return;
+        }
+
+        Transform target = waypoints[currentWaypointIndex];
+        Vector3 direction = (target.position - currentBattery.transform.position).normalized;
+
+        // Movimiento suave usando Lerp
+        currentBattery.transform.position = Vector3.Lerp(
+            currentBattery.transform.position,
+            target.position,
+            moveSpeed * Time.deltaTime
+        );
+
+        RotateBatteryTowards(target.position);
+
+        // Verificar si hemos llegado al waypoint actual
+        if (Vector3.Distance(currentBattery.transform.position, target.position) < 0.1f)
+        {
+            currentWaypointIndex++;
+            Debug.Log("Pasando al siguiente waypoint: " + currentWaypointIndex);
         }
     }
 
@@ -94,20 +94,16 @@ public class ChargingStation : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log($"Trigger entrado: {other.name}, tag: {other.tag}");
-
-        // Detectar cuando la batería entra en el trigger del cargador
         if (other.CompareTag("Battery"))
         {
-            Debug.Log("Batería detectada en trigger del cargador");
-
             PortableBattery battery = other.GetComponent<PortableBattery>();
-            if (battery != null && !isMovingBattery && !isMovementCompleted)
+            if (battery != null && !battery.isCharged && !isMovingBattery && !isMovementCompleted)
             {
+                Debug.Log("Batería detectada, iniciando movimiento");
+
                 // Quitar la batería del control del jugador
                 if (_playerScript != null)
                 {
-                    // Asegurarse de que la batería esté en la lista de colectables del jugador
                     if (_playerScript.colectables.Contains(battery.gameObject))
                     {
                         _playerScript.colectables.Remove(battery.gameObject);
@@ -116,26 +112,32 @@ public class ChargingStation : MonoBehaviour
                     }
                 }
 
-                Debug.Log("Iniciando movimiento de batería");
                 // Iniciar movimiento automático
                 isMovingBattery = true;
                 currentBattery = battery;
+                currentWaypointIndex = 0;
 
+                // Hacer la batería kinemática para evitar interferencias físicas
                 Rigidbody rb = currentBattery.GetComponent<Rigidbody>();
                 if (rb != null)
                 {
                     rb.isKinematic = true;
-                    Debug.Log("Rigidbody kinematic activado");
                 }
 
-                currentWaypointIndex = 0;
-
-                // NO desactivar el script de la batería - en su lugar, usar un flag
-                currentBattery.isBeingMoved = true; // Necesitamos agregar este flag al script PortableBattery
-                Debug.Log("Batería en movimiento - flag activado");
+                // Marcar que la batería está siendo movida
+                currentBattery.isBeingMoved = true;
+            }
+            // Permitir recoger la batería cargada
+            else if (battery != null && battery.isCharged)
+            {
+                // Agregar la batería a la lista de colectables del jugador
+                if (_playerScript != null && !_playerScript.colectables.Contains(battery.gameObject))
+                {
+                    _playerScript.colectables.Add(battery.gameObject);
+                    Debug.Log("Batería cargada agregada a colectables del jugador");
+                }
             }
         }
-        // Detectar cuando el jugador se acerca
         else if (other.CompareTag("Player"))
         {
             if (chargingPromptPanel != null)
@@ -143,8 +145,8 @@ public class ChargingStation : MonoBehaviour
 
             if (chargingPromptText != null)
             {
-                if (isMovementCompleted && currentBattery != null && currentBattery.isCharged)
-                    chargingPromptText.text = "Batería cargada lista para recoger.";
+                if (currentBattery != null && currentBattery.isCharged)
+                    chargingPromptText.text = "Presiona R para recoger la batería cargada";
                 else
                     chargingPromptText.text = "Parece una fuente de energia.";
             }
@@ -160,24 +162,33 @@ public class ChargingStation : MonoBehaviour
         }
     }
 
-    // Método para reiniciar el estado cuando el jugador recoge la batería cargada
-    public void BatteryPickedUp()
-    {
-        isMovementCompleted = false;
-
-        if (currentBattery != null)
-        {
-            currentBattery.isBeingMoved = false; // Restablecer el flag
-            currentBattery = null;
-        }
-
-        if (chargingPromptPanel != null)
-            chargingPromptPanel.SetActive(false);
-    }
-
     public void HideChargingText()
     {
         if (chargingPromptPanel != null)
             chargingPromptPanel.SetActive(false);
+    }
+
+    // Método para cuando la batería está cargada y lista para recoger
+    public void BatteryReadyForPickup()
+    {
+        if (currentBattery != null)
+        {
+            // Reactivar la física
+            Rigidbody rb = currentBattery.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.isKinematic = false;
+            }
+
+            // Quitar el flag de movimiento
+            currentBattery.isBeingMoved = false;
+
+            // Agregar la batería a la lista de colectables del jugador
+            if (_playerScript != null && !_playerScript.colectables.Contains(currentBattery.gameObject))
+            {
+                _playerScript.colectables.Add(currentBattery.gameObject);
+                Debug.Log("Batería cargada agregada a colectables del jugador");
+            }
+        }
     }
 }
