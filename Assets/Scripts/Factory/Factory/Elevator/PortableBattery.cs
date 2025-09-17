@@ -6,6 +6,7 @@ public class PortableBattery : MonoBehaviour
     [SerializeField] private float chargeTime = 5f;
     [SerializeField] private float timer = 0f;
     private bool isCharging = false;
+    public bool isBeingMoved = false; // Nuevo flag para indicar que está siendo movida
 
     [Header("UI / SFX")]
     public ChargingStation currentStation; // Referencia a la estación que la está cargando
@@ -17,7 +18,8 @@ public class PortableBattery : MonoBehaviour
 
     private void Update()
     {
-        if (isCharging)
+        // Permitir que la carga continúe incluso si la batería se está moviendo
+        if (isCharging && !isCharged)
         {
             timer += Time.deltaTime;
             if (timer >= chargeTime)
@@ -79,5 +81,21 @@ public class PortableBattery : MonoBehaviour
         }
 
         currentStation = null;
+    }
+
+    // Añadir este método para ser llamado cuando el jugador recoge la batería
+    public void OnPickedUp()
+    {
+        isBeingMoved = false; // Restablecer el flag
+
+        if (currentStation != null)
+        {
+            currentStation.BatteryPickedUp();
+            currentStation = null;
+        }
+
+        // Reactivar la física
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null) rb.isKinematic = false;
     }
 }
