@@ -33618,6 +33618,7 @@ GameObject:
   - component: {fileID: 612311091}
   - component: {fileID: 612311092}
   - component: {fileID: 612311093}
+  - component: {fileID: 612311094}
   m_Layer: 0
   m_Name: Revo FBX Pulso
   m_TagString: Untagged
@@ -33680,9 +33681,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ui3DObjects:
   - {fileID: 1033740031}
-  defaultScaleMultiplier: 1.25
+  defaultScaleMultiplier: 1.05
   perObjectMultiplier: []
   scaleDuration: 0.2
+  deactivateAtStart: 1
+  activateOnEnable: 1
+  highlightOnEnable: 1
+  highlightIndexOnEnable: 0
+  highlightDelay: 0.05
+--- !u!114 &612311094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 612311090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1a57ecbd9c3cc6488500b1968decb83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ui3DObjects:
+  - {fileID: 188630914}
+  defaultScaleMultiplier: 1.04
+  perObjectMultiplier: []
+  scaleDuration: 0.1
   deactivateAtStart: 1
   activateOnEnable: 1
   highlightOnEnable: 1
@@ -43335,16 +43358,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 870664504}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0.000000007230483, y: 0.0000000124514115, z: 1, w: -0.0000002685847}
   m_LocalPosition: {x: 0, y: 0, z: 283}
-  m_LocalScale: {x: 2.209895, y: 1.6735287, z: 1.6735287}
+  m_LocalScale: {x: 5.8077316, y: 1.6735287, z: 1.6735287}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1403369137}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 915.9, y: -492}
+  m_AnchoredPosition: {x: 907.2, y: -495.1}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &870664506
@@ -48533,6 +48556,7 @@ GameObject:
   - component: {fileID: 986810630}
   - component: {fileID: 986810631}
   - component: {fileID: 986810632}
+  - component: {fileID: 986810633}
   m_Layer: 0
   m_Name: Revo FBX InvisibleNormal
   m_TagString: Untagged
@@ -48594,11 +48618,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ui3DObjects:
-  - {fileID: 2088507937}
   - {fileID: 279812720}
-  defaultScaleMultiplier: 1.25
+  defaultScaleMultiplier: 1.05
   perObjectMultiplier: []
   scaleDuration: 0.2
+  deactivateAtStart: 1
+  activateOnEnable: 1
+  highlightOnEnable: 1
+  highlightIndexOnEnable: 0
+  highlightDelay: 0.05
+--- !u!114 &986810633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 986810629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1a57ecbd9c3cc6488500b1968decb83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ui3DObjects:
+  - {fileID: 1597107493}
+  defaultScaleMultiplier: 1.04
+  perObjectMultiplier: []
+  scaleDuration: 0.1
   deactivateAtStart: 1
   activateOnEnable: 1
   highlightOnEnable: 1
@@ -81511,15 +81556,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1779357452}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1a57ecbd9c3cc6488500b1968decb83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ui3DObjects:
   - {fileID: 2088507937}
-  - {fileID: 279812720}
-  defaultScaleMultiplier: 1.25
+  defaultScaleMultiplier: 1.05
   perObjectMultiplier: []
   scaleDuration: 0.2
   deactivateAtStart: 1
@@ -99716,6 +99760,7 @@ GameObject:
   - component: {fileID: 926079620806389876}
   - component: {fileID: 6501566558896744974}
   - component: {fileID: 6501566558896744975}
+  - component: {fileID: 6501566558896744976}
   m_Layer: 0
   m_Name: Revo FBX Original
   m_TagString: Untagged
@@ -103884,7 +103929,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5574189994558790655}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.0614177, y: -0.7043347, z: 0.061400168, w: 0.7045358}
+  m_LocalRotation: {x: 0.061417285, y: -0.7043347, z: 0.061399754, w: 0.7045358}
   m_LocalPosition: {x: 0.000030517578, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -107775,9 +107820,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ui3DObjects:
   - {fileID: 153446288}
-  defaultScaleMultiplier: 1.25
+  defaultScaleMultiplier: 1.05
   perObjectMultiplier: []
-  scaleDuration: 0.2
+  scaleDuration: 0.1
+  deactivateAtStart: 1
+  activateOnEnable: 1
+  highlightOnEnable: 1
+  highlightIndexOnEnable: 0
+  highlightDelay: 0.05
+--- !u!114 &6501566558896744976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 545437132824832718}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1a57ecbd9c3cc6488500b1968decb83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ui3DObjects:
+  - {fileID: 2147418391}
+  defaultScaleMultiplier: 1.04
+  perObjectMultiplier: []
+  scaleDuration: 0.1
   deactivateAtStart: 1
   activateOnEnable: 1
   highlightOnEnable: 1
