@@ -9,6 +9,8 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     [Header("Conecciones")]
     [SerializeField] private PauseMenu _pauseMenu;
 
+    [SerializeField] private Show3DOnToggle moduleUIHighlighter;
+
     [Header("Player")]
     [SerializeField] private float _maxHealth;
     [SerializeField] private float _currentHealth;
@@ -132,6 +134,12 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
 
     private void Start()
     {
+        if (moduleUIHighlighter != null && _inventory != null)
+        {
+            int sel = _inventory.WeaponSelected;
+            moduleUIHighlighter.HighlightObject(sel);
+        }
+
         if (_animatorBasic != null)
             _animatorBasic._playerMovement = this;
 
@@ -438,6 +446,11 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         if (index > _inventory.MyItemsCount() - 1) return;
         _weaponSelected = _inventory.SelectWeapon(index);
         _weaponSelected.GetComponent<Weapon>().MyStart();
+
+        if (moduleUIHighlighter != null)
+        {
+            moduleUIHighlighter.HighlightObject(index);
+        }
 
         // Actualizar estado del cursor
         UpdateCursorState();

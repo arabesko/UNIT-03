@@ -20,6 +20,14 @@ public class Show3DOnToggle : MonoBehaviour
     [Tooltip("Si está ON, al activarse el componente se activan automáticamente los ui3DObjects")]
     public bool activateOnEnable = true;
 
+    [Header("Highlight automático al Enable (útil si cada body tiene su propio componente)")]
+    [Tooltip("Si está ON, cuando este componente se habilite hará HighlightObject(highlightIndexOnEnable).")]
+    public bool highlightOnEnable = true;
+    [Tooltip("Índice a resaltar cuando se habilita (si tu instancia tiene solo un objeto, dejá 0).")]
+    public int highlightIndexOnEnable = 0;
+    [Tooltip("Delay opcional antes de hacer el highlight (segundos). Útil si hay otras inicializaciones en juego).")]
+    public float highlightDelay = 0.05f;
+
     // estado guardado
     private Vector3[] originalLocalPos;
     private Quaternion[] originalLocalRot;
@@ -54,23 +62,54 @@ public class Show3DOnToggle : MonoBehaviour
 
     void OnEnable()
     {
-        if (!activateOnEnable) return;
-        if (ui3DObjects == null) return;
-        for (int i = 0; i < ui3DObjects.Length; i++)
+        if (activateOnEnable && ui3DObjects != null)
         {
-            var o = ui3DObjects[i];
-            if (o == null) continue;
-            o.SetActive(true);
-            // restaurar transform local guardado (opcional)
-            o.transform.localPosition = originalLocalPos[i];
-            o.transform.localRotation = originalLocalRot[i];
-            o.transform.localScale = originalLocalScale[i];
+            for (int i = 0; i < ui3DObjects.Length; i++)
+            {
+                var o = ui3DObjects[i];
+                if (o == null) continue;
+                o.SetActive(true);
+                // restaurar transform local guardado (opcional)
+                o.transform.localPosition = originalLocalPos[i];
+                o.transform.localRotation = originalLocalRot[i];
+                o.transform.localScale = originalLocalScale[i];
+            }
+        }
+
+        // Si queremos highlight automático cuando este body se prenda
+        if (highlightOnEnable)
+        {
+            // Nos aseguramos que el índice sea válido
+            if (IsValidIndex(highlightIndexOnEnable))
+            {
+                // delay opcional para evitar race conditions
+                if (highlightDelay > 0f)
+                    StartCoroutine(DelayedHighlight(highlightIndexOnEnable, highlightDelay));
+                else
+                    HighlightObject(highlightIndexOnEnable);
+            }
         }
     }
 
     void OnDisable()
     {
-        // Intencionalmente vacío: no forzamos apagar los objetos equipados.
+        // Al desactivarse el body, restauramos las escalas ORIGINALES de inmediato
+        // (no intentamos animar con coroutines desde un gameObject inactivo)
+        if (ui3DObjects == null || originalLocalScale == null) return;
+
+        for (int i = 0; i < ui3DObjects.Length; i++)
+        {
+            if (ui3DObjects[i] == null) continue;
+            ui3DObjects[i].transform.localScale = originalLocalScale[i];
+        }
+
+        highlightedIndex = -1;
+    }
+
+    private IEnumerator DelayedHighlight(int idx, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        HighlightObject(idx);
     }
 
     // --- Métodos públicos para equipar / resaltar ---
@@ -146,6 +185,17 @@ public class Show3DOnToggle : MonoBehaviour
     private void StartScaleCoroutine(int index, Vector3 from, Vector3 to, float duration)
     {
         if (!IsValidIndex(index)) return;
+
+        // Si este componente o su gameobject NO están activos, no podemos empezar una coroutine aquí.
+        // En ese caso aplicamos la escala objetivo de forma inmediata para evitar errores.
+        if (!this.isActiveAndEnabled || !this.gameObject.activeInHierarchy)
+        {
+            if (ui3DObjects[index] != null)
+                ui3DObjects[index].transform.localScale = to;
+            scaleCoroutines[index] = null;
+            return;
+        }
+
         // parar coroutine previa si existe
         if (scaleCoroutines[index] != null)
         {
@@ -154,6 +204,7 @@ public class Show3DOnToggle : MonoBehaviour
         }
         scaleCoroutines[index] = StartCoroutine(LerpScale(ui3DObjects[index].transform, from, to, duration, index));
     }
+
 
     private IEnumerator LerpScale(Transform t, Vector3 from, Vector3 to, float duration, int index)
     {
