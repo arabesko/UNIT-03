@@ -93,26 +93,26 @@ public class Inventory
         }
 
         // Reactivar solo la selección actual
-        for (int i = 0; i < _inventory.Count; i++)
-        {
-            GameObject weaponObj = _inventory[i];
-            Weapon weapon = weaponObj.GetComponent<Weapon>();
+        //for (int i = 0; i < _inventory.Count; i++)
+        //{
+        //    GameObject weaponObj = _inventory[i];
+        //    Weapon weapon = weaponObj.GetComponent<Weapon>();
 
-            if (weapon != null)
-            {
-                bool isActive = (i == _weaponSelected);
-                weaponObj.SetActive(isActive);
+        //    if (weapon != null)
+        //    {
+        //        bool isActive = (i == _weaponSelected);
+        //        weaponObj.SetActive(isActive);
 
-                if (isActive)
-                {
-                    weapon.MyBodyFBX.SetActive(true);
-                }
-                else
-                {
-                    weapon.MyBodyFBX.SetActive(false);
-                }
-            }
-        }
+        //        if (isActive)
+        //        {
+        //            weapon.MyBodyFBX.SetActive(true);
+        //        }
+        //        else
+        //        {
+        //            weapon.MyBodyFBX.SetActive(false);
+        //        }
+        //    }
+        //}
     }
 
     public GameObject SelectWeapon(int index)
@@ -128,7 +128,7 @@ public class Inventory
         {
             _inventory[_weaponSelected].SetActive(false);
             Weapon currentWeapon = _inventory[_weaponSelected].GetComponent<Weapon>();
-            if (currentWeapon != null) currentWeapon.MyBodyFBX.SetActive(false);
+            //if (currentWeapon != null) currentWeapon.MyBodyFBX.SetActive(false);
         }
 
         // Actualizar índice y activar nueva arma
@@ -137,10 +137,10 @@ public class Inventory
         selectedWeapon.SetActive(true);
 
         Weapon weaponComp = selectedWeapon.GetComponent<Weapon>();
-        if (weaponComp != null)
-        {
-            weaponComp.MyBodyFBX.SetActive(true);
-        }
+        //if (weaponComp != null)
+        //{
+        //    weaponComp.MyBodyFBX.SetActive(true);
+        //}
 
         return selectedWeapon;
     }
