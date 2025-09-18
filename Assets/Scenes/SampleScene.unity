@@ -1709,7 +1709,7 @@ GameObject:
   - component: {fileID: 39550082}
   - component: {fileID: 39550083}
   m_Layer: 0
-  m_Name: PIERNAS.104
+  m_Name: BrazoDerecho
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4069,7 +4069,7 @@ GameObject:
   - component: {fileID: 85469384}
   - component: {fileID: 85469385}
   m_Layer: 0
-  m_Name: PIERNAS.082
+  m_Name: CabezaCuerpo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12539,7 +12539,7 @@ GameObject:
   - component: {fileID: 312754033}
   - component: {fileID: 312754034}
   m_Layer: 0
-  m_Name: PIERNAS.064
+  m_Name: BrazoIzquierdo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12555,7 +12555,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0.00057355803, y: 0.0029100415, z: -0.00012357777, w: 0.9999956}
   m_LocalPosition: {x: -0.00018759014, y: -0.00001424551, z: 0.00053429604}
-  m_LocalScale: {x: 0.99999994, y: 0.9999998, z: 0.99999994}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 986810630}
@@ -16502,8 +16502,8 @@ MonoBehaviour:
   _myBodyFBX: {fileID: 545437132824832718}
   _myAnimator: {fileID: 6501566558896744974}
   CurrentState: 0
-  _myBodyInvisible: {fileID: 1779357452}
-  _myAnimatorInvisible: {fileID: 1779357454}
+  _myBodyInvisible: {fileID: 545437132824832718}
+  _myAnimatorInvisible: {fileID: 6501566558896744974}
   headMat: {fileID: 2100000, guid: e7410a0e491dade46a9fcd9c78e94322, type: 2}
   legsMat: {fileID: 2100000, guid: 3183c6532063f35488895c971412f42e, type: 2}
   leftArmMat: {fileID: 2100000, guid: 5f28163cedf17ed45a52f7f6bdf36315, type: 2}
@@ -33808,8 +33808,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 612311090}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0.78141785, y: -1.8575627, z: -4.5869064}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -33818,7 +33818,7 @@ Transform:
   - {fileID: 1328637873}
   - {fileID: 916183143}
   - {fileID: 1209547569}
-  m_Father: {fileID: 3271667715992815716}
+  m_Father: {fileID: 1385947202}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &612311092
 Animator:
@@ -48147,7 +48147,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &974278076
 Transform:
   m_ObjectHideFlags: 0
@@ -48756,8 +48756,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 986810629}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0.78141785, y: -1.8575627, z: -4.5869064}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -48766,7 +48766,7 @@ Transform:
   - {fileID: 312754033}
   - {fileID: 85469384}
   - {fileID: 39550082}
-  m_Father: {fileID: 3271667715992815716}
+  m_Father: {fileID: 1385947202}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &986810631
 Animator:
@@ -64006,6 +64006,41 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2b44879f0f6883a4ab41eedfd43e5075, type: 3}
+--- !u!1 &1385947201
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1385947202}
+  m_Layer: 0
+  m_Name: A_Eliminar
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &1385947202
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1385947201}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -146.68141, y: 3.7175627, z: -76.61309}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 986810630}
+  - {fileID: 1779357453}
+  - {fileID: 612311091}
+  - {fileID: 4163618329725746201}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1386655430
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -71893,7 +71928,7 @@ GameObject:
   - component: {fileID: 1546953893}
   - component: {fileID: 1546953894}
   m_Layer: 0
-  m_Name: PIERNAS.006
+  m_Name: Piernas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -81904,8 +81939,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1779357452}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0.78141785, y: -1.8575627, z: -4.5869064}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -81914,7 +81949,7 @@ Transform:
   - {fileID: 1973658584}
   - {fileID: 1808477630}
   - {fileID: 1622659051}
-  m_Father: {fileID: 3271667715992815716}
+  m_Father: {fileID: 1385947202}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &1779357454
 Animator:
@@ -100659,7 +100694,7 @@ GameObject:
   - component: {fileID: 5637865028828516781}
   - component: {fileID: 4361214203892322050}
   m_Layer: 0
-  m_Name: PIERNAS.104
+  m_Name: BrazoDerecho
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -104322,10 +104357,6 @@ Transform:
   - {fileID: 8473917384596604533}
   - {fileID: 7846711420864475314}
   - {fileID: 926079620806389876}
-  - {fileID: 986810630}
-  - {fileID: 1779357453}
-  - {fileID: 612311091}
-  - {fileID: 4163618329725746201}
   - {fileID: 1726158771128888085}
   - {fileID: 7424229654976371615}
   - {fileID: 3977894096819906316}
@@ -104897,8 +104928,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5574189994558790655}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.061417162, y: -0.70433474, z: 0.06139963, w: 0.70453584}
-  m_LocalPosition: {x: 0.000030517578, y: 0, z: 0}
+  m_LocalRotation: {x: 0.061417375, y: -0.7043347, z: 0.061399844, w: 0.7045358}
+  m_LocalPosition: {x: 0.000061035156, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -105842,8 +105873,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3640021630843610787}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0.78141785, y: -1.8575627, z: -4.5869064}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -105852,7 +105883,7 @@ Transform:
   - {fileID: 5519440355195417682}
   - {fileID: 7310028174928309159}
   - {fileID: 5327763676567832502}
-  m_Father: {fileID: 3271667715992815716}
+  m_Father: {fileID: 1385947202}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4189574037700271669
 Transform:
@@ -106084,7 +106115,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 263a5895b3d7b4748bf18a9ceacfd8e3, type: 2}
+  - {fileID: 2100000, guid: 094207a3e789f464081527b5a3e41228, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -106311,7 +106342,7 @@ GameObject:
   - component: {fileID: 6986010402306962076}
   - component: {fileID: 5375676652353799830}
   m_Layer: 0
-  m_Name: PIERNAS.064
+  m_Name: BrazoIzquierdo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -107456,7 +107487,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 23cc16e735190194dbc3222203fd9a55, type: 2}
+  - {fileID: 2100000, guid: 5f28163cedf17ed45a52f7f6bdf36315, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -107711,7 +107742,7 @@ GameObject:
   - component: {fileID: 6244365727748573930}
   - component: {fileID: 7612704420655855001}
   m_Layer: 0
-  m_Name: PIERNAS.006
+  m_Name: Piernas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -108540,7 +108571,7 @@ GameObject:
   - component: {fileID: 5628268771053320303}
   - component: {fileID: 8905218548936991453}
   m_Layer: 0
-  m_Name: PIERNAS.082
+  m_Name: CabezaCuerpo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -108849,7 +108880,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0.00057355803, y: 0.0029100415, z: -0.00012357777, w: 0.9999956}
   m_LocalPosition: {x: -0.031948257, y: -0.00001424551, z: -95.399475}
-  m_LocalScale: {x: 0.99999994, y: 0.9999998, z: 0.99999994}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 926079620806389876}
@@ -109984,7 +110015,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0.00057355803, y: 0.0029100415, z: -0.00012357777, w: 0.9999956}
   m_LocalPosition: {x: -0.031948257, y: -0.00001424551, z: -95.399475}
-  m_LocalScale: {x: 0.99999994, y: 0.9999998, z: 0.99999994}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 926079620806389876}
@@ -110827,7 +110858,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 1a0f20cc6b248014f82714b05869e1f7, type: 2}
+  - {fileID: 2100000, guid: 3183c6532063f35488895c971412f42e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -113429,7 +113460,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 760127e145118ef4fa3c1433f346a27a, type: 2}
+  - {fileID: 2100000, guid: e7410a0e491dade46a9fcd9c78e94322, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -114107,3 +114138,4 @@ SceneRoots:
   - {fileID: 1518956989}
   - {fileID: 2690884188776678393}
   - {fileID: 543450653388438930}
+  - {fileID: 1385947202}
