@@ -49,24 +49,24 @@ public class WeaponInvisible : Weapon
 
     public void RecoveryMaterial()
     {
-        MyBodyFBX.SetActive(true);
-        _myBodyInvisible.SetActive(false);
-        _player._animatorBasic.animator = MyAnimator;
+        //MyBodyFBX.SetActive(true);
+        //_myBodyInvisible.SetActive(false);
+        //_player._animatorBasic.animator = MyAnimator;
         _player.IsInvisible = false;
         _player.CanWeaponChange = true;
     }
 
     public void AcitvateInvisibilityMaterial()
     {
-        MyBodyFBX.SetActive(false);
-        _myBodyInvisible.SetActive(true);
-        _player._animatorBasic.animator = _myAnimatorInvisible;
+        //MyBodyFBX.SetActive(false);
+        //_myBodyInvisible.SetActive(true);
+        //_player._animatorBasic.animator = _myAnimatorInvisible;
     }
 
     public override void ResetWeaponState()
     {
         base.ResetWeaponState();
-        if (_myBodyInvisible != null) _myBodyInvisible.SetActive(false);
+        //if (_myBodyInvisible != null) _myBodyInvisible.SetActive(false);
     }
 
     /// <summary>

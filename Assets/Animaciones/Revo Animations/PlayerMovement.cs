@@ -292,6 +292,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
             _weaponSelected.GetComponent<IModules>().PowerElement();
         }
 
+        //Codigo provisorio, esto se debe hacer desde el selector de UI
         if (Input.GetKeyDown(KeyCode.Alpha1) && CanWeaponChange)
         {
             SelectModule(0);
@@ -440,8 +441,9 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         /*if (index == _inventory.WeaponSelected)
             return;*/
 
-        _animatorBasic.animator = _inventory.MyCurrentAnimator();
-        _animatorBasic._playerMovement = this;
+        //Asigna el animator
+        //_animatorBasic.animator = _inventory.MyCurrentAnimator();
+        //_animatorBasic._playerMovement = this;
 
         if (index > _inventory.MyItemsCount() - 1) return;
         _weaponSelected = _inventory.SelectWeapon(index);
@@ -455,7 +457,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         // Actualizar estado del cursor
         UpdateCursorState();
 
-        _animatorBasic.animator = _inventory.MyCurrentAnimator();
+        //_animatorBasic.animator = _inventory.MyCurrentAnimator();
     }
 
     // método para verificar si tiene módulos
@@ -512,7 +514,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
 
             // Actualizar referencia y animador
             _weaponSelected = _inventory.GetModuleAtIndex(0);
-            _animatorBasic.animator = _inventory.MyCurrentAnimator();
+            //_animatorBasic.animator = _inventory.MyCurrentAnimator();
         }
 
         return module;
