@@ -12,6 +12,10 @@ public class UImodules3D : MonoBehaviour
     [Tooltip("Recuadros de fondo a resaltar. Deben corresponder por índice con ui3DObjects (pueden ser UI Image o cualquier GameObject).")]
     public GameObject[] uiBackgroundObjects;
 
+    [Header("Bordes luminosos (opcional)")]
+    [Tooltip("Bordes luminosos para resaltar. Deben corresponder por índice con ui3DObjects.")]
+    public GameObject[] highlightBorders;
+
     [Header("Escalado de resaltado")]
     [Tooltip("Multiplicador por defecto para el objeto seleccionado (ej: 1.15 = +15%)")]
     public float defaultScaleMultiplier = 1.15f;
@@ -80,7 +84,7 @@ public class UImodules3D : MonoBehaviour
             }
         }
 
-        // Inicialización de backgrounds - NO desactivar al inicio
+        // inicializar arrays backgrounds - NO desactivar al inicio
         if (uiBackgroundObjects != null && uiBackgroundObjects.Length > 0)
         {
             int c = uiBackgroundObjects.Length;
@@ -103,6 +107,16 @@ public class UImodules3D : MonoBehaviour
 
                 // Eliminar desactivación inicial:
                 // if (deactivateAtStart) b.SetActive(false);
+            }
+        }
+
+        // inicializar bordes luminosos - desactivar al inicio
+        if (highlightBorders != null && highlightBorders.Length > 0)
+        {
+            for (int i = 0; i < highlightBorders.Length; i++)
+            {
+                if (highlightBorders[i] == null) continue;
+                highlightBorders[i].SetActive(false);
             }
         }
     }
@@ -133,6 +147,16 @@ public class UImodules3D : MonoBehaviour
                 b.transform.localScale = originalBackgroundScale[i];
                 if (backgroundImages[i] != null)
                     backgroundImages[i].color = originalBackgroundColors[i];
+            }
+        }
+
+        // Desactivar todos los bordes al inicio
+        if (highlightBorders != null)
+        {
+            for (int i = 0; i < highlightBorders.Length; i++)
+            {
+                if (highlightBorders[i] == null) continue;
+                highlightBorders[i].SetActive(false);
             }
         }
 
@@ -170,6 +194,16 @@ public class UImodules3D : MonoBehaviour
             }
         }
 
+        // Desactivar todos los bordes
+        if (highlightBorders != null)
+        {
+            for (int i = 0; i < highlightBorders.Length; i++)
+            {
+                if (highlightBorders[i] == null) continue;
+                highlightBorders[i].SetActive(false);
+            }
+        }
+
         highlightedIndex = -1;
     }
 
@@ -181,7 +215,6 @@ public class UImodules3D : MonoBehaviour
 
     // -------------------- API pública --------------------
 
-    // Modificar SyncWithCount para no tocar backgrounds
     public void SyncWithCount(int count)
     {
         if (ui3DObjects != null)
@@ -212,12 +245,24 @@ public class UImodules3D : MonoBehaviour
                     backgroundImages[i].color = originalBackgroundColors[i];
             }
         }
+
+        // Desactivar bordes si no hay ítem
+        if (highlightBorders != null)
+        {
+            for (int i = 0; i < highlightBorders.Length; i++)
+            {
+                if (highlightBorders[i] == null) continue;
+                bool shouldBeActive = i < count && i == highlightedIndex;
+                highlightBorders[i].SetActive(shouldBeActive);
+            }
+        }
     }
 
     public void SyncWithInventory(Inventory inv)
     {
         if (inv == null) return;
 
+        // Si tenés GetModuleAtIndex en Inventory, sería mejor (activamos solo los slots con module != null)
         if (ui3DObjects != null)
         {
             for (int i = 0; i < ui3DObjects.Length; i++)
@@ -249,6 +294,22 @@ public class UImodules3D : MonoBehaviour
                     backgroundImages[i].color = originalBackgroundColors[i];
             }
         }
+
+        // Desactivar bordes si no hay ítem
+        if (highlightBorders != null)
+        {
+            for (int i = 0; i < highlightBorders.Length; i++)
+            {
+                if (highlightBorders[i] == null) continue;
+                bool shouldBeActive = false;
+                if (i < inv.MyItemsCount())
+                {
+                    GameObject module = inv.GetModuleAtIndex(i);
+                    shouldBeActive = (module != null) && i == highlightedIndex;
+                }
+                highlightBorders[i].SetActive(shouldBeActive);
+            }
+        }
     }
 
     public void EquipObject(int index)
@@ -267,6 +328,8 @@ public class UImodules3D : MonoBehaviour
             if (backgroundImages != null && backgroundImages[index] != null)
                 backgroundImages[index].color = originalBackgroundColors[index];
         }
+
+        // No activar borde aquí, solo en HighlightObject
     }
 
     public void HighlightObject(int index)
@@ -279,6 +342,12 @@ public class UImodules3D : MonoBehaviour
             StartScaleToOriginal(highlightedIndex);
             StartBgScaleToOriginal(highlightedIndex);
             StartBgColorToOriginal(highlightedIndex);
+
+            // Desactivar borde del item anterior
+            if (highlightBorders != null && highlightedIndex < highlightBorders.Length && highlightBorders[highlightedIndex] != null)
+            {
+                highlightBorders[highlightedIndex].SetActive(false);
+            }
         }
 
         highlightedIndex = -1;
@@ -305,6 +374,12 @@ public class UImodules3D : MonoBehaviour
                 }
             }
 
+            // Activar borde luminoso del item seleccionado
+            if (highlightBorders != null && index < highlightBorders.Length && highlightBorders[index] != null)
+            {
+                highlightBorders[index].SetActive(true);
+            }
+
             highlightedIndex = index;
         }
     }
@@ -316,6 +391,13 @@ public class UImodules3D : MonoBehaviour
             StartScaleToOriginal(highlightedIndex);
             StartBgScaleToOriginal(highlightedIndex);
             StartBgColorToOriginal(highlightedIndex);
+
+            // Desactivar borde del item actual
+            if (highlightBorders != null && highlightedIndex < highlightBorders.Length && highlightBorders[highlightedIndex] != null)
+            {
+                highlightBorders[highlightedIndex].SetActive(false);
+            }
+
             highlightedIndex = -1;
         }
     }
@@ -339,6 +421,17 @@ public class UImodules3D : MonoBehaviour
                 StartBgColorToOriginal(i);
             }
         }
+
+        // Desactivar todos los bordes
+        if (highlightBorders != null)
+        {
+            for (int i = 0; i < highlightBorders.Length; i++)
+            {
+                if (highlightBorders[i] == null) continue;
+                highlightBorders[i].SetActive(false);
+            }
+        }
+
         highlightedIndex = -1;
     }
 
