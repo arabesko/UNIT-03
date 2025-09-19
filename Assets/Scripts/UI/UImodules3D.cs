@@ -80,7 +80,7 @@ public class UImodules3D : MonoBehaviour
             }
         }
 
-        // inicializar arrays backgrounds si se asignaron
+        // Inicialización de backgrounds - NO desactivar al inicio
         if (uiBackgroundObjects != null && uiBackgroundObjects.Length > 0)
         {
             int c = uiBackgroundObjects.Length;
@@ -96,13 +96,13 @@ public class UImodules3D : MonoBehaviour
                 if (b == null) continue;
                 originalBackgroundScale[i] = b.transform.localScale;
 
-                // si tiene componente Image, guardamos color original
                 var img = b.GetComponent<Image>();
                 backgroundImages[i] = img;
                 if (img != null)
                     originalBackgroundColors[i] = img.color;
 
-                if (deactivateAtStart) b.SetActive(false);
+                // Eliminar desactivación inicial:
+                // if (deactivateAtStart) b.SetActive(false);
             }
         }
     }
@@ -122,13 +122,14 @@ public class UImodules3D : MonoBehaviour
             }
         }
 
+        // Activar siempre los backgrounds
         if (uiBackgroundObjects != null)
         {
             for (int i = 0; i < uiBackgroundObjects.Length; i++)
             {
                 var b = uiBackgroundObjects[i];
                 if (b == null) continue;
-                b.SetActive(true);
+                b.SetActive(true); // Siempre activos
                 b.transform.localScale = originalBackgroundScale[i];
                 if (backgroundImages[i] != null)
                     backgroundImages[i].color = originalBackgroundColors[i];
@@ -180,6 +181,7 @@ public class UImodules3D : MonoBehaviour
 
     // -------------------- API pública --------------------
 
+    // Modificar SyncWithCount para no tocar backgrounds
     public void SyncWithCount(int count)
     {
         if (ui3DObjects != null)
@@ -198,19 +200,16 @@ public class UImodules3D : MonoBehaviour
             }
         }
 
+        // Backgrounds siempre visibles - eliminar lógica de desactivación
         if (uiBackgroundObjects != null)
         {
             for (int i = 0; i < uiBackgroundObjects.Length; i++)
             {
                 if (uiBackgroundObjects[i] == null) continue;
-                bool shouldBeActive = i < count;
-                uiBackgroundObjects[i].SetActive(shouldBeActive);
-                if (shouldBeActive)
-                {
-                    uiBackgroundObjects[i].transform.localScale = originalBackgroundScale[i];
-                    if (backgroundImages != null && backgroundImages[i] != null)
-                        backgroundImages[i].color = originalBackgroundColors[i];
-                }
+                // Solo restaurar propiedades, no cambiar activeState
+                uiBackgroundObjects[i].transform.localScale = originalBackgroundScale[i];
+                if (backgroundImages != null && backgroundImages[i] != null)
+                    backgroundImages[i].color = originalBackgroundColors[i];
             }
         }
     }
@@ -219,7 +218,6 @@ public class UImodules3D : MonoBehaviour
     {
         if (inv == null) return;
 
-        // Si tenés GetModuleAtIndex en Inventory, sería mejor (activamos solo los slots con module != null)
         if (ui3DObjects != null)
         {
             for (int i = 0; i < ui3DObjects.Length; i++)
@@ -239,24 +237,16 @@ public class UImodules3D : MonoBehaviour
             }
         }
 
+        // Backgrounds siempre visibles
         if (uiBackgroundObjects != null)
         {
             for (int i = 0; i < uiBackgroundObjects.Length; i++)
             {
                 if (uiBackgroundObjects[i] == null) continue;
-                bool shouldBeActive = false;
-                if (i < inv.MyItemsCount())
-                {
-                    GameObject module = inv.GetModuleAtIndex(i);
-                    shouldBeActive = (module != null);
-                }
-                uiBackgroundObjects[i].SetActive(shouldBeActive);
-                if (shouldBeActive)
-                {
-                    uiBackgroundObjects[i].transform.localScale = originalBackgroundScale[i];
-                    if (backgroundImages != null && backgroundImages[i] != null)
-                        backgroundImages[i].color = originalBackgroundColors[i];
-                }
+                // Solo restaurar propiedades
+                uiBackgroundObjects[i].transform.localScale = originalBackgroundScale[i];
+                if (backgroundImages != null && backgroundImages[i] != null)
+                    backgroundImages[i].color = originalBackgroundColors[i];
             }
         }
     }
@@ -270,9 +260,9 @@ public class UImodules3D : MonoBehaviour
         o.transform.localPosition = originalLocalPos[index];
         o.transform.localRotation = originalLocalRot[index];
 
+        // Solo restaurar propiedades del background
         if (uiBackgroundObjects != null && index < uiBackgroundObjects.Length && uiBackgroundObjects[index] != null)
         {
-            uiBackgroundObjects[index].SetActive(true);
             uiBackgroundObjects[index].transform.localScale = originalBackgroundScale[index];
             if (backgroundImages != null && backgroundImages[index] != null)
                 backgroundImages[index].color = originalBackgroundColors[index];
