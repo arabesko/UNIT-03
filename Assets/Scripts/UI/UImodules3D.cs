@@ -1,15 +1,17 @@
 using System.Collections;
 using UnityEngine;
 
-public class Show3DOnToggle : MonoBehaviour
+[DisallowMultipleComponent]
+public class UImodules3D : MonoBehaviour
 {
     [Header("Referencias a Objetos 3D (en Canvas) - deben corresponder por índice al inventario")]
+    [Tooltip("Arrastrá aquí los GameObjects 3D que renderizás en cada slot (orden: slot 0, slot 1, ...).")]
     public GameObject[] ui3DObjects;
 
     [Header("Escalado de resaltado")]
     [Tooltip("Multiplicador por defecto para el objeto seleccionado (ej: 1.15 = +15%)")]
     public float defaultScaleMultiplier = 1.15f;
-    [Tooltip("Si quieres multiplicadores distintos por objeto, pon un array del mismo tamaño que ui3DObjects")]
+    [Tooltip("Si querés multiplicadores distintos por objeto, pon un array del mismo tamaño que ui3DObjects")]
     public float[] perObjectMultiplier;
     [Tooltip("Duración (segundos) de la animación de escalado")]
     public float scaleDuration = 0.12f;
@@ -17,10 +19,10 @@ public class Show3DOnToggle : MonoBehaviour
     [Header("Comportamiento de equip/enable")]
     [Tooltip("Si está ON, se desactivan los objetos al inicio (Awake)")]
     public bool deactivateAtStart = true;
-    [Tooltip("Si está ON, al activarse el componente se activan automáticamente los ui3DObjects")]
+    [Tooltip("Si está ON, al habilitar este componente se activan automáticamente los ui3DObjects")]
     public bool activateOnEnable = true;
 
-    [Header("Highlight automático al Enable (útil si cada body tiene su propio componente)")]
+    [Header("Highlight automático al Enable")]
     [Tooltip("Si está ON, cuando este componente se habilite hará HighlightObject(highlightIndexOnEnable).")]
     public bool highlightOnEnable = true;
     [Tooltip("Índice a resaltar cuando se habilita (si tu instancia tiene solo un objeto, dejá 0).")]
@@ -28,15 +30,15 @@ public class Show3DOnToggle : MonoBehaviour
     [Tooltip("Delay opcional antes de hacer el highlight (segundos). Útil si hay otras inicializaciones en juego).")]
     public float highlightDelay = 0.05f;
 
-    // estado guardado
+    // Guardados de transform original para restaurar al desactivar
     private Vector3[] originalLocalPos;
     private Quaternion[] originalLocalRot;
     private Vector3[] originalLocalScale;
 
-    // control de coroutines por objeto
+    // Coroutines por slot
     private Coroutine[] scaleCoroutines;
 
-    // índice actualmente resaltado (-1 ninguno)
+    // Índice resaltado actualmente (-1 = ninguno)
     private int highlightedIndex = -1;
 
     void Awake()
@@ -56,7 +58,9 @@ public class Show3DOnToggle : MonoBehaviour
             originalLocalPos[i] = o.transform.localPosition;
             originalLocalRot[i] = o.transform.localRotation;
             originalLocalScale[i] = o.transform.localScale;
-            if (deactivateAtStart) o.SetActive(false);
+
+            if (deactivateAtStart)
+                o.SetActive(false);
         }
     }
 
@@ -69,40 +73,33 @@ public class Show3DOnToggle : MonoBehaviour
                 var o = ui3DObjects[i];
                 if (o == null) continue;
                 o.SetActive(true);
-                // restaurar transform local guardado (opcional)
                 o.transform.localPosition = originalLocalPos[i];
                 o.transform.localRotation = originalLocalRot[i];
                 o.transform.localScale = originalLocalScale[i];
             }
         }
 
-        // Si queremos highlight automático cuando este body se prenda
-        if (highlightOnEnable)
+        if (highlightOnEnable && IsValidIndex(highlightIndexOnEnable))
         {
-            // Nos aseguramos que el índice sea válido
-            if (IsValidIndex(highlightIndexOnEnable))
-            {
-                // delay opcional para evitar race conditions
-                if (highlightDelay > 0f)
-                    StartCoroutine(DelayedHighlight(highlightIndexOnEnable, highlightDelay));
-                else
-                    HighlightObject(highlightIndexOnEnable);
-            }
+            if (highlightDelay > 0f)
+                StartCoroutine(DelayedHighlight(highlightIndexOnEnable, highlightDelay));
+            else
+                HighlightObject(highlightIndexOnEnable);
         }
     }
 
     void OnDisable()
     {
-        // Al desactivarse el body, restauramos las escalas ORIGINALES de inmediato
-        // (no intentamos animar con coroutines desde un gameObject inactivo)
+        // Restaurar transform originales inmediatamente (evitar coroutines desde objetos inactivos)
         if (ui3DObjects == null || originalLocalScale == null) return;
 
         for (int i = 0; i < ui3DObjects.Length; i++)
         {
             if (ui3DObjects[i] == null) continue;
             ui3DObjects[i].transform.localScale = originalLocalScale[i];
+            ui3DObjects[i].transform.localPosition = originalLocalPos[i];
+            ui3DObjects[i].transform.localRotation = originalLocalRot[i];
         }
-
         highlightedIndex = -1;
     }
 
@@ -112,22 +109,85 @@ public class Show3DOnToggle : MonoBehaviour
         HighlightObject(idx);
     }
 
-    // --- Métodos públicos para equipar / resaltar ---
-    // Activa y deja encendido (equipa) el objeto por índice
+    // -------------------- API pública --------------------
+
+    /// <summary>
+    /// Activa los primeros 'count' slots (0..count-1) y desactiva el resto.
+    /// Útil para sincronizar con un inventario que mantiene el orden por índice.
+    /// </summary>
+    public void SyncWithCount(int count)
+    {
+        if (ui3DObjects == null) return;
+        for (int i = 0; i < ui3DObjects.Length; i++)
+        {
+            if (ui3DObjects[i] == null) continue;
+            bool shouldBeActive = i < count;
+            ui3DObjects[i].SetActive(shouldBeActive);
+            if (shouldBeActive)
+            {
+                // aseguramos transform original al activar
+                ui3DObjects[i].transform.localScale = originalLocalScale[i];
+                ui3DObjects[i].transform.localPosition = originalLocalPos[i];
+                ui3DObjects[i].transform.localRotation = originalLocalRot[i];
+            }
+        }
+    }
+
+    /// <summary>
+    /// Sincroniza con tu clase Inventory (debe exponer MyItemsCount() -> int).
+    /// </summary>
+    public void SyncWithInventory(Inventory inv)
+    {
+        if (inv == null || ui3DObjects == null) return;
+
+        // Revisamos todos los slots visibles en UI (ui3DObjects)
+        for (int i = 0; i < ui3DObjects.Length; i++)
+        {
+            if (ui3DObjects[i] == null) continue;
+
+            bool shouldBeActive = false;
+
+            // Si el inventario tiene al menos 'i+1' items, consultamos el módulo en esa posición
+            if (i < inv.MyItemsCount())
+            {
+                // Usamos GetModuleAtIndex (tu Player/Drops usan este método)
+                GameObject module = inv.GetModuleAtIndex(i);
+                shouldBeActive = (module != null);
+            }
+
+            ui3DObjects[i].SetActive(shouldBeActive);
+
+            if (shouldBeActive)
+            {
+                // Restaurar transform original para que no quede "pegado" o escalado raro
+                ui3DObjects[i].transform.localScale = originalLocalScale[i];
+                ui3DObjects[i].transform.localPosition = originalLocalPos[i];
+                ui3DObjects[i].transform.localRotation = originalLocalRot[i];
+            }
+        }
+    }
+
+
+    /// <summary>
+    /// Activa el objeto (equipa) en el índice dado.
+    /// </summary>
     public void EquipObject(int index)
     {
         if (!IsValidIndex(index)) return;
         var o = ui3DObjects[index];
         o.SetActive(true);
-        // asegurar escala original si por si acaso
         o.transform.localScale = originalLocalScale[index];
+        o.transform.localPosition = originalLocalPos[index];
+        o.transform.localRotation = originalLocalRot[index];
     }
 
-    // Resalta (agranda) el objeto por índice; el anterior resaltado vuelve a su escala original.
-    // Si index == -1 desresalta todo.
+    /// <summary>
+    /// Resalta (agranda) el objeto por índice; el anterior resaltado vuelve a su escala original.
+    /// Si index == -1 desresalta todo.
+    /// </summary>
     public void HighlightObject(int index)
     {
-        if (index == highlightedIndex) return; // nada que hacer
+        if (index == highlightedIndex) return;
 
         // devolver anterior a escala original
         if (IsValidIndex(highlightedIndex) && ui3DObjects[highlightedIndex] != null)
@@ -140,7 +200,6 @@ public class Show3DOnToggle : MonoBehaviour
         // si index válido, animar nuevo highlight
         if (IsValidIndex(index) && ui3DObjects[index] != null)
         {
-            // asegurar que el objeto esté activo (si está equipado debería estarlo)
             if (!ui3DObjects[index].activeInHierarchy) ui3DObjects[index].SetActive(true);
 
             float mul = GetMultiplierForIndex(index);
@@ -151,7 +210,7 @@ public class Show3DOnToggle : MonoBehaviour
         }
     }
 
-    // Desresalta el actual (vuelve a escala original)
+    /// <summary> Desresalta el actual (vuelve a escala original) </summary>
     public void UnhighlightCurrent()
     {
         if (IsValidIndex(highlightedIndex))
@@ -161,7 +220,7 @@ public class Show3DOnToggle : MonoBehaviour
         }
     }
 
-    // Desresalta todos (animado)
+    /// <summary> Desresalta todos (animado) </summary>
     public void UnhighlightAll()
     {
         if (ui3DObjects == null) return;
@@ -173,7 +232,8 @@ public class Show3DOnToggle : MonoBehaviour
         highlightedIndex = -1;
     }
 
-    // --- helpers internos ---
+    // -------------------- animación de escalado (internos) --------------------
+
     private void StartScaleToOriginal(int index)
     {
         if (!IsValidIndex(index) || ui3DObjects[index] == null) return;
@@ -186,8 +246,8 @@ public class Show3DOnToggle : MonoBehaviour
     {
         if (!IsValidIndex(index)) return;
 
-        // Si este componente o su gameobject NO están activos, no podemos empezar una coroutine aquí.
-        // En ese caso aplicamos la escala objetivo de forma inmediata para evitar errores.
+        // Si este componente o su gameObject NO están activos, no arrancamos coroutine:
+        // aplicamos la escala directamente (evitamos error "Coroutine couldn't be started...").
         if (!this.isActiveAndEnabled || !this.gameObject.activeInHierarchy)
         {
             if (ui3DObjects[index] != null)
@@ -205,7 +265,6 @@ public class Show3DOnToggle : MonoBehaviour
         scaleCoroutines[index] = StartCoroutine(LerpScale(ui3DObjects[index].transform, from, to, duration, index));
     }
 
-
     private IEnumerator LerpScale(Transform t, Vector3 from, Vector3 to, float duration, int index)
     {
         if (t == null) yield break;
@@ -221,13 +280,15 @@ public class Show3DOnToggle : MonoBehaviour
         {
             elapsed += Time.deltaTime;
             float p = Mathf.Clamp01(elapsed / duration);
-            float sp = p * p * (3f - 2f * p);
+            float sp = p * p * (3f - 2f * p); // smoothstep-like
             t.localScale = Vector3.LerpUnclamped(from, to, sp);
             yield return null;
         }
         t.localScale = to;
         scaleCoroutines[index] = null;
     }
+
+    // -------------------- helpers --------------------
 
     private float GetMultiplierForIndex(int index)
     {
@@ -236,7 +297,8 @@ public class Show3DOnToggle : MonoBehaviour
         return defaultScaleMultiplier;
     }
 
-    private bool IsValidIndex(int idx) => ui3DObjects != null && idx >= 0 && idx < ui3DObjects.Length && ui3DObjects[idx] != null;
+    private bool IsValidIndex(int idx) =>
+        ui3DObjects != null && idx >= 0 && idx < ui3DObjects.Length && ui3DObjects[idx] != null;
 
 #if UNITY_EDITOR
     [ContextMenu("UnhighlightAll")]

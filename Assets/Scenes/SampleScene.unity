@@ -82146,6 +82146,62 @@ Transform:
   - {fileID: 1949598154}
   m_Father: {fileID: 1054522714}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1776453390
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1776453392}
+  - component: {fileID: 1776453391}
+  m_Layer: 0
+  m_Name: Show3DOnToggle
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1776453391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1776453390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1a57ecbd9c3cc6488500b1968decb83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ui3DObjects:
+  - {fileID: 153446288}
+  - {fileID: 1033740031}
+  - {fileID: 279812720}
+  defaultScaleMultiplier: 1.15
+  perObjectMultiplier: []
+  scaleDuration: 0.12
+  deactivateAtStart: 0
+  activateOnEnable: 1
+  highlightOnEnable: 1
+  highlightIndexOnEnable: 0
+  highlightDelay: 0.05
+--- !u!4 &1776453392
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1776453390}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -138.73225, y: 57.41468, z: -153.48643}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1776987915 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8a8a0b6982b9ef14dad5b4e1fabb2170, type: 3}
@@ -105337,7 +105393,7 @@ Transform:
   m_GameObject: {fileID: 5574189994558790655}
   serializedVersion: 2
   m_LocalRotation: {x: 0.06142212, y: -0.70433426, z: 0.06140459, w: 0.70453537}
-  m_LocalPosition: {x: 0.000030517578, y: 0, z: 0}
+  m_LocalPosition: {x: 0.000061035156, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -110779,7 +110835,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pauseMenu: {fileID: 1364714279}
-  moduleUIHighlighter: {fileID: 0}
+  moduleUIHighlighter: {fileID: 1776453391}
   _maxHealth: 1
   _currentHealth: 0
   _isDeath: 0
@@ -114441,3 +114497,4 @@ SceneRoots:
   - {fileID: 2690884188776678393}
   - {fileID: 543450653388438930}
   - {fileID: 1385947202}
+  - {fileID: 1776453392}
