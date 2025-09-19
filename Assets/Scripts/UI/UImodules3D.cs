@@ -1,33 +1,43 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 [DisallowMultipleComponent]
 public class UImodules3D : MonoBehaviour
 {
     [Header("Referencias a Objetos 3D (en Canvas) - deben corresponder por índice al inventario")]
-    [Tooltip("Arrastrá aquí los GameObjects 3D que renderizás en cada slot (orden: slot 0, slot 1, ...).")]
     public GameObject[] ui3DObjects;
+
+    [Header("Backgrounds (opcional)")]
+    [Tooltip("Recuadros de fondo a resaltar. Deben corresponder por índice con ui3DObjects (pueden ser UI Image o cualquier GameObject).")]
+    public GameObject[] uiBackgroundObjects;
 
     [Header("Escalado de resaltado")]
     [Tooltip("Multiplicador por defecto para el objeto seleccionado (ej: 1.15 = +15%)")]
     public float defaultScaleMultiplier = 1.15f;
-    [Tooltip("Si querés multiplicadores distintos por objeto, pon un array del mismo tamaño que ui3DObjects")]
+    [Tooltip("Si quieres multiplicadores distintos por objeto, pon un array del mismo tamaño que ui3DObjects")]
     public float[] perObjectMultiplier;
     [Tooltip("Duración (segundos) de la animación de escalado")]
     public float scaleDuration = 0.12f;
 
+    [Header("Escalado del background (adicional)")]
+    [Tooltip("Cuánto escala el recuadro de fondo cuando se resalta (multiplicador).")]
+    public float backgroundScaleMultiplier = 1.08f;
+
+    [Header("Color del background (opcional si el background tiene Image)")]
+    [Tooltip("Si está ON, el script también tintará la Image del background al resaltar.")]
+    public bool highlightBackgroundColor = true;
+    public Color backgroundHighlightColor = new Color(0.15f, 0.9f, 1f, 1f);
+    [Tooltip("Duración de la animación de color (se usa la misma que scaleDuration si está en 0)")]
+    public float backgroundColorDuration = 0.12f;
+
     [Header("Comportamiento de equip/enable")]
-    [Tooltip("Si está ON, se desactivan los objetos al inicio (Awake)")]
     public bool deactivateAtStart = true;
-    [Tooltip("Si está ON, al habilitar este componente se activan automáticamente los ui3DObjects")]
     public bool activateOnEnable = true;
 
     [Header("Highlight automático al Enable")]
-    [Tooltip("Si está ON, cuando este componente se habilite hará HighlightObject(highlightIndexOnEnable).")]
     public bool highlightOnEnable = true;
-    [Tooltip("Índice a resaltar cuando se habilita (si tu instancia tiene solo un objeto, dejá 0).")]
     public int highlightIndexOnEnable = 0;
-    [Tooltip("Delay opcional antes de hacer el highlight (segundos). Útil si hay otras inicializaciones en juego).")]
     public float highlightDelay = 0.05f;
 
     // Guardados de transform original para restaurar al desactivar
@@ -35,32 +45,65 @@ public class UImodules3D : MonoBehaviour
     private Quaternion[] originalLocalRot;
     private Vector3[] originalLocalScale;
 
+    // Background originals
+    private Vector3[] originalBackgroundScale;
+    private Image[] backgroundImages; // si el background es UI.Image
+    private Color[] originalBackgroundColors;
+
     // Coroutines por slot
     private Coroutine[] scaleCoroutines;
+    private Coroutine[] bgScaleCoroutines;
+    private Coroutine[] bgColorCoroutines;
 
     // Índice resaltado actualmente (-1 = ninguno)
     private int highlightedIndex = -1;
 
     void Awake()
     {
-        if (ui3DObjects == null || ui3DObjects.Length == 0) return;
-
-        int c = ui3DObjects.Length;
-        originalLocalPos = new Vector3[c];
-        originalLocalRot = new Quaternion[c];
-        originalLocalScale = new Vector3[c];
-        scaleCoroutines = new Coroutine[c];
-
-        for (int i = 0; i < c; i++)
+        // inicializar arrays ui3DObjects
+        if (ui3DObjects != null && ui3DObjects.Length > 0)
         {
-            var o = ui3DObjects[i];
-            if (o == null) continue;
-            originalLocalPos[i] = o.transform.localPosition;
-            originalLocalRot[i] = o.transform.localRotation;
-            originalLocalScale[i] = o.transform.localScale;
+            int c = ui3DObjects.Length;
+            originalLocalPos = new Vector3[c];
+            originalLocalRot = new Quaternion[c];
+            originalLocalScale = new Vector3[c];
+            scaleCoroutines = new Coroutine[c];
 
-            if (deactivateAtStart)
-                o.SetActive(false);
+            for (int i = 0; i < c; i++)
+            {
+                var o = ui3DObjects[i];
+                if (o == null) continue;
+                originalLocalPos[i] = o.transform.localPosition;
+                originalLocalRot[i] = o.transform.localRotation;
+                originalLocalScale[i] = o.transform.localScale;
+                if (deactivateAtStart) o.SetActive(false);
+            }
+        }
+
+        // inicializar arrays backgrounds si se asignaron
+        if (uiBackgroundObjects != null && uiBackgroundObjects.Length > 0)
+        {
+            int c = uiBackgroundObjects.Length;
+            originalBackgroundScale = new Vector3[c];
+            bgScaleCoroutines = new Coroutine[c];
+            bgColorCoroutines = new Coroutine[c];
+            backgroundImages = new Image[c];
+            originalBackgroundColors = new Color[c];
+
+            for (int i = 0; i < c; i++)
+            {
+                var b = uiBackgroundObjects[i];
+                if (b == null) continue;
+                originalBackgroundScale[i] = b.transform.localScale;
+
+                // si tiene componente Image, guardamos color original
+                var img = b.GetComponent<Image>();
+                backgroundImages[i] = img;
+                if (img != null)
+                    originalBackgroundColors[i] = img.color;
+
+                if (deactivateAtStart) b.SetActive(false);
+            }
         }
     }
 
@@ -79,6 +122,19 @@ public class UImodules3D : MonoBehaviour
             }
         }
 
+        if (uiBackgroundObjects != null)
+        {
+            for (int i = 0; i < uiBackgroundObjects.Length; i++)
+            {
+                var b = uiBackgroundObjects[i];
+                if (b == null) continue;
+                b.SetActive(true);
+                b.transform.localScale = originalBackgroundScale[i];
+                if (backgroundImages[i] != null)
+                    backgroundImages[i].color = originalBackgroundColors[i];
+            }
+        }
+
         if (highlightOnEnable && IsValidIndex(highlightIndexOnEnable))
         {
             if (highlightDelay > 0f)
@@ -90,16 +146,29 @@ public class UImodules3D : MonoBehaviour
 
     void OnDisable()
     {
-        // Restaurar transform originales inmediatamente (evitar coroutines desde objetos inactivos)
-        if (ui3DObjects == null || originalLocalScale == null) return;
-
-        for (int i = 0; i < ui3DObjects.Length; i++)
+        // Restaurar transform originales inmediatamente
+        if (ui3DObjects != null && originalLocalScale != null)
         {
-            if (ui3DObjects[i] == null) continue;
-            ui3DObjects[i].transform.localScale = originalLocalScale[i];
-            ui3DObjects[i].transform.localPosition = originalLocalPos[i];
-            ui3DObjects[i].transform.localRotation = originalLocalRot[i];
+            for (int i = 0; i < ui3DObjects.Length; i++)
+            {
+                if (ui3DObjects[i] == null) continue;
+                ui3DObjects[i].transform.localScale = originalLocalScale[i];
+                ui3DObjects[i].transform.localPosition = originalLocalPos[i];
+                ui3DObjects[i].transform.localRotation = originalLocalRot[i];
+            }
         }
+
+        if (uiBackgroundObjects != null && originalBackgroundScale != null)
+        {
+            for (int i = 0; i < uiBackgroundObjects.Length; i++)
+            {
+                if (uiBackgroundObjects[i] == null) continue;
+                uiBackgroundObjects[i].transform.localScale = originalBackgroundScale[i];
+                if (backgroundImages != null && backgroundImages[i] != null)
+                    backgroundImages[i].color = originalBackgroundColors[i];
+            }
+        }
+
         highlightedIndex = -1;
     }
 
@@ -111,66 +180,87 @@ public class UImodules3D : MonoBehaviour
 
     // -------------------- API pública --------------------
 
-    /// <summary>
-    /// Activa los primeros 'count' slots (0..count-1) y desactiva el resto.
-    /// Útil para sincronizar con un inventario que mantiene el orden por índice.
-    /// </summary>
     public void SyncWithCount(int count)
     {
-        if (ui3DObjects == null) return;
-        for (int i = 0; i < ui3DObjects.Length; i++)
+        if (ui3DObjects != null)
         {
-            if (ui3DObjects[i] == null) continue;
-            bool shouldBeActive = i < count;
-            ui3DObjects[i].SetActive(shouldBeActive);
-            if (shouldBeActive)
+            for (int i = 0; i < ui3DObjects.Length; i++)
             {
-                // aseguramos transform original al activar
-                ui3DObjects[i].transform.localScale = originalLocalScale[i];
-                ui3DObjects[i].transform.localPosition = originalLocalPos[i];
-                ui3DObjects[i].transform.localRotation = originalLocalRot[i];
+                if (ui3DObjects[i] == null) continue;
+                bool shouldBeActive = i < count;
+                ui3DObjects[i].SetActive(shouldBeActive);
+                if (shouldBeActive)
+                {
+                    ui3DObjects[i].transform.localScale = originalLocalScale[i];
+                    ui3DObjects[i].transform.localPosition = originalLocalPos[i];
+                    ui3DObjects[i].transform.localRotation = originalLocalRot[i];
+                }
+            }
+        }
+
+        if (uiBackgroundObjects != null)
+        {
+            for (int i = 0; i < uiBackgroundObjects.Length; i++)
+            {
+                if (uiBackgroundObjects[i] == null) continue;
+                bool shouldBeActive = i < count;
+                uiBackgroundObjects[i].SetActive(shouldBeActive);
+                if (shouldBeActive)
+                {
+                    uiBackgroundObjects[i].transform.localScale = originalBackgroundScale[i];
+                    if (backgroundImages != null && backgroundImages[i] != null)
+                        backgroundImages[i].color = originalBackgroundColors[i];
+                }
             }
         }
     }
 
-    /// <summary>
-    /// Sincroniza con tu clase Inventory (debe exponer MyItemsCount() -> int).
-    /// </summary>
     public void SyncWithInventory(Inventory inv)
     {
-        if (inv == null || ui3DObjects == null) return;
+        if (inv == null) return;
 
-        // Revisamos todos los slots visibles en UI (ui3DObjects)
-        for (int i = 0; i < ui3DObjects.Length; i++)
+        // Si tenés GetModuleAtIndex en Inventory, sería mejor (activamos solo los slots con module != null)
+        if (ui3DObjects != null)
         {
-            if (ui3DObjects[i] == null) continue;
-
-            bool shouldBeActive = false;
-
-            // Si el inventario tiene al menos 'i+1' items, consultamos el módulo en esa posición
-            if (i < inv.MyItemsCount())
+            for (int i = 0; i < ui3DObjects.Length; i++)
             {
-                // Usamos GetModuleAtIndex (tu Player/Drops usan este método)
-                GameObject module = inv.GetModuleAtIndex(i);
-                shouldBeActive = (module != null);
+                if (ui3DObjects[i] == null) continue;
+                bool shouldBeActive = false;
+                if (i < inv.MyItemsCount())
+                {
+                    GameObject module = inv.GetModuleAtIndex(i);
+                    shouldBeActive = (module != null);
+                }
+                ui3DObjects[i].SetActive(shouldBeActive);
+                if (shouldBeActive)
+                {
+                    ui3DObjects[i].transform.localScale = originalLocalScale[i];
+                }
             }
+        }
 
-            ui3DObjects[i].SetActive(shouldBeActive);
-
-            if (shouldBeActive)
+        if (uiBackgroundObjects != null)
+        {
+            for (int i = 0; i < uiBackgroundObjects.Length; i++)
             {
-                // Restaurar transform original para que no quede "pegado" o escalado raro
-                ui3DObjects[i].transform.localScale = originalLocalScale[i];
-                ui3DObjects[i].transform.localPosition = originalLocalPos[i];
-                ui3DObjects[i].transform.localRotation = originalLocalRot[i];
+                if (uiBackgroundObjects[i] == null) continue;
+                bool shouldBeActive = false;
+                if (i < inv.MyItemsCount())
+                {
+                    GameObject module = inv.GetModuleAtIndex(i);
+                    shouldBeActive = (module != null);
+                }
+                uiBackgroundObjects[i].SetActive(shouldBeActive);
+                if (shouldBeActive)
+                {
+                    uiBackgroundObjects[i].transform.localScale = originalBackgroundScale[i];
+                    if (backgroundImages != null && backgroundImages[i] != null)
+                        backgroundImages[i].color = originalBackgroundColors[i];
+                }
             }
         }
     }
 
-
-    /// <summary>
-    /// Activa el objeto (equipa) en el índice dado.
-    /// </summary>
     public void EquipObject(int index)
     {
         if (!IsValidIndex(index)) return;
@@ -179,12 +269,16 @@ public class UImodules3D : MonoBehaviour
         o.transform.localScale = originalLocalScale[index];
         o.transform.localPosition = originalLocalPos[index];
         o.transform.localRotation = originalLocalRot[index];
+
+        if (uiBackgroundObjects != null && index < uiBackgroundObjects.Length && uiBackgroundObjects[index] != null)
+        {
+            uiBackgroundObjects[index].SetActive(true);
+            uiBackgroundObjects[index].transform.localScale = originalBackgroundScale[index];
+            if (backgroundImages != null && backgroundImages[index] != null)
+                backgroundImages[index].color = originalBackgroundColors[index];
+        }
     }
 
-    /// <summary>
-    /// Resalta (agranda) el objeto por índice; el anterior resaltado vuelve a su escala original.
-    /// Si index == -1 desresalta todo.
-    /// </summary>
     public void HighlightObject(int index)
     {
         if (index == highlightedIndex) return;
@@ -193,11 +287,12 @@ public class UImodules3D : MonoBehaviour
         if (IsValidIndex(highlightedIndex) && ui3DObjects[highlightedIndex] != null)
         {
             StartScaleToOriginal(highlightedIndex);
+            StartBgScaleToOriginal(highlightedIndex);
+            StartBgColorToOriginal(highlightedIndex);
         }
 
         highlightedIndex = -1;
 
-        // si index válido, animar nuevo highlight
         if (IsValidIndex(index) && ui3DObjects[index] != null)
         {
             if (!ui3DObjects[index].activeInHierarchy) ui3DObjects[index].SetActive(true);
@@ -206,28 +301,53 @@ public class UImodules3D : MonoBehaviour
             Vector3 target = originalLocalScale[index] * mul;
             StartScaleCoroutine(index, ui3DObjects[index].transform.localScale, target, scaleDuration);
 
+            // background scale
+            if (uiBackgroundObjects != null && index < uiBackgroundObjects.Length && uiBackgroundObjects[index] != null)
+            {
+                if (!uiBackgroundObjects[index].activeInHierarchy) uiBackgroundObjects[index].SetActive(true);
+                Vector3 bgTarget = originalBackgroundScale[index] * backgroundScaleMultiplier * mul;
+                StartBgScaleCoroutine(index, uiBackgroundObjects[index].transform.localScale, bgTarget, scaleDuration);
+
+                // color
+                if (highlightBackgroundColor && backgroundImages != null && backgroundImages[index] != null)
+                {
+                    StartBgColorCoroutine(index, backgroundImages[index], backgroundImages[index].color, backgroundHighlightColor, (backgroundColorDuration > 0f ? backgroundColorDuration : scaleDuration));
+                }
+            }
+
             highlightedIndex = index;
         }
     }
 
-    /// <summary> Desresalta el actual (vuelve a escala original) </summary>
     public void UnhighlightCurrent()
     {
         if (IsValidIndex(highlightedIndex))
         {
             StartScaleToOriginal(highlightedIndex);
+            StartBgScaleToOriginal(highlightedIndex);
+            StartBgColorToOriginal(highlightedIndex);
             highlightedIndex = -1;
         }
     }
 
-    /// <summary> Desresalta todos (animado) </summary>
     public void UnhighlightAll()
     {
-        if (ui3DObjects == null) return;
-        for (int i = 0; i < ui3DObjects.Length; i++)
+        if (ui3DObjects != null)
         {
-            if (ui3DObjects[i] == null) continue;
-            StartScaleToOriginal(i);
+            for (int i = 0; i < ui3DObjects.Length; i++)
+            {
+                if (ui3DObjects[i] == null) continue;
+                StartScaleToOriginal(i);
+            }
+        }
+        if (uiBackgroundObjects != null)
+        {
+            for (int i = 0; i < uiBackgroundObjects.Length; i++)
+            {
+                if (uiBackgroundObjects[i] == null) continue;
+                StartBgScaleToOriginal(i);
+                StartBgColorToOriginal(i);
+            }
         }
         highlightedIndex = -1;
     }
@@ -246,17 +366,13 @@ public class UImodules3D : MonoBehaviour
     {
         if (!IsValidIndex(index)) return;
 
-        // Si este componente o su gameObject NO están activos, no arrancamos coroutine:
-        // aplicamos la escala directamente (evitamos error "Coroutine couldn't be started...").
         if (!this.isActiveAndEnabled || !this.gameObject.activeInHierarchy)
         {
-            if (ui3DObjects[index] != null)
-                ui3DObjects[index].transform.localScale = to;
+            if (ui3DObjects[index] != null) ui3DObjects[index].transform.localScale = to;
             scaleCoroutines[index] = null;
             return;
         }
 
-        // parar coroutine previa si existe
         if (scaleCoroutines[index] != null)
         {
             StopCoroutine(scaleCoroutines[index]);
@@ -280,12 +396,92 @@ public class UImodules3D : MonoBehaviour
         {
             elapsed += Time.deltaTime;
             float p = Mathf.Clamp01(elapsed / duration);
-            float sp = p * p * (3f - 2f * p); // smoothstep-like
+            float sp = p * p * (3f - 2f * p);
             t.localScale = Vector3.LerpUnclamped(from, to, sp);
             yield return null;
         }
         t.localScale = to;
         scaleCoroutines[index] = null;
+    }
+
+    // -------------------- background scale/color coroutines --------------------
+
+    private void StartBgScaleToOriginal(int index)
+    {
+        if (uiBackgroundObjects == null || index < 0 || index >= uiBackgroundObjects.Length) return;
+        if (uiBackgroundObjects[index] == null) return;
+        Vector3 from = uiBackgroundObjects[index].transform.localScale;
+        Vector3 to = originalBackgroundScale[index];
+        StartBgScaleCoroutine(index, from, to, scaleDuration);
+    }
+
+    private void StartBgScaleCoroutine(int index, Vector3 from, Vector3 to, float duration)
+    {
+        if (uiBackgroundObjects == null || index < 0 || index >= uiBackgroundObjects.Length) return;
+
+        if (!this.isActiveAndEnabled || !this.gameObject.activeInHierarchy)
+        {
+            if (uiBackgroundObjects[index] != null) uiBackgroundObjects[index].transform.localScale = to;
+            if (bgScaleCoroutines != null) bgScaleCoroutines[index] = null;
+            return;
+        }
+
+        if (bgScaleCoroutines[index] != null)
+        {
+            StopCoroutine(bgScaleCoroutines[index]);
+            bgScaleCoroutines[index] = null;
+        }
+        bgScaleCoroutines[index] = StartCoroutine(LerpScale(uiBackgroundObjects[index].transform, from, to, duration, index));
+    }
+
+    private void StartBgColorCoroutine(int index, Image img, Color from, Color to, float duration)
+    {
+        if (!highlightBackgroundColor || img == null) return;
+
+        if (!this.isActiveAndEnabled || !this.gameObject.activeInHierarchy)
+        {
+            img.color = to;
+            if (bgColorCoroutines != null) bgColorCoroutines[index] = null;
+            return;
+        }
+
+        if (bgColorCoroutines[index] != null)
+        {
+            StopCoroutine(bgColorCoroutines[index]);
+            bgColorCoroutines[index] = null;
+        }
+        bgColorCoroutines[index] = StartCoroutine(LerpColor(img, from, to, duration, index));
+    }
+
+    private IEnumerator LerpColor(Image img, Color from, Color to, float duration, int index)
+    {
+        if (img == null) yield break;
+        if (duration <= 0f)
+        {
+            img.color = to;
+            bgColorCoroutines[index] = null;
+            yield break;
+        }
+
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            float sp = t * t * (3f - 2f * t);
+            img.color = Color.LerpUnclamped(from, to, sp);
+            yield return null;
+        }
+        img.color = to;
+        bgColorCoroutines[index] = null;
+    }
+
+    private void StartBgColorToOriginal(int index)
+    {
+        if (backgroundImages == null || index < 0 || index >= backgroundImages.Length) return;
+        var img = backgroundImages[index];
+        if (img == null) return;
+        StartBgColorCoroutine(index, img, img.color, originalBackgroundColors[index], (backgroundColorDuration > 0f ? backgroundColorDuration : scaleDuration));
     }
 
     // -------------------- helpers --------------------
