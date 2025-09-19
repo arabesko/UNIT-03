@@ -438,6 +438,10 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
 
     private void SelectModule(int index)
     {
+        // Si ya está seleccionado este módulo, no hacer nada
+        if (index == _inventory.WeaponSelected)
+            return;
+
         // Mejor guardia: si index es >= cantidad, no hacer nada
         if (_inventory == null || index >= _inventory.MyItemsCount()) return;
 
