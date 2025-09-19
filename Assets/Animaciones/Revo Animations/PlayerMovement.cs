@@ -9,7 +9,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     [Header("Conecciones")]
     [SerializeField] private PauseMenu _pauseMenu;
 
-    [SerializeField] private Show3DOnToggle moduleUIHighlighter;
+    [SerializeField] private UImodules3D moduleUIHighlighter;
 
     [Header("Player")]
     [SerializeField] private float _maxHealth;
@@ -134,40 +134,39 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
 
     private void Start()
     {
-        if (moduleUIHighlighter != null && _inventory != null)
-        {
-            int sel = _inventory.WeaponSelected;
-            moduleUIHighlighter.HighlightObject(sel);
-        }
-
         if (_animatorBasic != null)
             _animatorBasic._playerMovement = this;
 
         _currentHealth = _maxHealth;
+
+        // Inicializar inventario PRIMERO
         _inventory = new Inventory(8, _element0);
+
+        // Si ya hay objetos iniciales a agregar, llamá AddModules (tu lógica)
         AddModules(_projectorPosition);
-        // Asegurar que existe el componente
+
+        // Ahora sincronizar la UI manager con el inventario
+        if (moduleUIHighlighter != null && _inventory != null)
+        {
+            moduleUIHighlighter.SyncWithInventory(_inventory);
+            int sel = _inventory.WeaponSelected;
+            moduleUIHighlighter.HighlightObject(sel);
+        }
+
         if (_eagleVision == null)
             _eagleVision = gameObject.AddComponent<EagleVision>();
 
-        // Guardar colores originales
         SaveOriginalColors();
-
-        // Guardar colores originales si las referencias están asignadas
         if (_damageLight != null)
             _originalLightColor = _damageLight.color;
-
-        if (_animatorBasic != null)
-            _animatorBasic._playerMovement = this;
 
         if (aimBone != null)
         {
             aimBoneInitialLocalRot = aimBone.localRotation;
             aimBoneInitialized = true;
         }
-
-
     }
+
 
     void LateUpdate()
     {
@@ -414,16 +413,18 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         var myDriver = _elementDetected.GetComponent<IModules>();
         if (myDriver == null) return;
 
-        // Desactivar solo el componente de texto, no el objeto completo
-        //InteractableText text = _elementDetected.GetComponent<InteractableText>();
-        //if (text != null)
-        //{
-        //    text.interactableEnabled = false; // Esto evitará que se muestre
-        //    text.HideUILetter(); // Oculta inmediatamente
-        //}
-
         _weaponSelected = _elementDetected;
         _inventory.AddWeapon(_weaponSelected);
+
+        // Actualizamos UI justo después de agregar
+        if (moduleUIHighlighter != null)
+        {
+            moduleUIHighlighter.SyncWithInventory(_inventory);
+            // si quieres resaltar el nuevo, puedes usar: _inventory.MyItemsCount() - 1
+            int newIndex = _inventory.WeaponSelected; // o: _inventory.MyItemsCount() - 1
+            moduleUIHighlighter.HighlightObject(newIndex);
+        }
+
         _weaponSelected.transform.parent = transform;
         _weaponSelected.transform.position = _position.position;
         _weaponSelected.transform.rotation = this.transform.rotation;
@@ -438,27 +439,26 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     private void SelectModule(int index)
     {
         // Si ya está seleccionado este módulo, no hacer nada
-        /*if (index == _inventory.WeaponSelected)
-            return;*/
+        if (index == _inventory.WeaponSelected)
+            return;
 
-        //Asigna el animator
-        //_animatorBasic.animator = _inventory.MyCurrentAnimator();
-        //_animatorBasic._playerMovement = this;
+        // Mejor guardia: si index es >= cantidad, no hacer nada
+        if (_inventory == null || index >= _inventory.MyItemsCount()) return;
 
-        if (index > _inventory.MyItemsCount() - 1) return;
         _weaponSelected = _inventory.SelectWeapon(index);
         _weaponSelected.GetComponent<Weapon>().MyStart();
 
+        // SINCRONIZAR UI por si cambió algo
         if (moduleUIHighlighter != null)
         {
+            moduleUIHighlighter.SyncWithInventory(_inventory);
             moduleUIHighlighter.HighlightObject(index);
         }
 
         // Actualizar estado del cursor
         UpdateCursorState();
-
-        //_animatorBasic.animator = _inventory.MyCurrentAnimator();
     }
+
 
     // método para verificar si tiene módulos
     public bool HasModules()
@@ -478,6 +478,8 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
 
             module.SetActive(true);
             _inventory.ReAddModule(module);
+            if (moduleUIHighlighter != null)
+                moduleUIHighlighter.SyncWithInventory(_inventory);
 
             module.transform.parent = transform;
             Rigidbody rb = module.GetComponent<Rigidbody>();
