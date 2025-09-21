@@ -1,4 +1,3 @@
-
 using System.Collections;
 using UnityEngine;
 
@@ -17,6 +16,8 @@ public class WeaponInvisible : Weapon
     [Header("Dissolve Settings")]
     [SerializeField] private float dissolveSpeed = 2f; // qué tan rápido se disuelve
     [SerializeField] private float invisibleDuration = 5f; // cuánto dura invisible
+    [SerializeField] private float SpeedFBX = 0f; // Nueva variable
+    [SerializeField] private float NoiseFBX = 0f; // Nueva variable
 
     public override void Initialized(PlayerMovement player)
     {
@@ -49,9 +50,6 @@ public class WeaponInvisible : Weapon
 
     public void RecoveryMaterial()
     {
-        //MyBodyFBX.SetActive(true);
-        //_myBodyInvisible.SetActive(false);
-        //_player._animatorBasic.animator = MyAnimator;
         _player.IsInvisible = false;
         _player.CanWeaponChange = true;
     }
@@ -81,12 +79,35 @@ public class WeaponInvisible : Weapon
             t += Time.deltaTime * dissolveSpeed;
             float value = Mathf.Lerp(start, end, t);
 
-            headMat.SetFloat("_DisolveHead", value);
-            legsMat.SetFloat("_DisolveLegs", value);
-            leftArmMat.SetFloat("_DisolveLeft", value);
-            rightArmMat.SetFloat("_DisolveRight", value);
+            // Propiedades de dissolve originales
+            headMat.SetFloat("_Disolve", value);
+            legsMat.SetFloat("_Disolve", value);
+            leftArmMat.SetFloat("_Disolve", value);
+            rightArmMat.SetFloat("_Disolve", value);
+
+            // Nuevas propiedades FBX (solo se activan durante la transición)
+            float fbxValue = Mathf.Lerp(0f, 0.1f, t);
+            headMat.SetFloat("_SpeedFBX", fbxValue);
+            headMat.SetFloat("_NoiseFBX", fbxValue);
+            legsMat.SetFloat("_SpeedFBX", fbxValue);
+            legsMat.SetFloat("_NoiseFBX", fbxValue);
+            leftArmMat.SetFloat("_SpeedFBX", fbxValue);
+            leftArmMat.SetFloat("_NoiseFBX", fbxValue);
+            rightArmMat.SetFloat("_SpeedFBX", fbxValue);
+            rightArmMat.SetFloat("_NoiseFBX", fbxValue);
 
             yield return null;
         }
+
+        // Asegurar valores finales después del bucle
+        float finalFBXValue = end == 1f ? 0.1f : 0f;
+        headMat.SetFloat("_SpeedFBX", finalFBXValue);
+        headMat.SetFloat("_NoiseFBX", finalFBXValue);
+        legsMat.SetFloat("_SpeedFBX", finalFBXValue);
+        legsMat.SetFloat("_NoiseFBX", finalFBXValue);
+        leftArmMat.SetFloat("_SpeedFBX", finalFBXValue);
+        leftArmMat.SetFloat("_NoiseFBX", finalFBXValue);
+        rightArmMat.SetFloat("_SpeedFBX", finalFBXValue);
+        rightArmMat.SetFloat("_NoiseFBX", finalFBXValue);
     }
 }

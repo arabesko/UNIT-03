@@ -7,13 +7,13 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: MAT_Hologram
-  m_Shader: {fileID: -6465566751694194690, guid: bfc369a720ab512478935ffabb7ac952, type: 3}
+  m_Name: MAT_INVIRIGHT
+  m_Shader: {fileID: -6465566751694194690, guid: 5382cb04158a981498f641572c4b2660, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
-  m_LightmapFlags: 2
+  m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -23,16 +23,20 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _Holograma:
-        m_Texture: {fileID: 0}
+    - _SampleTexture2D_1a7986e7fdfd49a8bede9e993a88110b_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 34fb72284c62f2e459f8d549eebf0f2c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _HologramaTextura:
-        m_Texture: {fileID: 0}
+    - _SampleTexture2D_46ff2db9ee4d4081b64e23539a023c39_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 7e8a449db1a6279458efb0e5851cc0dd, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _SampleTexture2D_8ea604f125de46308904fd6b929c5d12_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: f214dc048049f564783db2023a61679e, type: 3}
+    - _SampleTexture2D_b966b2efb44a4ddda8919fca3c9e3141_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: cb93eb12ccd11d94ab1ff06fa8275b11, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_db9a5cb9e5814cd3bd58b98555020613_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: e94d04e5f69efac4fab4fb185775b3da, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -49,16 +53,15 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _ControlEfectoFBX: 1
+    - _Disolve: 0
+    - _DisolveRight: 1
+    - _Fade: 0.15
+    - _OpacidadVoronoi: 0.37
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _VelocidadHolograma: 0.1
-    m_Colors:
-    - _BaseColor: {r: 0, g: 0, b: 0, a: 0}
-    - _FresnelColor: {r: 1.0763044, g: 1.8628348, b: 3.9533494, a: 0.5529412}
-    - _HologramaTiling: {r: 1, g: 3, b: 0, a: 0}
+    m_Colors: []
   m_BuildTextureStacks: []
---- !u!114 &6892203433197493591
+--- !u!114 &3277125619637683343
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

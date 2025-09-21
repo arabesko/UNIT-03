@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7952899154637167023
+--- !u!114 &-8912609532952267147
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,36 +20,33 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: MAT_INVILEGS
-  m_Shader: {fileID: -6465566751694194690, guid: fd4dbfdd0001790438741f252c3ca4d3, type: 3}
+  m_Name: InviLeft
+  m_Shader: {fileID: -6465566751694194690, guid: 0f494a651d0a4a44f85f5799045e1578, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - _RECEIVE_SHADOWS_OFF
+  - _SPECULAR_SETUP
+  - _SURFACE_TYPE_TRANSPARENT
   m_InvalidKeywords: []
-  m_LightmapFlags: 4
+  m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
+  stringTagMap:
+    RenderType: Transparent
+  disabledShaderPasses:
+  - SHADOWCASTER
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _SampleTexture2D_09208bdce54441ef994b7160ccb83e13_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 489faec637ae10c4e8362e506ac0eaed, type: 3}
+    - _SampleTexture2D_1fb41b6ac6ec4985bd29d429683e22f5_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: f214dc048049f564783db2023a61679e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _SampleTexture2D_3e8df1e2dceb47adb86aecef6ed09ee1_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: a7068a3da4ed11a419bca7710642ab54, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _SampleTexture2D_9f81dfccef204a969df53c6286bdd647_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 189e8bcf0ca431144aaf57d7fc36cb2c, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _SampleTexture2D_b79a2bde700e4d77b06949819f9626d8_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 32282ff9fbd76744389713af4121a47a, type: 3}
+    - _SampleTexture2D_f787747901a74fd681f3ecad50286b78_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 86a0d79f3134cc24abf00b0cac8beae3, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -66,11 +63,31 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AlphaClip: 0
+    - _AlphaToMask: 0
+    - _Blend: 0
+    - _BlendModePreserveSpecular: 0
+    - _CastShadows: 0
+    - _Cull: 2
     - _Disolve: 0
-    - _DisolveLegs: 0
-    - _Fade: 0.15
-    - _OpacidadVoronoi: 0.37
+    - _DstBlend: 10
+    - _Float_Noise: 90
+    - _Fresnel: 80
+    - _Holograma_Velocidad: 0.5
+    - _IOR: -0.25
+    - _NoiseFBX: 0
+    - _Power: 0.1
     - _QueueControl: 0
     - _QueueOffset: 0
-    m_Colors: []
+    - _ReceiveShadows: 0
+    - _SpeedFBX: 0
+    - _SrcBlend: 5
+    - _Surface: 1
+    - _WorkflowMode: 0
+    - _ZTest: 4
+    - _ZWrite: 1
+    - _ZWriteControl: 1
+    m_Colors:
+    - _Color: {r: 6.6928387, g: 83.46362, b: 66.98403, a: 0}
+    - _Holograma_Tiling: {r: 0, g: 7.17, b: 0, a: 0}
   m_BuildTextureStacks: []
