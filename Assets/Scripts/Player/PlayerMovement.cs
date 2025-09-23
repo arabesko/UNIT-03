@@ -102,6 +102,12 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     private Color _originalMaterialColor2;
     private bool _colorsSaved = false; // Para asegurar que guardamos los colores solo una vez
 
+    [Header("Wake Animation Settings")]
+    [SerializeField] private string wakeAnimationName = "Wake"; // Nombre del trigger de la animación
+    [SerializeField] private AudioSource wakeAudioSource; // AudioSource para el sonido de despertar
+    [SerializeField] private float wakeAnimationDuration = 2f; // Duración estimada de la animación
+    private bool isPlayingWakeAnimation = false;
+    private Coroutine wakeCoroutine;
 
     public bool IsInvisible
     {
@@ -134,6 +140,8 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
 
     private void Start()
     {
+        Controller = GetComponent<CharacterController>();
+
         if (_animatorBasic != null)
             _animatorBasic._playerMovement = this;
 
@@ -165,6 +173,9 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
             aimBoneInitialLocalRot = aimBone.localRotation;
             aimBoneInitialized = true;
         }
+
+        // Iniciar animación de wake al comenzar el juego
+        StartWakeAnimation();
     }
 
 
@@ -176,7 +187,8 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         _animatorBasic.animator.SetBool("IsGrounded", Controller.isGrounded);
         _animatorBasic.animator.SetBool("IsStunned", false);
 
-        if (EnableMovement)
+        // Solo permitir movimiento si no está en animación de wake
+        if (EnableMovement && !isPlayingWakeAnimation)
         {
             HandleMovement();
             HandleGravityAndJump();
@@ -780,6 +792,9 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         _currentHealth = _maxHealth;
         if (cc != null) cc.enabled = true;
 
+        // Reproducir animación de wake después del respawn
+        yield return StartCoroutine(PlayWakeAnimationCoroutine());
+
         // Esperar duración del efecto completo (menos lo que ya esperamos antes)
         float remainingEffectTime = Mathf.Max(0f, volumeEffectDuration - teleportDelay);
         yield return new WaitForSeconds(remainingEffectTime);
@@ -807,6 +822,70 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         }
 
         globalVolume.weight = to;
+    }
+    #endregion
+
+    #region Wake Animation System
+    /// <summary>
+    /// Inicia la animación de despertar del robot
+    /// </summary>
+    public void StartWakeAnimation()
+    {
+        if (wakeCoroutine != null)
+            StopCoroutine(wakeCoroutine);
+
+        wakeCoroutine = StartCoroutine(PlayWakeAnimationCoroutine());
+    }
+
+    /// <summary>
+    /// Corrutina que controla la animación de despertar
+    /// </summary>
+    private IEnumerator PlayWakeAnimationCoroutine()
+    {
+        isPlayingWakeAnimation = true;
+        EnableMovement = false;
+
+        // Reproducir sonido de despertar si está asignado
+        if (wakeAudioSource != null)
+        {
+            wakeAudioSource.Play();
+        }
+
+        // Disparar la animación de wake en el Animator
+        if (_animatorBasic != null && _animatorBasic.animator != null)
+        {
+            _animatorBasic.animator.SetTrigger(wakeAnimationName);
+        }
+
+        // Esperar a que termine la animación
+        yield return new WaitForSeconds(wakeAnimationDuration);
+
+        // Restaurar control del jugador
+        EnableMovement = true;
+        isPlayingWakeAnimation = false;
+    }
+
+    /// <summary>
+    /// Método público para forzar el fin de la animación de wake (por si necesitas cancelarla)
+    /// </summary>
+    public void EndWakeAnimationEarly()
+    {
+        if (wakeCoroutine != null)
+        {
+            StopCoroutine(wakeCoroutine);
+            wakeCoroutine = null;
+        }
+
+        EnableMovement = true;
+        isPlayingWakeAnimation = false;
+    }
+
+    /// <summary>
+    /// Verifica si está reproduciendo la animación de wake
+    /// </summary>
+    public bool IsPlayingWakeAnimation()
+    {
+        return isPlayingWakeAnimation;
     }
     #endregion
 
