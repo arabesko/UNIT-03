@@ -1,6 +1,6 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class PauseMenu : MonoBehaviour
 {
@@ -16,13 +16,19 @@ public class PauseMenu : MonoBehaviour
         {
             playerMovement = FindObjectOfType<PlayerMovement>();
         }
+
+        // Por si el panel de opciones ya está activo al iniciar (caso raro)
+        if (optionsPanel != null && optionsPanel.activeSelf)
+        {
+            StartCoroutine(RefreshAudioBindingsNextFrame());
+        }
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (optionsPanel.activeSelf)
+            if (optionsPanel != null && optionsPanel.activeSelf)
             {
                 CloseOptions();
             }
@@ -36,19 +42,23 @@ public class PauseMenu : MonoBehaviour
 
     public void Pause()
     {
-        pausePanel.SetActive(true);
+        if (pausePanel != null) pausePanel.SetActive(true);
+        if (optionsPanel != null) optionsPanel.SetActive(false);
         Time.timeScale = 0f;
         isPaused = true;
 
         // Forzar mostrar cursor al pausar
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+
+        // Si tus sliders están en el panel de pausa, reconectar UI (esperamos 1 frame)
+        StartCoroutine(RefreshAudioBindingsNextFrame());
     }
 
     public void Resume()
     {
-        pausePanel.SetActive(false);
-        optionsPanel.SetActive(false);
+        if (pausePanel != null) pausePanel.SetActive(false);
+        if (optionsPanel != null) optionsPanel.SetActive(false);
         Time.timeScale = 1f;
         isPaused = false;
 
@@ -61,14 +71,20 @@ public class PauseMenu : MonoBehaviour
 
     public void Options()
     {
-        pausePanel.SetActive(false);
-        optionsPanel.SetActive(true);
+        if (pausePanel != null) pausePanel.SetActive(false);
+        if (optionsPanel != null) optionsPanel.SetActive(true);
+
+        // Esperamos un frame y luego forzamos que MusicManager (re)busque los sliders activos
+        StartCoroutine(RefreshAudioBindingsNextFrame());
     }
 
     public void CloseOptions()
     {
-        optionsPanel.SetActive(false);
-        pausePanel.SetActive(true);
+        if (optionsPanel != null) optionsPanel.SetActive(false);
+        if (pausePanel != null) pausePanel.SetActive(true);
+
+        // Si el panel de pausa tiene sliders, sincronizarlos también (opcional)
+        StartCoroutine(RefreshAudioBindingsNextFrame());
     }
 
     public void GoToMainMenu()
@@ -83,5 +99,17 @@ public class PauseMenu : MonoBehaviour
     {
         Application.Quit();
         Debug.Log("Salir del juego");
+    }
+
+    // ---------- Helpers ----------
+    private IEnumerator RefreshAudioBindingsNextFrame()
+    {
+        // Espera un frame para asegurarse de que GameObjects activados ya estén "visibles" para FindWithTag.
+        yield return null;
+
+        if (MusicManager.Instance != null)
+        {
+            MusicManager.Instance.RefreshUIBindings();
+        }
     }
 }

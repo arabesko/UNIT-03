@@ -99,6 +99,16 @@ public class PuzzleFusibles : MonoBehaviour
 
         fuse.transform.localScale = Vector3.one;
 
+        // Cambiar la layer a Default
+        fuse.gameObject.layer = 0; // 0 es el índice de la layer "Default"
+
+        // Destruir el componente InteractableUI si existe
+        InteractableUI interactableUI = fuse.GetComponent<InteractableUI>();
+        if (interactableUI != null)
+        {
+            Destroy(interactableUI);
+        }
+
         // Reactivar collider
         if (fuseCollider != null) fuseCollider.enabled = true;
 
