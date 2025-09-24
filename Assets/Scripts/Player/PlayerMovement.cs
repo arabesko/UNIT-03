@@ -103,11 +103,13 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     private bool _colorsSaved = false; // Para asegurar que guardamos los colores solo una vez
 
     [Header("Wake Animation Settings")]
-    [SerializeField] private string wakeAnimationName = "Wake"; // Nombre del trigger de la animación
-    [SerializeField] private AudioSource wakeAudioSource; // AudioSource para el sonido de despertar
-    [SerializeField] private float wakeAnimationDuration = 2f; // Duración estimada de la animación
+    [SerializeField] private string wakeAnimationName = "Wake"; // (opcional) trigger name
+    [SerializeField] private string wakeStateName = "WakeRevo"; // NOMBRE EXACTO del estado en el Animator
+    [SerializeField] private AudioSource wakeAudioSource;
+    [SerializeField] private float wakeAnimationDuration = 2f;
     private bool isPlayingWakeAnimation = false;
     private Coroutine wakeCoroutine;
+
 
     public bool IsInvisible
     {
@@ -769,44 +771,82 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     public float volumeEffectDuration = 2f; // Tiempo total que el efecto permanece activo
     public float fadeDuration = 1f;         // Tiempo de transición para el fade in/out
 
+    [Header("Screen Curtain (optional)")]
+    [Tooltip("CanvasGroup de la cortina negra (poner alpha=1 antes del respawn)")]
+    public CanvasGroup blackCurtain;
+    public float curtainFadeDuration = 1f;
+
     private bool isProcessing = false;
 
     private IEnumerator RespawnWithVolumeFade()
     {
         isProcessing = true;
 
-        // Activar Global Volume gradualmente (Fade In)
+        // Fade IN del volume (oscurecer)
         if (globalVolume != null)
         {
             globalVolume.enabled = true;
             yield return StartCoroutine(FadeVolume(0f, 1f));
         }
 
-        // Esperar antes de teletransportar
+        // Espera antes del teleport
         yield return new WaitForSeconds(teleportDelay);
 
-        // Teletransportar al jugador
+        // Teletransportar
         var cc = GetComponent<CharacterController>();
         if (cc != null) cc.enabled = false;
         transform.position = respawnPoint.position;
         _currentHealth = _maxHealth;
         if (cc != null) cc.enabled = true;
 
-        // Reproducir animación de wake después del respawn
-        yield return StartCoroutine(PlayWakeAnimationCoroutine());
+        // ---- Aquí lanzamos todo en paralelo ----
+        // 1) Start de la animación wake (no esperamos)
+        StartCoroutine(PlayWakeAnimationCoroutine());
 
-        // Esperar duración del efecto completo (menos lo que ya esperamos antes)
-        float remainingEffectTime = Mathf.Max(0f, volumeEffectDuration - teleportDelay);
-        yield return new WaitForSeconds(remainingEffectTime);
-
-        // Desactivar Global Volume gradualmente (Fade Out)
+        // 2) Fade OUT del globalVolume PARA QUE SE VEA LA ANIMACIÓN mientras suena
         if (globalVolume != null)
         {
+            // Si querés que la visibilidad vuelva rápido, devolvé este StartCoroutine sin yield
+            // pero lo mejor es yield return para que el respawn espere a que visualmente termine el fade.
             yield return StartCoroutine(FadeVolume(1f, 0f));
+        }
+
+        // A partir de acá, el volumen está visible; la animación puede seguir en background.
+        // Esperamos explícitamente a que termine la animación (si hace falta bloquear más lógica)
+        while (isPlayingWakeAnimation)
+            yield return null;
+
+        // Seguridad: asegurarnos de apagar el volume si quedó activo
+        if (globalVolume != null)
+        {
+            globalVolume.weight = 0f;
             globalVolume.enabled = false;
         }
+
         _isDeath = false;
         isProcessing = false;
+    }
+
+
+    private IEnumerator FadeCurtain(float from, float to, float duration)
+    {
+        if (blackCurtain == null)
+            yield break;
+
+        float elapsed = 0f;
+        blackCurtain.alpha = from;
+        blackCurtain.blocksRaycasts = (to > 0.5f);
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            blackCurtain.alpha = Mathf.Lerp(from, to, t);
+            yield return null;
+        }
+
+        blackCurtain.alpha = to;
+        blackCurtain.blocksRaycasts = (to > 0.5f);
     }
 
     private IEnumerator FadeVolume(float from, float to)
@@ -845,25 +885,43 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         isPlayingWakeAnimation = true;
         EnableMovement = false;
 
-        // Reproducir sonido de despertar si está asignado
+        // Sonido
         if (wakeAudioSource != null)
         {
             wakeAudioSource.Play();
         }
 
-        // Disparar la animación de wake en el Animator
+        // Forzar animación en Animator (más robusto que solo SetTrigger)
         if (_animatorBasic != null && _animatorBasic.animator != null)
         {
-            _animatorBasic.animator.SetTrigger(wakeAnimationName);
+            var anim = _animatorBasic.animator;
+            if (!anim.enabled) anim.enabled = true;
+
+            // Intentamos Play por nombre de estado (fuerza el estado inmediatamente)
+            try
+            {
+                anim.Play(wakeStateName, 0, 0f); // capa 0, al inicio
+                                                 // alternativamente podés usar CrossFade si querés blend:
+                                                 // anim.CrossFade(wakeStateName, 0.1f, 0, 0f);
+            }
+            catch
+            {
+                // fallback: trigger (por compatibilidad)
+                anim.SetTrigger(wakeAnimationName);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Animator no asignado en _animatorBasic al intentar PlayWakeAnimation.");
         }
 
-        // Esperar a que termine la animación
+        // Esperamos la duración estimada (puede ser el length real si preferís)
         yield return new WaitForSeconds(wakeAnimationDuration);
 
-        // Restaurar control del jugador
         EnableMovement = true;
         isPlayingWakeAnimation = false;
     }
+
 
     /// <summary>
     /// Método público para forzar el fin de la animación de wake (por si necesitas cancelarla)
