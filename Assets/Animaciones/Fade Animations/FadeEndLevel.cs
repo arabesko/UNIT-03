@@ -10,7 +10,7 @@ public class FadeEndLevel : MonoBehaviour
 
     [Header("Audio Settings")]
     [SerializeField] private AudioSource ambientAudio;
-    [SerializeField] private AudioSource EndTheme;
+    //[SerializeField] private AudioSource EndTheme;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -46,7 +46,7 @@ public class FadeEndLevel : MonoBehaviour
         if (ambientAudio != null && ambientAudio.isPlaying)
             ambientAudio.Pause();
 
-        if (EndTheme != null && !EndTheme.isPlaying)
-            EndTheme.Play();
+        /*if (EndTheme != null && !EndTheme.isPlaying)
+            EndTheme.Play();*/
     }
 }
