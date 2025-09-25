@@ -16,15 +16,25 @@ public class ChargingStation : MonoBehaviour
     [SerializeField] private float offsetY = -90f;
 
     [Header("Object Movement on Charged")]
-    [SerializeField] private Transform objectToMove; // Objeto que se moverá cuando la batería esté cargada
-    [SerializeField] private Transform objectTargetPosition; // Posición objetivo del objeto
-    [SerializeField] private float objectMoveSpeed = 2f; // Velocidad de movimiento del objeto
-    private bool shouldMoveObject = false; // Controla si el objeto debe moverse
+    [SerializeField] private Transform objectToMove;
+    [SerializeField] private Transform objectTargetPosition;
+    [SerializeField] private float objectMoveSpeed = 2f;
+    private bool shouldMoveObject = false;
+
+    [Header("Charging Lights")]
+    [SerializeField] private Light light1; // Point Light para la primera luz
+    [SerializeField] private Light light2; // Point Light para la segunda luz
+    [SerializeField] private Light light3; // Point Light para la tercera luz
+    [SerializeField] private Color redColor = Color.red;
+    [SerializeField] private Color greenColor = Color.green;
+    [SerializeField] private float lightIntensity = 2f; // Intensidad de las luces
+    private bool[] lightsStatus = new bool[3]; // false = rojo, true = verde
 
     private PortableBattery currentBattery;
     private bool isMovingBattery = false;
     private int currentWaypointIndex = 0;
     private bool isMovementCompleted = false;
+    private Coroutine chargingLightsCoroutine;
 
     // Referencia al script del jugador
     private PlayerMovement _playerScript;
@@ -32,6 +42,7 @@ public class ChargingStation : MonoBehaviour
     private void Start()
     {
         _playerScript = FindObjectOfType<PlayerMovement>();
+        InitializeLights();
     }
 
     private void Update()
@@ -41,11 +52,82 @@ public class ChargingStation : MonoBehaviour
             MoveBatteryAlongWaypoints();
         }
 
-        // Mover el objeto si está activado
         if (shouldMoveObject && objectToMove != null && objectTargetPosition != null)
         {
             MoveObject();
         }
+    }
+
+    // Inicializar todas las luces en rojo
+    private void InitializeLights()
+    {
+        SetLightColor(light1, redColor);
+        SetLightColor(light2, redColor);
+        SetLightColor(light3, redColor);
+
+        lightsStatus[0] = false;
+        lightsStatus[1] = false;
+        lightsStatus[2] = false;
+    }
+
+    // Método para cambiar el color de una luz
+    private void SetLightColor(Light light, Color color)
+    {
+        if (light != null)
+        {
+            light.color = color;
+            light.intensity = lightIntensity;
+        }
+    }
+
+    // Corrutina para controlar el cambio de luces
+    private IEnumerator ChargingLightsSequence()
+    {
+        // Luz 1 se enciende después de 1 segundo
+        yield return new WaitForSeconds(1f);
+        SetLightColor(light1, greenColor);
+        lightsStatus[0] = true;
+
+        // Luz 2 se enciende después de 2 segundos
+        yield return new WaitForSeconds(1f);
+        SetLightColor(light2, greenColor);
+        lightsStatus[1] = true;
+
+        // Luz 3 se enciende después de 3 segundos
+        yield return new WaitForSeconds(0.5f);
+        SetLightColor(light3, greenColor);
+        lightsStatus[2] = true;
+
+        Debug.Log("Todas las luces están verdes - Carga completa");
+    }
+
+    // Iniciar la secuencia de carga de luces
+    private void StartChargingLights()
+    {
+        // Reiniciar luces a rojo antes de comenzar
+        InitializeLights();
+
+        if (chargingLightsCoroutine != null)
+            StopCoroutine(chargingLightsCoroutine);
+
+        chargingLightsCoroutine = StartCoroutine(ChargingLightsSequence());
+    }
+
+    // Detener la secuencia de luces
+    private void StopChargingLights()
+    {
+        if (chargingLightsCoroutine != null)
+        {
+            StopCoroutine(chargingLightsCoroutine);
+            chargingLightsCoroutine = null;
+        }
+    }
+
+    // Método para resetear las luces cuando se retira la batería
+    public void ResetLights()
+    {
+        StopChargingLights();
+        InitializeLights();
     }
 
     private void MoveBatteryAlongWaypoints()
@@ -60,6 +142,9 @@ public class ChargingStation : MonoBehaviour
             {
                 currentBattery.StartCharging(this);
 
+                // Iniciar la secuencia de luces cuando comienza la carga
+                StartChargingLights();
+
                 if (chargingPromptPanel != null)
                     chargingPromptPanel.SetActive(true);
 
@@ -70,8 +155,6 @@ public class ChargingStation : MonoBehaviour
         }
 
         Transform target = waypoints[currentWaypointIndex];
-
-        // Movimiento directo como en ElevatorPower
         Vector3 direction = (target.position - currentBattery.transform.position).normalized;
         currentBattery.transform.position += direction * batterySpeed * Time.deltaTime;
 
@@ -87,7 +170,7 @@ public class ChargingStation : MonoBehaviour
     private void RotateBatteryTowards(Vector3 targetPosition)
     {
         Vector3 direction = (targetPosition - currentBattery.transform.position);
-        direction.y = 0; // Ignorar componente Y para rotación
+        direction.y = 0;
 
         if (direction.sqrMagnitude < 0.001f) return;
 
@@ -101,13 +184,11 @@ public class ChargingStation : MonoBehaviour
         );
     }
 
-    // Método para mover el objeto suavemente hacia la posición objetivo
     private void MoveObject()
     {
         Vector3 direction = (objectTargetPosition.position - objectToMove.position).normalized;
         objectToMove.position += direction * objectMoveSpeed * Time.deltaTime;
 
-        // Si está muy cerca, detenemos el movimiento
         if (Vector3.Distance(objectToMove.position, objectTargetPosition.position) < 0.01f)
         {
             shouldMoveObject = false;
@@ -115,34 +196,30 @@ public class ChargingStation : MonoBehaviour
         }
     }
 
-    // En el método BatteryReadyForPickup, activamos el movimiento del objeto
     public void BatteryReadyForPickup()
     {
         if (currentBattery != null)
         {
-            // Reactivar la física
             Rigidbody rb = currentBattery.GetComponent<Rigidbody>();
             if (rb != null)
             {
                 rb.isKinematic = false;
             }
 
-            // Quitar el flag de movimiento
             currentBattery.isBeingMoved = false;
 
-            // Agregar la batería a la lista de colectables del jugador
             if (_playerScript != null && !_playerScript.colectables.Contains(currentBattery.gameObject))
             {
                 _playerScript.colectables.Add(currentBattery.gameObject);
                 Debug.Log("Batería cargada agregada a colectables del jugador");
             }
 
-            // Activamos el movimiento del objeto
             shouldMoveObject = true;
+
+            // Las luces se mantienen verdes hasta que se retira la batería
         }
     }
 
-    // Resto del código (OnTriggerEnter, OnTriggerExit, HideChargingText) sin cambios...
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Battery"))
@@ -152,7 +229,6 @@ public class ChargingStation : MonoBehaviour
             {
                 Debug.Log("Batería detectada, iniciando movimiento");
 
-                // Quitar la batería del control del jugador
                 if (_playerScript != null)
                 {
                     if (_playerScript.colectables.Contains(battery.gameObject))
@@ -163,29 +239,26 @@ public class ChargingStation : MonoBehaviour
                     }
                 }
 
-                // Iniciar movimiento automático
                 isMovingBattery = true;
                 currentBattery = battery;
                 currentWaypointIndex = 0;
 
-                // Hacer la batería kinemática para evitar interferencias físicas
                 Rigidbody rb = currentBattery.GetComponent<Rigidbody>();
                 if (rb != null)
                 {
                     rb.isKinematic = true;
                 }
 
-                // Marcar que la batería está siendo movida
                 currentBattery.isBeingMoved = true;
+
+                // Resetear luces si había una carga previa
+                //ResetLights();
             }
-            // Permitir recoger la batería cargada
             else if (battery != null && battery.isCharged)
             {
-                // Agregar la batería a la lista de colectables del jugador
                 if (_playerScript != null && !_playerScript.colectables.Contains(battery.gameObject))
                 {
                     _playerScript.colectables.Add(battery.gameObject);
-                    Debug.Log("Batería cargada agregada a colectables del jugador");
                 }
             }
         }
@@ -210,6 +283,16 @@ public class ChargingStation : MonoBehaviour
         {
             if (chargingPromptPanel != null)
                 chargingPromptPanel.SetActive(false);
+        }
+        // Cuando la batería cargada sale del trigger, resetear las luces
+        else if (other.CompareTag("Battery"))
+        {
+            PortableBattery battery = other.GetComponent<PortableBattery>();
+            if (battery != null && battery.isCharged)
+            {
+                //ResetLights();
+                isMovementCompleted = false; // Permitir nueva carga
+            }
         }
     }
 
