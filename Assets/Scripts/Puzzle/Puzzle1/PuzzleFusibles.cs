@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
+using Unity.VisualScripting;
 
 public class PuzzleFusibles : MonoBehaviour
 {
@@ -12,6 +14,7 @@ public class PuzzleFusibles : MonoBehaviour
         public Transform slotTransform; // Slot asignado a este fusible
         public Transform placementPoint; // Punto de colocación exacto
         public bool isOccupied = false;
+        public List<Transform> PointsMovement = new List<Transform>();
     }
 
     public List<FuseAssignment> fuseAssignments = new List<FuseAssignment>();
@@ -28,6 +31,10 @@ public class PuzzleFusibles : MonoBehaviour
     private List<GameObject> insertedFuses = new List<GameObject>();
     private int totalPercent = 0;
     private bool isDoorOpen = false;
+
+    [SerializeField] private int _fusibleSpeed;
+    [SerializeField] private int _fusibleSpeedRotation;
+    [SerializeField] private float offsetY = -90f;
 
     private void Start()
     {
@@ -84,12 +91,13 @@ public class PuzzleFusibles : MonoBehaviour
         if (fuseCollider != null) fuseCollider.enabled = false;
 
         // Posicionar el fusible en su slot asignado
-        fuse.transform.SetParent(assignment.slotTransform);
+        //fuse.transform.SetParent(assignment.slotTransform);
 
         if (assignment.placementPoint != null)
         {
-            fuse.transform.position = assignment.placementPoint.position;
-            fuse.transform.rotation = assignment.placementPoint.rotation;
+            StartCoroutine(MoveBatteryToPosition(fuse.transform, assignment.PointsMovement, 0));
+            //fuse.transform.position = assignment.placementPoint.position;
+            //fuse.transform.rotation = assignment.placementPoint.rotation;
         }
         else
         {
@@ -114,21 +122,66 @@ public class PuzzleFusibles : MonoBehaviour
 
         fuse.Desactivate();
 
-        // Sonido
-        if (doorAudioSource != null && fuseInsertSound != null)
-        {
-            doorAudioSource.PlayOneShot(fuseInsertSound);
-        }
+        
 
         // Actualizar porcentaje
         totalPercent += fuse.MyReturnNumber();
         percentText.text = totalPercent.ToString() + "%";
+
+        
+    }
+
+    public IEnumerator MoveBatteryToPosition(Transform fusible, List<Transform> points, int index)
+    {
+        
+        bool swFin = false;
+        Vector3 dir = (points[index].transform.position - fusible.transform.position).normalized;
+        while (swFin == false)
+        {
+            fusible.transform.position += dir * _fusibleSpeed * Time.deltaTime;
+            //RotateTowards(fusible.gameObject, points[index].transform.position);
+            if (Vector3.Distance(fusible.transform.position, points[index].transform.position) < 0.2f)
+            {
+                index++;
+                if (index >= points.Count)
+                {
+                    //Esta en la posicion final
+                    swFin = true;
+                }
+                else
+                {
+                    dir = (points[index].transform.position - fusible.transform.position).normalized;
+                }
+            }
+            yield return null;
+        }
+        fusible.transform.position = points[0].transform.position;
+        fusible.transform.rotation = points[0].transform.rotation;
 
         // Verificar si el puzzle está completo
         if (totalPercent >= 100)
         {
             StartCoroutine(OpenDoor());
         }
+
+        // Sonido
+        if (doorAudioSource != null && fuseInsertSound != null)
+        {
+            doorAudioSource.PlayOneShot(fuseInsertSound);
+        }
+    }
+
+    private void RotateTowards(GameObject fusible, Vector3 target)
+    {
+        Vector3 direction = (target - fusible.transform.position);
+        direction.y = 0;
+        if (direction.sqrMagnitude < 0.001f) return;
+
+        Quaternion targetRotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
+        Quaternion correctedRotation = targetRotation * Quaternion.Euler(0, offsetY, 0);
+
+        fusible.transform.rotation = Quaternion.Slerp(fusible.transform.rotation, correctedRotation,
+                                              _fusibleSpeedRotation * Time.deltaTime);
     }
 
     private IEnumerator OpenDoor()
