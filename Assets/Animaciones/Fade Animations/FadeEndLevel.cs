@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class FadeEndLevel : MonoBehaviour
 {
@@ -10,25 +11,34 @@ public class FadeEndLevel : MonoBehaviour
 
     [Header("Audio Settings")]
     [SerializeField] private AudioSource ambientAudio;
-    //[SerializeField] private AudioSource EndTheme;
+    [SerializeField] private AudioSource EndTheme; // sonido de "elevador que se rompe"
+
+    [Header("Scene")]
+    [SerializeField] private string nextSceneName = "Level2";
+
+    private bool transitioning = false;
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
-        {
-            StartCoroutine(FadeOutAndEnd());
-        }
+        if (transitioning) return;
+        if (!other.CompareTag("Player")) return;
+
+        transitioning = true;
+
+        // Destruir el player PASADOS 3 segundos (no tocamos nada más del player)
+        Destroy(other.gameObject, 3f);
+
+        // Iniciar la secuencia de fade + espera por audio + carga de escena
+        StartCoroutine(FadeOutAndEnd());
     }
 
     private IEnumerator FadeOutAndEnd()
     {
-        // Activar el volumen global si no está activado
+        // 1) Activar el volumen global si está asignado y no está activado
         if (globalVolume != null && !globalVolume.enabled)
-        {
             globalVolume.enabled = true;
-        }
 
-        // Fade in del efecto
+        // 2) Ejecutar fade in del volume (0 -> 1)
         if (globalVolume != null)
         {
             float elapsed = 0f;
@@ -36,17 +46,41 @@ public class FadeEndLevel : MonoBehaviour
             {
                 elapsed += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsed / fadeDuration);
-                globalVolume.weight = t;  // Aumentar peso gradualmente
+                globalVolume.weight = t;
                 yield return null;
             }
-            globalVolume.weight = 1f;  // Mantener al máximo
+            globalVolume.weight = 1f;
+        }
+        else
+        {
+            // si no hay volume asignado, esperamos el tiempo para mantener la sensación de transición
+            yield return new WaitForSeconds(fadeDuration);
         }
 
-        // Manejo de audio
+        // 3) Pausar ambient si corresponde
         if (ambientAudio != null && ambientAudio.isPlaying)
             ambientAudio.Pause();
 
-        /*if (EndTheme != null && !EndTheme.isPlaying)
-            EndTheme.Play();*/
+        // 4) Reproducir EndTheme si está asignado y esperar a que termine
+        if (EndTheme != null)
+        {
+            EndTheme.Play();
+
+            // Si el clip está asignado y tiene length, esperar esa duración (más robusto)
+            if (EndTheme.clip != null && EndTheme.clip.length > 0.01f)
+            {
+                yield return new WaitForSeconds(EndTheme.clip.length);
+            }
+            else
+            {
+                // Si no hay clip o su length no es fiable, esperar hasta que termine de sonar
+                yield return new WaitWhile(() => EndTheme.isPlaying);
+            }
+        }
+
+        // 5) Cargar la siguiente escena (asíncrono)
+        var ao = SceneManager.LoadSceneAsync(nextSceneName);
+        while (!ao.isDone)
+            yield return null;
     }
 }
