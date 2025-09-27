@@ -22,13 +22,13 @@ public class ChargingStation : MonoBehaviour
     private bool shouldMoveObject = false;
 
     [Header("Charging Lights")]
-    [SerializeField] private Light light1; // Point Light para la primera luz
-    [SerializeField] private Light light2; // Point Light para la segunda luz
-    [SerializeField] private Light light3; // Point Light para la tercera luz
+    [SerializeField] private Light light1;
+    [SerializeField] private Light light2;
+    [SerializeField] private Light light3;
     [SerializeField] private Color redColor = Color.red;
     [SerializeField] private Color greenColor = Color.green;
-    [SerializeField] private float lightIntensity = 2f; // Intensidad de las luces
-    private bool[] lightsStatus = new bool[3]; // false = rojo, true = verde
+    [SerializeField] private float lightIntensity = 2f;
+    private bool[] lightsStatus = new bool[3];
 
     private PortableBattery currentBattery;
     private bool isMovingBattery = false;
@@ -36,8 +36,18 @@ public class ChargingStation : MonoBehaviour
     private bool isMovementCompleted = false;
     private Coroutine chargingLightsCoroutine;
 
+    // Variables para manejo de mensajes
+    private bool isPlayerInTrigger = false;
+    private bool isChargingInProgress = false;
+    private Coroutine messageCoroutine;
+
     // Referencia al script del jugador
     private PlayerMovement _playerScript;
+
+    // Mensajes predefinidos
+    private const string SOURCE_MESSAGE = "Parece una fuente de energia.";
+    private const string CHARGING_MESSAGE = "Cargando bateria...";
+    private const string READY_MESSAGE = "Presiona R para recoger la batería cargada";
 
     private void Start()
     {
@@ -56,6 +66,47 @@ public class ChargingStation : MonoBehaviour
         {
             MoveObject();
         }
+
+        // Actualizar mensaje según prioridades
+        UpdateMessage();
+    }
+
+    private void UpdateMessage()
+    {
+        if (!isPlayerInTrigger)
+        {
+            HideMessage();
+            return;
+        }
+
+        // Sistema de prioridades
+        if (currentBattery != null && currentBattery.isCharged)
+        {
+            ShowMessage(READY_MESSAGE);
+        }
+        else if (isChargingInProgress)
+        {
+            ShowMessage(CHARGING_MESSAGE);
+        }
+        else
+        {
+            ShowMessage(SOURCE_MESSAGE);
+        }
+    }
+
+    private void ShowMessage(string message)
+    {
+        if (chargingPromptPanel != null)
+            chargingPromptPanel.SetActive(true);
+
+        if (chargingPromptText != null)
+            chargingPromptText.text = message;
+    }
+
+    private void HideMessage()
+    {
+        if (chargingPromptPanel != null)
+            chargingPromptPanel.SetActive(false);
     }
 
     // Inicializar todas las luces en rojo
@@ -97,8 +148,6 @@ public class ChargingStation : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         SetLightColor(light3, greenColor);
         lightsStatus[2] = true;
-
-        Debug.Log("Todas las luces están verdes - Carga completa");
     }
 
     // Iniciar la secuencia de carga de luces
@@ -134,22 +183,16 @@ public class ChargingStation : MonoBehaviour
     {
         if (currentWaypointIndex >= waypoints.Count || waypoints.Count == 0)
         {
-            Debug.Log("Movimiento completado, iniciando carga");
             isMovingBattery = false;
             isMovementCompleted = true;
 
             if (currentBattery != null && !currentBattery.isCharged)
             {
                 currentBattery.StartCharging(this);
+                isChargingInProgress = true; // Marcar que la carga está en progreso
 
                 // Iniciar la secuencia de luces cuando comienza la carga
                 StartChargingLights();
-
-                if (chargingPromptPanel != null)
-                    chargingPromptPanel.SetActive(true);
-
-                if (chargingPromptText != null)
-                    chargingPromptText.text = "Cargando bateria...";
             }
             return;
         }
@@ -163,7 +206,6 @@ public class ChargingStation : MonoBehaviour
         if (Vector3.Distance(currentBattery.transform.position, target.position) < 0.2f)
         {
             currentWaypointIndex++;
-            Debug.Log("Pasando al siguiente waypoint: " + currentWaypointIndex);
         }
     }
 
@@ -192,7 +234,6 @@ public class ChargingStation : MonoBehaviour
         if (Vector3.Distance(objectToMove.position, objectTargetPosition.position) < 0.01f)
         {
             shouldMoveObject = false;
-            Debug.Log("Objeto ha llegado a su posición final");
         }
     }
 
@@ -207,16 +248,14 @@ public class ChargingStation : MonoBehaviour
             }
 
             currentBattery.isBeingMoved = false;
+            isChargingInProgress = false; // La carga ha terminado
 
             if (_playerScript != null && !_playerScript.colectables.Contains(currentBattery.gameObject))
             {
                 _playerScript.colectables.Add(currentBattery.gameObject);
-                Debug.Log("Batería cargada agregada a colectables del jugador");
             }
 
             shouldMoveObject = true;
-
-            // Las luces se mantienen verdes hasta que se retira la batería
         }
     }
 
@@ -227,15 +266,12 @@ public class ChargingStation : MonoBehaviour
             PortableBattery battery = other.GetComponent<PortableBattery>();
             if (battery != null && !battery.isCharged && !isMovingBattery && !isMovementCompleted)
             {
-                Debug.Log("Batería detectada, iniciando movimiento");
-
                 if (_playerScript != null)
                 {
                     if (_playerScript.colectables.Contains(battery.gameObject))
                     {
                         _playerScript.colectables.Remove(battery.gameObject);
                         _playerScript.NoLevitate();
-                        Debug.Log("Batería removida del control del jugador");
                     }
                 }
 
@@ -250,9 +286,6 @@ public class ChargingStation : MonoBehaviour
                 }
 
                 currentBattery.isBeingMoved = true;
-
-                // Resetear luces si había una carga previa
-                //ResetLights();
             }
             else if (battery != null && battery.isCharged)
             {
@@ -264,16 +297,7 @@ public class ChargingStation : MonoBehaviour
         }
         else if (other.CompareTag("Player"))
         {
-            if (chargingPromptPanel != null)
-                chargingPromptPanel.SetActive(true);
-
-            if (chargingPromptText != null)
-            {
-                if (currentBattery != null && currentBattery.isCharged)
-                    chargingPromptText.text = "Presiona R para recoger la batería cargada";
-                else
-                    chargingPromptText.text = "Parece una fuente de energia.";
-            }
+            isPlayerInTrigger = true;
         }
     }
 
@@ -281,8 +305,8 @@ public class ChargingStation : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            if (chargingPromptPanel != null)
-                chargingPromptPanel.SetActive(false);
+            isPlayerInTrigger = false;
+            HideMessage();
         }
         // Cuando la batería cargada sale del trigger, resetear las luces
         else if (other.CompareTag("Battery"))
@@ -290,15 +314,14 @@ public class ChargingStation : MonoBehaviour
             PortableBattery battery = other.GetComponent<PortableBattery>();
             if (battery != null && battery.isCharged)
             {
-                //ResetLights();
                 isMovementCompleted = false; // Permitir nueva carga
+                isChargingInProgress = false; // Resetear estado de carga
             }
         }
     }
 
     public void HideChargingText()
     {
-        if (chargingPromptPanel != null)
-            chargingPromptPanel.SetActive(false);
+        HideMessage();
     }
 }

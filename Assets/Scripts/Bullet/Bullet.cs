@@ -7,6 +7,7 @@ public class Bullet : MonoBehaviour
     [SerializeField] private float _damage = 10f;
     [SerializeField] private float _targetSearchRange = 10f;
     [SerializeField] private float _lifeTime = 2f;
+    [SerializeField] private ParticleSystem _impactParticles; // Sistema de partículas de impacto
 
     private Transform _target;
     private Vector3 _initialDirection = Vector3.forward;
@@ -15,9 +16,8 @@ public class Bullet : MonoBehaviour
     void Start()
     {
         Destroy(gameObject, _lifeTime);
-        // NO sobreescribimos _initialDirection aquí: puede venir desde Initialize.
         FindNearestEnemy();
-        // Si no fue inicializado externamente, tomamos transform.forward como fallback
+
         if (!_initialized)
         {
             _initialDirection = transform.forward;
@@ -26,7 +26,6 @@ public class Bullet : MonoBehaviour
                 _initialDirection.Normalize();
             else
                 _initialDirection = Vector3.forward;
-            // Orientar visual al inicio
             transform.rotation = Quaternion.LookRotation(_initialDirection, Vector3.up);
         }
     }
@@ -44,8 +43,6 @@ public class Bullet : MonoBehaviour
         else
         {
             transform.position += _initialDirection * _moveSpeed * Time.deltaTime;
-
-            // Mantener rotación alineada con el movimiento (si querés spinning visual, reemplazá por Rotate)
             Quaternion lookRotation = Quaternion.LookRotation(_initialDirection, Vector3.up);
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, _speedRotation * Time.deltaTime);
         }
@@ -53,17 +50,21 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        // Generar partículas de impacto
+        if (_impactParticles != null)
+        {
+            Instantiate(_impactParticles, transform.position, Quaternion.identity);
+        }
+
+        // Dañar enemigos si es posible
         IDamagiable entity = other.GetComponent<IDamagiable>();
         if (entity != null)
         {
             entity.Damage(_damage);
-            Destroy(gameObject);
         }
-        else
-        {
-            // opcional: destruir ante paredes u otros impactos
-            // Destroy(gameObject);
-        }
+
+        // Destruir la bala siempre que colisione con cualquier cosa
+        Destroy(gameObject);
     }
 
     private void FindNearestEnemy()
@@ -75,7 +76,7 @@ public class Bullet : MonoBehaviour
         foreach (Scavanger enemy in enemies)
         {
             float distance = Vector3.Distance(transform.position, enemy.transform.position);
-            if (distance < minDistance && distance <= _targetSearchRange) // Solo si está en rango
+            if (distance < minDistance && distance <= _targetSearchRange)
             {
                 minDistance = distance;
                 nearestEnemy = enemy;
@@ -88,13 +89,11 @@ public class Bullet : MonoBehaviour
         }
     }
 
-    // --- Método público para inicializar desde WeaponPulse ---
     public void Initialize(Vector3 direction, float speed)
     {
         if (direction.sqrMagnitude < 0.0001f)
             direction = Vector3.forward;
 
-        // Querés disparar estrictamente horizontal: proyectar y = 0
         direction.y = 0f;
         direction.Normalize();
 
@@ -102,7 +101,6 @@ public class Bullet : MonoBehaviour
         _moveSpeed = speed;
         _initialized = true;
 
-        // Orientar el transform para que visualmente apunte en esa dirección
         transform.rotation = Quaternion.LookRotation(_initialDirection, Vector3.up);
     }
 }

@@ -15,27 +15,31 @@ public class DoorController : MonoBehaviour
 
     [Header("Sonidos")]
     public AudioClip openSound;
-    public AudioClip closeSound;
-    [Range(0, 10)] public float volume = 1f;
+    
 
     // Variables privadas
     private bool isOpen = false;
     private bool isMoving = false;
     private Quaternion closedRotation;
     private Quaternion targetRotation;
-    private AudioSource audioSource;
+    [SerializeField]private AudioSource audioSource;
     private Transform player;
+    private bool hasBeenOpened = false; // Nueva variable para controlar si ya se abrió
 
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
-        audioSource = GetComponent<AudioSource>();
 
+        // Obtener o crear AudioSource
+        audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
         {
             audioSource = gameObject.AddComponent<AudioSource>();
-            audioSource.spatialBlend = 1f;
         }
+
+        // Configurar AudioSource con valores por defecto
+        audioSource.spatialBlend = 1f; // Sonido 3D
+        audioSource.playOnAwake = false;
 
         closedRotation = transform.localRotation;
         targetRotation = closedRotation;
@@ -47,10 +51,10 @@ public class DoorController : MonoBehaviour
         Vector3 interactionPoint = transform.position + interactionOffset;
         float distance = Vector3.Distance(interactionPoint, player.position);
 
-        // Detectar input cuando el jugador está cerca
-        if (distance <= interactionRadius && Input.GetKeyDown(interactionKey))
+        // Detectar input cuando el jugador está cerca y la puerta no ha sido abierta
+        if (distance <= interactionRadius && Input.GetKeyDown(interactionKey) && !hasBeenOpened)
         {
-            ToggleDoor();
+            OpenDoor();
         }
 
         // Rotación suave
@@ -64,35 +68,30 @@ public class DoorController : MonoBehaviour
         }
     }
 
-    public void ToggleDoor()
+    public void OpenDoor()
     {
-        if (isMoving) return;
+        if (isMoving || hasBeenOpened) return; // Evitar abrir si ya se está moviendo o ya fue abierta
 
-        isOpen = !isOpen;
+        isOpen = true;
         isMoving = true;
+        hasBeenOpened = true; // Marcar que ya fue abierta
 
         // Calcular dirección de apertura
         float direction = clockwise ? 1f : -1f;
+        targetRotation = closedRotation * Quaternion.AngleAxis(openAngle * direction, rotationAxis);
 
-        if (isOpen)
-        {
-            targetRotation = closedRotation * Quaternion.AngleAxis(openAngle * direction, rotationAxis);
-            PlaySound(openSound);
-        }
-        else
-        {
-            targetRotation = closedRotation;
-            PlaySound(closeSound);
-        }
-
+        PlaySound(openSound);
         Invoke("ResetMovementFlag", 0.5f);
     }
+
+    // Eliminamos el método ToggleDoor ya que no lo necesitamos más
+    // public void ToggleDoor() { ... }
 
     private void PlaySound(AudioClip clip)
     {
         if (clip != null && audioSource != null)
         {
-            audioSource.PlayOneShot(clip, volume);
+            audioSource.PlayOneShot(clip);
         }
     }
 
