@@ -590,6 +590,21 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
                     }
                 }
             }
+            else
+            {
+                //Si no es un coleccionable verifico si es un arma
+                Weapon myWeapon = col.gameObject.GetComponent<Weapon>();
+                if (myWeapon != null)
+                {
+                    //Es un arma asi que debo decidir 
+                    if (Vector3.Distance(transform.position, col.gameObject.transform.position) < minDist)
+                    {
+                        //Este objeto esta a menor distancia
+                        elementCloser = col.gameObject;
+                        minDist = Vector3.Distance(transform.position, col.gameObject.transform.position);
+                    }
+                }
+            }
         }
 
         if (elementCloser != null)
