@@ -30,6 +30,10 @@ public class ChargingStation : MonoBehaviour
     [SerializeField] private float lightIntensity = 2f;
     private bool[] lightsStatus = new bool[3];
 
+    [Header("Battery Lights")]
+    [SerializeField] private Light batteryLightRed;
+    [SerializeField] private Light batteryLightGreen;
+
     private PortableBattery currentBattery;
     private bool isMovingBattery = false;
     private int currentWaypointIndex = 0;
@@ -148,6 +152,9 @@ public class ChargingStation : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         SetLightColor(light3, greenColor);
         lightsStatus[2] = true;
+
+        batteryLightRed.gameObject.SetActive(false);
+        batteryLightGreen.gameObject.SetActive(true);
     }
 
     // Iniciar la secuencia de carga de luces
