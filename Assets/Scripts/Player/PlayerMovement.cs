@@ -53,6 +53,8 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     [SerializeField] private float _viewRadius;
     [SerializeField] private float _viewAngle;
     public List<GameObject> colectables;
+    public LayerMask layerElements;
+
     [SerializeField] private LayerMask _wallLayer;
 
     [SerializeField] private GameObject _elementDetected;
@@ -208,8 +210,8 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         // Press
         if (Input.GetKeyDown(KeyCode.E) && CollectWeapon() && CanWeaponChange)
         {
-            Weapon myWeapon = _elementDetected.GetComponent<Weapon>();
-            if (myWeapon != null)
+            //Weapon myWeapon = _elementDetected.GetComponent<Weapon>();
+            //if (myWeapon != null)
                 AddModules(_module1);
         }
 
@@ -234,12 +236,12 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
                 _animatorBasic.animator.SetTrigger("Press");
 
                 // Evitar spam: una vez interactuado, cambiamos su layer para excluirlo
-                target.layer = LayerMask.NameToLayer("Default");
+                
+                //ESTO ESTA PROHIBIDO NO HACERLO NUNCA MAS A MENOS QUE NO SE USE MAS EL ELEMENTO
+                //target.layer = LayerMask.NameToLayer("Default");
 
                 // Aquí puedes agregar más lógica de interacción aparte de recolectar armas
             }
-
-
         }
 
 
@@ -427,6 +429,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         var myDriver = _elementDetected.GetComponent<IModules>();
         if (myDriver == null) return;
 
+        
         _weaponSelected = _elementDetected;
         _inventory.AddWeapon(_weaponSelected);
 
@@ -446,6 +449,9 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         Rigidbody rb = _weaponSelected.GetComponent<Rigidbody>();
         if (rb != null) rb.isKinematic = true;
 
+        Collider myCol = _weaponSelected.GetComponent<Collider>();
+        if (myCol != null) myCol.enabled = false;
+
         SelectModule(_inventory.WeaponSelected);
         myDriver.Initialized(this);
 
@@ -454,6 +460,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
             bool isBlasterEquipped = (_weaponSelected != null && _weaponSelected.GetComponent<WeaponPulse>() != null);
             _animatorBasic.animator.SetBool("IsBlasterEquipped", isBlasterEquipped);
         }
+        _elementDetected = null;
     }
 
     private void SelectModule(int index)
@@ -556,13 +563,57 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
 
     private bool CollectWeapon()
     {
-        foreach (var item in colectables)
+        //foreach (var item in colectables)
+        //{
+        //    if (FieldOfView(item))
+        //    {
+        //        return true;
+        //    }
+        //}
+
+        Collider[] hits = Physics.OverlapSphere(transform.position, _viewRadius, layerElements);
+        GameObject elementCloser = null;
+        float minDist = Mathf.Infinity;
+        foreach (var col in hits)
         {
-            if (FieldOfView(item))
+            //Verifico si es un elemento levitable
+            ElementPuzzle myPuzz = col.gameObject.GetComponent<ElementPuzzle>();
+            if (myPuzz != null)
             {
-                return true;
+                if (myPuzz.isLevitable == true)
+                {
+                    if (Vector3.Distance(transform.position, col.gameObject.transform.position) < minDist)
+                    {
+                        //Este objeto esta a menor distancia
+                        elementCloser = col.gameObject;
+                        minDist = Vector3.Distance(transform.position, col.gameObject.transform.position);
+                    }
+                }
+            }
+            else
+            {
+                //Si no es un coleccionable verifico si es un arma
+                Weapon myWeapon = col.gameObject.GetComponent<Weapon>();
+                if (myWeapon != null)
+                {
+                    //Es un arma asi que debo decidir 
+                    if (Vector3.Distance(transform.position, col.gameObject.transform.position) < minDist)
+                    {
+                        //Este objeto esta a menor distancia
+                        elementCloser = col.gameObject;
+                        minDist = Vector3.Distance(transform.position, col.gameObject.transform.position);
+                    }
+                }
             }
         }
+
+        if (elementCloser != null)
+        {
+            //Hay un elemento que es mas cercano que todos los detectados
+            _elementDetected = elementCloser;
+            return true;
+        }
+
         return false;
     }
 
@@ -598,11 +649,11 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, _viewRadius);
 
-        Vector3 lineA = GetVectorFromAngle(_viewAngle * 0.5f + transform.eulerAngles.y);
-        Vector3 lineB = GetVectorFromAngle(-_viewAngle * 0.5f + transform.eulerAngles.y);
+        //Vector3 lineA = GetVectorFromAngle(_viewAngle * 0.5f + transform.eulerAngles.y);
+        //Vector3 lineB = GetVectorFromAngle(-_viewAngle * 0.5f + transform.eulerAngles.y);
 
-        Gizmos.DrawLine(transform.position, transform.position + lineA * _viewRadius);
-        Gizmos.DrawLine(transform.position, transform.position + lineB * _viewRadius);
+        //Gizmos.DrawLine(transform.position, transform.position + lineA * _viewRadius);
+        //Gizmos.DrawLine(transform.position, transform.position + lineB * _viewRadius);
     }
 
     #region Movement & Physics

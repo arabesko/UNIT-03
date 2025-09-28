@@ -33,7 +33,7 @@ public class Inventory
             _weaponSelected = _inventory.Count - 1;
         } else
         {
-            Debug.Log("La arma ya esta en el inventario");
+           // Debug.Log("La arma ya esta en el inventario");
         }
     }
 

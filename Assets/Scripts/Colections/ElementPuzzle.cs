@@ -10,6 +10,7 @@ public class ElementPuzzle : PuzzleMother
     public PlayerMovement _player;
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private AudioClip _audioClip;
+    public bool isLevitable = true;
     
     //private bool _activateRadar = false;
 
