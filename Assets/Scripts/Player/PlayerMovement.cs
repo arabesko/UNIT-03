@@ -576,11 +576,19 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         float minDist = Mathf.Infinity;
         foreach (var col in hits)
         {
-            if (Vector3.Distance(transform.position, col.gameObject.transform.position) < minDist)
+            //Verifico si es un elemento levitable
+            ElementPuzzle myPuzz = col.gameObject.GetComponent<ElementPuzzle>();
+            if (myPuzz != null)
             {
-                //Este objeto esta a menor distancia
-                elementCloser = col.gameObject;
-                minDist = Vector3.Distance(transform.position, col.gameObject.transform.position);
+                if (myPuzz.isLevitable == true)
+                {
+                    if (Vector3.Distance(transform.position, col.gameObject.transform.position) < minDist)
+                    {
+                        //Este objeto esta a menor distancia
+                        elementCloser = col.gameObject;
+                        minDist = Vector3.Distance(transform.position, col.gameObject.transform.position);
+                    }
+                }
             }
         }
 
