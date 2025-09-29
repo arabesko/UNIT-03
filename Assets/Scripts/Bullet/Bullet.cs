@@ -56,7 +56,17 @@ public class Bullet : MonoBehaviour
             Instantiate(_impactParticles, transform.position, Quaternion.identity);
         }
 
-        // Dañar enemigos si es posible
+        // Verificar si es la caja eléctrica por tag
+        if (other.CompareTag("ElectricBox"))
+        {
+            ElectricBox electricBox = other.GetComponent<ElectricBox>();
+            if (electricBox != null)
+            {
+                electricBox.DisableTrap();
+            }
+        }
+
+        // Dañar enemigos si es posible (manteniendo tu código original)
         IDamagiable entity = other.GetComponent<IDamagiable>();
         if (entity != null)
         {
