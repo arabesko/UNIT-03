@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
+[ExecuteInEditMode]  // ¡IMPORTANTE! Esto permite que el script se ejecute en el editor
 [RequireComponent(typeof(Renderer))]
 public class IrisController : MonoBehaviour
 {
@@ -28,22 +29,71 @@ public class IrisController : MonoBehaviour
     [Tooltip("Radio cerrado (casi 0)")]
     public float closedRadius = 0.01f;
 
+    // Variables para controlar cuándo estamos en modo edición
+    private bool isInEditMode = true;
+
+    private void Awake()
+    {
+        // Detectar si estamos en el editor pero NO en Play Mode
+        isInEditMode = !Application.isPlaying;
+
+        if (irisMaterial == null)
+            irisMaterial = GetComponent<Renderer>()?.material;
+    }
+
     private void OnEnable()
     {
         if (irisMaterial == null)
             irisMaterial = GetComponent<Renderer>()?.material;
 
-        // Inicializar iris en posición base y radio abierto
-        irisMaterial.SetVector("_IrisOffset", baseOffset);
-        irisMaterial.SetFloat("_IrisRadius", openRadius);
+        // SIEMPRE aplicar los valores del inspector al material
+        ApplyInspectorValuesToMaterial();
 
-        StopAllCoroutines();
-        StartCoroutine(IrisRoutine());
+        // Solo ejecutar las corrutinas durante el Play Mode
+        if (Application.isPlaying)
+        {
+            isInEditMode = false;
+            StopAllCoroutines();
+            StartCoroutine(IrisRoutine());
+        }
     }
 
     private void OnDisable()
     {
-        StopAllCoroutines();
+        if (Application.isPlaying)
+        {
+            StopAllCoroutines();
+        }
+    }
+
+    // Este método se llama automáticamente cuando cambias valores en el inspector
+    private void OnValidate()
+    {
+        // Aplicar los valores inmediatamente cuando se modifican en el inspector
+        if (irisMaterial != null)
+        {
+            ApplyInspectorValuesToMaterial();
+        }
+    }
+
+    // Método crucial: aplica los valores del inspector al material
+    private void ApplyInspectorValuesToMaterial()
+    {
+        if (irisMaterial != null)
+        {
+            irisMaterial.SetVector("_IrisOffset", baseOffset);
+            irisMaterial.SetFloat("_IrisRadius", openRadius);
+        }
+    }
+
+    // Update se ejecuta también en el editor gracias a [ExecuteInEditMode]
+    private void Update()
+    {
+        // Si estamos en modo edición, mantener aplicados los valores del inspector
+        if (isInEditMode && irisMaterial != null)
+        {
+            ApplyInspectorValuesToMaterial();
+        }
     }
 
     private IEnumerator IrisRoutine()
