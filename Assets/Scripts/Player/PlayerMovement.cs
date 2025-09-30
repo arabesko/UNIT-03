@@ -63,6 +63,11 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     [SerializeField] private GameObject _elementLevitated;
     public GameObject ElementLevitated { get { return _elementLevitated; } }
 
+    public GameObject ElementDetected
+    {
+        get { return _elementDetected; }
+    }
+
     [SerializeField] private Transform _levitationPoint;
 
     [Header("Jump Settings")]
