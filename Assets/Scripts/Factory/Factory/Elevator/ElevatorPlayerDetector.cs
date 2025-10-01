@@ -10,6 +10,7 @@ public class ElevatorPlayerDetector : MonoBehaviour
     [SerializeField] private TextMeshProUGUI elevatorPromptText;
     [SerializeField] private GameObject batteryPromptPanel;
     [SerializeField] private TextMeshProUGUI batteryPromptText;
+    [SerializeField] private PlayerMovement _player;
 
     [Header("Elevator Settings")]
     [SerializeField] private GameObject elevator;
@@ -64,6 +65,7 @@ public class ElevatorPlayerDetector : MonoBehaviour
     {
         if (playerOnPlatform && elevatorPower.HasPower && !isMoving)
         {
+            _player.dontDoNothing = true;
             StartCoroutine(MoveElevator());
         }
     }

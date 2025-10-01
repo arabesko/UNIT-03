@@ -218,19 +218,28 @@ public class ChargingStation : MonoBehaviour
 
     private void RotateBatteryTowards(Vector3 targetPosition)
     {
+        //Vector3 direction = (targetPosition - currentBattery.transform.position);
+        //direction.y = 0;
+
+        //if (direction.sqrMagnitude < 0.001f) return;
+
+        //Quaternion targetRotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
+        //Quaternion correctedRotation = targetRotation * Quaternion.Euler(0, offsetY, 0);
+
+        //currentBattery.transform.rotation = Quaternion.Slerp(
+        //    currentBattery.transform.rotation,
+        //    correctedRotation,
+        //    batteryRotationSpeed * Time.deltaTime
+        //);
         Vector3 direction = (targetPosition - currentBattery.transform.position);
         direction.y = 0;
-
         if (direction.sqrMagnitude < 0.001f) return;
 
         Quaternion targetRotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
         Quaternion correctedRotation = targetRotation * Quaternion.Euler(0, offsetY, 0);
 
-        currentBattery.transform.rotation = Quaternion.Slerp(
-            currentBattery.transform.rotation,
-            correctedRotation,
-            batteryRotationSpeed * Time.deltaTime
-        );
+        currentBattery.transform.rotation = Quaternion.Slerp(currentBattery.transform.rotation, correctedRotation,
+                                              batteryRotationSpeed * Time.deltaTime);
     }
 
     private void MoveObject()

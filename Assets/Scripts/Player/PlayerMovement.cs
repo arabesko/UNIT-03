@@ -20,6 +20,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     public float moveSpeed = 5f;
     public float sprintMultiplier = 1.5f;
     public float rotationSpeed = 10f;
+    public bool dontDoNothing = false;
 
     [Header("Aiming / Bone Aim")]
     [SerializeField] public Transform aimBone;            // Asigná el hueso de la cintura (o el que quieras) desde el inspector
@@ -144,6 +145,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
 
     void Awake()
     {
+        DontDestroyOnLoad(gameObject);
         Controller = GetComponent<CharacterController>();
     }
 
@@ -190,6 +192,8 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
 
     void LateUpdate()
     {
+        
+
         HandleTimers();
         HandleAimBone();
 
@@ -211,7 +215,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         pct = (currentSpeed > 0f) ? (isSprinting ? 1f : walkAnimValueTransition) : 0f;
 
 
-
+        if (dontDoNothing) return;
         // Press
         if (Input.GetKeyDown(KeyCode.E) && CollectWeapon() && CanWeaponChange)
         {
