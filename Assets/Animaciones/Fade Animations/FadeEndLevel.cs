@@ -26,7 +26,7 @@ public class FadeEndLevel : MonoBehaviour
         transitioning = true;
 
         // Destruir el player PASADOS 3 segundos (no tocamos nada más del player)
-        Destroy(other.gameObject, 3f);
+        //Destroy(other.gameObject, 3f);
 
         // Iniciar la secuencia de fade + espera por audio + carga de escena
         StartCoroutine(FadeOutAndEnd());
