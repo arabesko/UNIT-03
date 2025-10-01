@@ -438,7 +438,6 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         var myDriver = _elementDetected.GetComponent<IModules>();
         if (myDriver == null) return;
 
-        
         _weaponSelected = _elementDetected;
         _inventory.AddWeapon(_weaponSelected);
 
@@ -446,8 +445,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         if (moduleUIHighlighter != null)
         {
             moduleUIHighlighter.SyncWithInventory(_inventory);
-            // si quieres resaltar el nuevo, puedes usar: _inventory.MyItemsCount() - 1
-            int newIndex = _inventory.WeaponSelected; // o: _inventory.MyItemsCount() - 1
+            int newIndex = _inventory.WeaponSelected;
             moduleUIHighlighter.HighlightObject(newIndex);
         }
 
@@ -469,7 +467,11 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
             bool isBlasterEquipped = (_weaponSelected != null && _weaponSelected.GetComponent<WeaponPulse>() != null);
             _animatorBasic.animator.SetBool("IsBlasterEquipped", isBlasterEquipped);
         }
+
         _elementDetected = null;
+
+        // AÑADIR ESTA ÚNICA LÍNEA: Actualizar el cursor inmediatamente después de recolectar
+        UpdateCursorState();
     }
 
     private void SelectModule(int index)

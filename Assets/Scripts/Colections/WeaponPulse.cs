@@ -17,9 +17,16 @@ public class WeaponPulse : Weapon
 
     private bool _isReadyToShootAgain = true;
 
+    public void ForceInitialization()
+    {
+        _isReadyToShootAgain = true;
+        StopAllCoroutines(); // Limpiar cualquier corrutina previa
+    }
+
     public override void Initialized(PlayerMovement player)
     {
         base.Initialized(player);
+        
     }
 
     public override void PowerElement()
