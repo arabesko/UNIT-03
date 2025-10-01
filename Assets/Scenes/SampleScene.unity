@@ -52240,6 +52240,21 @@ MonoBehaviour:
   closeAnchor: {fileID: 132429004}
   moveDuration: 0.6
   dialogues:
+  - id: start_level
+    lines:
+    - text: ...
+      voiceClip: {fileID: 0}
+      autoAdvanceAfter: 1
+    - text: "[Sistema: n\xFAcleo de proyecci\xF3n encontrado. Energ\xEDa entrando...]"
+      voiceClip: {fileID: 8300000, guid: 8b80494db16032a4d80ffe6536d9ef98, type: 3}
+      autoAdvanceAfter: 4
+    - text: Ok... No entiendo que hacemos ambos aqui
+      voiceClip: {fileID: 8300000, guid: 81948bf3887d0954dabeba5ffc8c0914, type: 3}
+      autoAdvanceAfter: 3
+    - text: No tengo ruedas. Asi que me anclo a ti, no es opcional.
+      voiceClip: {fileID: 8300000, guid: d85994e0abb7fad4b8a815c1edc1d6bd, type: 3}
+      autoAdvanceAfter: 3
+    closeWhenDone: 1
   - id: tuto_levitar
     lines:
     - text: ...
@@ -91131,8 +91146,8 @@ Transform:
   m_GameObject: {fileID: 1786539027}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -125.82144, y: -59.70602, z: 82.22576}
-  m_LocalScale: {x: 12.591039, y: 18.266863, z: 39.912556}
+  m_LocalPosition: {x: -107.32145, y: -59.70602, z: 94.47576}
+  m_LocalScale: {x: 12.591039, y: 18.266863, z: 54.384846}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 746833496}
@@ -91149,7 +91164,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b1b1a61f66ba4e43b44dc131fb37833, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogueId: start_level
+  dialogueId: tuto_levitar
   projectorController: {fileID: 952916035}
   onlyOnce: 1
 --- !u!65 &1786539030
@@ -107232,7 +107247,7 @@ Transform:
   m_GameObject: {fileID: 2005114453}
   serializedVersion: 2
   m_LocalRotation: {x: 0.12303313, y: 0.00021623076, z: -0.000026807213, w: 0.99240255}
-  m_LocalPosition: {x: -126.2, y: 15.7, z: -89.4}
+  m_LocalPosition: {x: -148.95, y: 1.3499999, z: -72.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -107852,7 +107867,7 @@ Transform:
   m_GameObject: {fileID: 2014324618}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -170.52145, y: -59.70602, z: 79.22577}
+  m_LocalPosition: {x: -192.92145, y: -59.70602, z: 79.22577}
   m_LocalScale: {x: 53.77398, y: 18.266863, z: 36.620384}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -124164,7 +124179,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3629622117526868552, guid: 3a7035a7cee2ead4dbe9c281cb5e9860, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -141.9
+      value: -125.119125
       objectReference: {fileID: 0}
     - target: {fileID: 3629622117526868552, guid: 3a7035a7cee2ead4dbe9c281cb5e9860, type: 3}
       propertyPath: m_LocalPosition.y
@@ -124172,7 +124187,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3629622117526868552, guid: 3a7035a7cee2ead4dbe9c281cb5e9860, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -43.8
+      value: -49.666355
       objectReference: {fileID: 0}
     - target: {fileID: 3629622117526868552, guid: 3a7035a7cee2ead4dbe9c281cb5e9860, type: 3}
       propertyPath: m_LocalRotation.w
