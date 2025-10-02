@@ -5,6 +5,14 @@ using UnityEngine;
 
 public class Scavanger : MonoBehaviour, IDamagiable
 {
+    [System.Serializable]
+    public class MovPoint
+    {
+        public Transform point;
+        [Tooltip("Si true, el enemigo se moverá SOLO en el eje vertical (Y) hacia este punto. Si false, se moverá en el plano horizontal (X,Z). Todos empiezan en horizontal por defecto.")]
+        public bool isVertical = false; // por defecto horizontal
+    }
+
     [Header("Enemigo")]
     [SerializeField] private float _maxHealth;
     [SerializeField] private float _currentHealth;
@@ -13,16 +21,22 @@ public class Scavanger : MonoBehaviour, IDamagiable
     [Header("Movimiento")]
     [SerializeField] private float _speed;
     [SerializeField] private float _distAttack;
-    [SerializeField] private List<Transform> _movPoints;
+    [SerializeField] private List<MovPoint> _movPoints; // ahora cada punto tiene su bool
     private int _indexMovPoints = 0;
     private Vector3 _dir;
     private Action _currentState;
     private bool _canShase = true;
 
+    [Header("Llegada")]
+    [Tooltip("Distancia a la que se considera que llegó al punto (ajustable desde el inspector)")]
+    [SerializeField] private float _arrivalTolerance = 0.15f;
+
     [Header("Rotación")]
     [SerializeField] private float _speedRotation = 5f;
     [Tooltip("Ángulo en grados para corregir la orientación del modelo")]
     [SerializeField] private float offsetY = 90f;
+    [Tooltip("Si true, el enemigo también rotará hacia el objetivo cuando el punto sea vertical (útil si querés que gire aunque suba/baje)")]
+    [SerializeField] private bool _rotateOnVertical = false;
 
     [Header("Referencias")]
     [SerializeField] private Animator _anim;
@@ -64,7 +78,13 @@ public class Scavanger : MonoBehaviour, IDamagiable
     {
         _currentHealth = _maxHealth;
         _anim.SetBool("isWalking", true);
-        _dir = (_movPoints[_indexMovPoints].transform.position - transform.position).normalized;
+
+        if (_movPoints != null && _movPoints.Count > 0)
+        {
+            Vector3 initialTarget = GetPointTargetPosition(_indexMovPoints);
+            _dir = (initialTarget - transform.position).normalized;
+        }
+
         _currentState = WalkingArround;
     }
 
@@ -74,7 +94,8 @@ public class Scavanger : MonoBehaviour, IDamagiable
         {
             ResetAnimatorParameters();
             _anim.SetBool("isWalking", true);
-            _dir = (_movPoints[_indexMovPoints].transform.position - transform.position).normalized;
+            Vector3 t = GetPointTargetPosition(_indexMovPoints);
+            _dir = (t - transform.position).normalized;
             _currentState = WalkingArround;
             _canShase = true;
             _canAttack = true;
@@ -108,16 +129,18 @@ public class Scavanger : MonoBehaviour, IDamagiable
                             _currentState = LookToAttack;
                             _canShase = true;
                             _canAttack = false;
-                        } else
+                        }
+                        else
                         {
                             ResetAnimatorParameters();
                             _anim.SetBool("isWalking", true);
-                            _dir = (_movPoints[_indexMovPoints].transform.position - transform.position).normalized;
+                            Vector3 t = GetPointTargetPosition(_indexMovPoints);
+                            _dir = (t - transform.position).normalized;
                             _currentState = WalkingArround;
                             _canShase = true;
                             _canAttack = true;
                         }
-                    } 
+                    }
                 }
                 else
                 {
@@ -134,14 +157,15 @@ public class Scavanger : MonoBehaviour, IDamagiable
                     {
                         ResetAnimatorParameters();
                         _anim.SetBool("isWalking", true);
-                        _dir = (_movPoints[_indexMovPoints].transform.position - transform.position).normalized;
+                        Vector3 t = GetPointTargetPosition(_indexMovPoints);
+                        _dir = (t - transform.position).normalized;
                         _currentState = WalkingArround;
                         _canShase = true;
                         _canAttack = true;
                     }
                 }
             }
-        } 
+        }
         else
         {
             //Salio del rango de vision
@@ -149,15 +173,18 @@ public class Scavanger : MonoBehaviour, IDamagiable
             {
                 ResetAnimatorParameters();
                 _anim.SetBool("isWalking", true);
-                _dir = (_movPoints[_indexMovPoints].transform.position - transform.position).normalized;
+                Vector3 t = GetPointTargetPosition(_indexMovPoints);
+                _dir = (t - transform.position).normalized;
                 _currentState = WalkingArround;
                 _canShase = true;
                 _canAttack = true;
-            }else if (_playerScript._isDeath)
+            }
+            else if (_playerScript._isDeath)
             {
                 ResetAnimatorParameters();
                 _anim.SetBool("isWalking", true);
-                _dir = (_movPoints[_indexMovPoints].transform.position - transform.position).normalized;
+                Vector3 t = GetPointTargetPosition(_indexMovPoints);
+                _dir = (t - transform.position).normalized;
                 _currentState = WalkingArround;
                 _canShase = true;
                 _canAttack = true;
@@ -165,7 +192,6 @@ public class Scavanger : MonoBehaviour, IDamagiable
         }
     }
 
-    
     private void LookToAttack()
     {
         GirarHacia(_playerTransform.position, 1.5f);
@@ -222,13 +248,27 @@ public class Scavanger : MonoBehaviour, IDamagiable
     private void WalkingArround()
     {
         //Aqui hace la ronda entre los puntos
-        _dir = (_movPoints[_indexMovPoints].transform.position - transform.position).normalized;
+        if (_movPoints == null || _movPoints.Count == 0) return;
+
+        MovPoint currentMP = _movPoints[_indexMovPoints];
+        Vector3 target = GetPointTargetPosition(_indexMovPoints);
+        _dir = (target - transform.position).normalized;
         transform.position += _dir * _speed * Time.deltaTime;
-        GirarHacia(_movPoints[_indexMovPoints].transform.position);
+
+        // Decisión de rotación:
+        // - Si el punto es horizontal -> rotar siempre (como antes)
+        // - Si el punto es vertical -> rotar solo si _rotateOnVertical == true
+        if (!currentMP.isVertical || _rotateOnVertical)
+        {
+            // Si el punto es vertical, al rotar usamos la posición real del punto para orientar correctamente
+            Vector3 lookTarget = currentMP.point != null ? currentMP.point.position : target;
+            GirarHacia(lookTarget);
+        }
 
         Debug.DrawLine(_origen.position, _origen.position + _dir * 6);
 
-        if (Vector3.Distance(transform.position, _movPoints[_indexMovPoints].transform.position) < 1f)
+        // Comprueba llegada usando la posición objetivo ya adaptada al eje correspondiente
+        if (Vector3.Distance(transform.position, target) < _arrivalTolerance)
         {
             //Llego al punto
             if (_indexMovPoints == _movPoints.Count - 1)
@@ -239,9 +279,6 @@ public class Scavanger : MonoBehaviour, IDamagiable
             {
                 _indexMovPoints++;
             }
-
-            //_dir = (_movPoints[_indexMovPoints].transform.position - transform.position).normalized;
-
 
             ResetAnimatorParameters();
             _anim.SetBool("isIdle", true);
@@ -265,7 +302,26 @@ public class Scavanger : MonoBehaviour, IDamagiable
         }
     }
 
-    
+    private Vector3 GetPointTargetPosition(int index)
+    {
+        // Retorna la posición objetivo adaptada al eje que corresponde (vertical u horizontal)
+        if (_movPoints == null || _movPoints.Count == 0) return transform.position;
+
+        MovPoint mp = _movPoints[index];
+        Vector3 p = mp.point != null ? mp.point.position : transform.position;
+
+        if (mp.isVertical)
+        {
+            // Mantener X,Z actuales, moverse sólo en Y
+            return new Vector3(transform.position.x, p.y, transform.position.z);
+        }
+        else
+        {
+            // Mantener Y actual, moverse en X,Z
+            return new Vector3(p.x, transform.position.y, p.z);
+        }
+    }
+
     private void GirarHacia(Vector3 target)
     {
         Vector3 direccion = (target - transform.position);
