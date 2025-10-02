@@ -38,6 +38,10 @@ public class Scavanger : MonoBehaviour, IDamagiable
     [Tooltip("Si true, el enemigo también rotará hacia el objetivo cuando el punto sea vertical (útil si querés que gire aunque suba/baje)")]
     [SerializeField] private bool _rotateOnVertical = false;
 
+    // Variables para controlar el giro de 180 grados en vertical
+    private bool _isFlipping = false;
+    private float _lastVerticalDirection = 0f;
+
     [Header("Referencias")]
     [SerializeField] private Animator _anim;
     [SerializeField] private AudioSource _audioSource;
@@ -247,6 +251,8 @@ public class Scavanger : MonoBehaviour, IDamagiable
 
     private void WalkingArround()
     {
+        if (_isFlipping) return; // No hacer nada mientras está girando
+
         //Aqui hace la ronda entre los puntos
         if (_movPoints == null || _movPoints.Count == 0) return;
 
@@ -270,21 +276,92 @@ public class Scavanger : MonoBehaviour, IDamagiable
         // Comprueba llegada usando la posición objetivo ya adaptada al eje correspondiente
         if (Vector3.Distance(transform.position, target) < _arrivalTolerance)
         {
-            //Llego al punto
+            //Llego al punto, preparar siguiente punto
+            int nextIndex;
             if (_indexMovPoints == _movPoints.Count - 1)
             {
-                _indexMovPoints = 0;
+                nextIndex = 0;
             }
             else
             {
-                _indexMovPoints++;
+                nextIndex = _indexMovPoints + 1;
             }
+
+            MovPoint nextMP = _movPoints[nextIndex];
+
+            // Verificar si necesita girar 180 grados (solo en movimiento vertical)
+            if (currentMP.isVertical && nextMP.isVertical)
+            {
+                // Comprobar cambio de dirección vertical
+                float currentVerticalDir = Mathf.Sign(_dir.y);
+                Vector3 nextDir = CalculateDirection(nextMP);
+                float nextVerticalDir = Mathf.Sign(nextDir.y);
+
+                if (currentVerticalDir != nextVerticalDir && currentVerticalDir != 0)
+                {
+                    // Cambió la dirección vertical, girar 180 grados
+                    StartCoroutine(Flip180Coroutine(nextIndex));
+                    return;
+                }
+            }
+
+            // Si no necesita girar, continuar normalmente
+            _indexMovPoints = nextIndex;
 
             ResetAnimatorParameters();
             _anim.SetBool("isIdle", true);
             StartCoroutine(TimerIdle());
             _currentState = Idle;
         }
+    }
+
+    // NUEVO: Método para calcular dirección
+    private Vector3 CalculateDirection(MovPoint movPoint)
+    {
+        Vector3 direction = movPoint.point.position - transform.position;
+
+        if (movPoint.isVertical)
+        {
+            return new Vector3(0, direction.y, 0).normalized;
+        }
+        else
+        {
+            direction.y = 0;
+            return direction.normalized;
+        }
+    }
+
+    // NUEVO: Corrutina para girar 180 grados
+    private IEnumerator Flip180Coroutine(int nextIndex)
+    {
+        _isFlipping = true;
+
+        // Pequeña pausa antes de girar
+        yield return new WaitForSeconds(0.2f);
+
+        float duration = 0.8f;
+        float elapsed = 0f;
+
+        Quaternion startRotation = transform.rotation;
+        Quaternion endRotation = startRotation * Quaternion.Euler(0, 180f, 0);
+
+        while (elapsed < duration)
+        {
+            transform.rotation = Quaternion.Slerp(startRotation, endRotation, elapsed / duration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.rotation = endRotation;
+
+        // Continuar con el siguiente punto
+        _indexMovPoints = nextIndex;
+        _isFlipping = false;
+
+        ResetAnimatorParameters();
+        _anim.SetBool("isIdle", true);
+        StartCoroutine(TimerIdle());
+        _currentState = Idle;
     }
 
     private void ShasePlayer()
