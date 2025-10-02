@@ -20,6 +20,7 @@ public class Scavanger : MonoBehaviour, IDamagiable
 
     [Header("Movimiento")]
     [SerializeField] private float _speed;
+    [SerializeField] private float _speedChase = 8f; // NUEVA: Velocidad cuando persigue al jugador
     [SerializeField] private float _distAttack;
     [SerializeField] private List<MovPoint> _movPoints; // ahora cada punto tiene su bool
     private int _indexMovPoints = 0;
@@ -366,7 +367,8 @@ public class Scavanger : MonoBehaviour, IDamagiable
 
     private void ShasePlayer()
     {
-        transform.position += _dirPlayer * _speed * 1.5f * Time.deltaTime;
+        // MODIFICADO: Usar _speedChase en lugar de _speed * 1.5f
+        transform.position += _dirPlayer * _speedChase * Time.deltaTime;
         GirarHacia(_playerTransform.position, 1.5f);
 
         if (Vector3.Distance(transform.position, _playerTransform.position) < 1f)
