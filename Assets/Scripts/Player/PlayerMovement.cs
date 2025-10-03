@@ -846,11 +846,6 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     public float volumeEffectDuration = 2f; // Tiempo total que el efecto permanece activo
     public float fadeDuration = 1f;         // Tiempo de transición para el fade in/out
 
-    [Header("Screen Curtain (optional)")]
-    [Tooltip("CanvasGroup de la cortina negra (poner alpha=1 antes del respawn)")]
-    public CanvasGroup blackCurtain;
-    public float curtainFadeDuration = 1f;
-
     private bool isProcessing = false;
 
     private IEnumerator RespawnWithVolumeFade()
