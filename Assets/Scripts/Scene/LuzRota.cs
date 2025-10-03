@@ -9,14 +9,24 @@ public class LuzRota : MonoBehaviour
     [Header("Material Titilante")]
     public Material materialTitilante; // Solo asigna el material aquí
 
+    [Header("Modo de Animación")]
+    public bool modoAlarma = false; // Si está activo, usa animación lenta tipo alarma
+
+    [Header("Configuración Alarma")]
+    public float tiempoEncendido = 1.0f;
+    public float tiempoApagado = 1.0f;
+    public float velocidadTransicion = 2.0f; // Velocidad de la transición suave
+
     private Light luz;
     private Color colorOriginal;
     private Color emissionOriginal;
     private bool tieneEmission;
+    private float intensidadLuzOriginal;
 
     void Start()
     {
         luz = GetComponent<Light>();
+        intensidadLuzOriginal = luz.intensity;
 
         // Guardar estado original del material
         if (materialTitilante != null)
@@ -36,7 +46,14 @@ public class LuzRota : MonoBehaviour
     {
         if (!_titilo)
         {
-            StartCoroutine(LuzTitilante());
+            if (modoAlarma)
+            {
+                StartCoroutine(AlarmaSuave());
+            }
+            else
+            {
+                StartCoroutine(LuzTitilante());
+            }
         }
     }
 
@@ -48,10 +65,10 @@ public class LuzRota : MonoBehaviour
         luz.enabled = false;
         if (materialTitilante != null)
         {
-            materialTitilante.color = Color.black; // Color apagado
+            materialTitilante.color = Color.black;
             if (tieneEmission)
             {
-                materialTitilante.SetColor("_EmissionColor", Color.black); // Emisión apagada
+                materialTitilante.SetColor("_EmissionColor", Color.black);
             }
         }
 
@@ -62,10 +79,10 @@ public class LuzRota : MonoBehaviour
         luz.enabled = true;
         if (materialTitilante != null)
         {
-            materialTitilante.color = colorOriginal; // Color original
+            materialTitilante.color = colorOriginal;
             if (tieneEmission)
             {
-                materialTitilante.SetColor("_EmissionColor", emissionOriginal); // Emisión original
+                materialTitilante.SetColor("_EmissionColor", emissionOriginal);
             }
         }
 
@@ -73,6 +90,98 @@ public class LuzRota : MonoBehaviour
         yield return new WaitForSeconds(_timeDelay);
 
         _titilo = false;
+    }
+
+    IEnumerator AlarmaSuave()
+    {
+        _titilo = true;
+
+        // Transición suave de apagado a encendido
+        yield return StartCoroutine(TransicionSuave(false, true, velocidadTransicion));
+
+        // Mantener encendido por tiempo configurado
+        yield return new WaitForSeconds(tiempoEncendido);
+
+        // Transición suave de encendido a apagado
+        yield return StartCoroutine(TransicionSuave(true, false, velocidadTransicion));
+
+        // Mantener apagado por tiempo configurado
+        yield return new WaitForSeconds(tiempoApagado);
+
+        _titilo = false;
+    }
+
+    IEnumerator TransicionSuave(bool desdeEncendido, bool haciaEncendido, float duracion)
+    {
+        float tiempo = 0f;
+
+        Color colorInicio, colorFin;
+        Color emissionInicio, emissionFin;
+        float intensidadInicio, intensidadFin;
+
+        // Configurar valores iniciales y finales según la dirección de la transición
+        if (desdeEncendido && !haciaEncendido)
+        {
+            // De encendido a apagado
+            colorInicio = colorOriginal;
+            colorFin = Color.black;
+            emissionInicio = tieneEmission ? emissionOriginal : Color.black;
+            emissionFin = Color.black;
+            intensidadInicio = intensidadLuzOriginal;
+            intensidadFin = 0f;
+        }
+        else
+        {
+            // De apagado a encendido
+            colorInicio = Color.black;
+            colorFin = colorOriginal;
+            emissionInicio = Color.black;
+            emissionFin = tieneEmission ? emissionOriginal : Color.black;
+            intensidadInicio = 0f;
+            intensidadFin = intensidadLuzOriginal;
+        }
+
+        // Asegurar que la luz esté activa durante las transiciones
+        luz.enabled = true;
+
+        // Ejecutar la transición suave
+        while (tiempo < duracion)
+        {
+            tiempo += Time.deltaTime;
+            float progreso = tiempo / duracion;
+
+            // Interpolar valores
+            if (materialTitilante != null)
+            {
+                materialTitilante.color = Color.Lerp(colorInicio, colorFin, progreso);
+                if (tieneEmission)
+                {
+                    materialTitilante.SetColor("_EmissionColor", Color.Lerp(emissionInicio, emissionFin, progreso));
+                }
+            }
+
+            luz.intensity = Mathf.Lerp(intensidadInicio, intensidadFin, progreso);
+
+            yield return null;
+        }
+
+        // Asegurar valores finales exactos
+        if (materialTitilante != null)
+        {
+            materialTitilante.color = colorFin;
+            if (tieneEmission)
+            {
+                materialTitilante.SetColor("_EmissionColor", emissionFin);
+            }
+        }
+
+        luz.intensity = intensidadFin;
+
+        // Si está completamente apagado, desactivar la luz
+        if (!haciaEncendido)
+        {
+            luz.enabled = false;
+        }
     }
 
     // Restaurar estado original al desactivar
@@ -86,6 +195,8 @@ public class LuzRota : MonoBehaviour
                 materialTitilante.SetColor("_EmissionColor", emissionOriginal);
             }
         }
+        luz.intensity = intensidadLuzOriginal;
+        luz.enabled = true;
     }
 
     // También restaurar al destruir
@@ -99,5 +210,7 @@ public class LuzRota : MonoBehaviour
                 materialTitilante.SetColor("_EmissionColor", emissionOriginal);
             }
         }
+        luz.intensity = intensidadLuzOriginal;
+        luz.enabled = true;
     }
 }
