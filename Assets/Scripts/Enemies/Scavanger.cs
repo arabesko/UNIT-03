@@ -5,6 +5,14 @@ using UnityEngine;
 
 public class Scavanger : MonoBehaviour, IDamagiable
 {
+    [System.Serializable]
+    public class MovPoint
+    {
+        public Transform point;
+        [Tooltip("Si true, el enemigo se moverá SOLO en el eje vertical (Y) hacia este punto. Si false, se moverá en el plano horizontal (X,Z). Todos empiezan en horizontal por defecto.")]
+        public bool isVertical = false; // por defecto horizontal
+    }
+
     [Header("Enemigo")]
     [SerializeField] private float _maxHealth;
     [SerializeField] private float _currentHealth;
@@ -12,17 +20,28 @@ public class Scavanger : MonoBehaviour, IDamagiable
 
     [Header("Movimiento")]
     [SerializeField] private float _speed;
+    [SerializeField] private float _speedChase = 8f; // NUEVA: Velocidad cuando persigue al jugador
     [SerializeField] private float _distAttack;
-    [SerializeField] private List<Transform> _movPoints;
+    [SerializeField] private List<MovPoint> _movPoints; // ahora cada punto tiene su bool
     private int _indexMovPoints = 0;
     private Vector3 _dir;
     private Action _currentState;
     private bool _canShase = true;
 
+    [Header("Llegada")]
+    [Tooltip("Distancia a la que se considera que llegó al punto (ajustable desde el inspector)")]
+    [SerializeField] private float _arrivalTolerance = 0.15f;
+
     [Header("Rotación")]
     [SerializeField] private float _speedRotation = 5f;
     [Tooltip("Ángulo en grados para corregir la orientación del modelo")]
     [SerializeField] private float offsetY = 90f;
+    [Tooltip("Si true, el enemigo también rotará hacia el objetivo cuando el punto sea vertical (útil si querés que gire aunque suba/baje)")]
+    [SerializeField] private bool _rotateOnVertical = false;
+
+    // Variables para controlar el giro de 180 grados en vertical
+    private bool _isFlipping = false;
+    private float _lastVerticalDirection = 0f;
 
     [Header("Referencias")]
     [SerializeField] private Animator _anim;
@@ -64,7 +83,13 @@ public class Scavanger : MonoBehaviour, IDamagiable
     {
         _currentHealth = _maxHealth;
         _anim.SetBool("isWalking", true);
-        _dir = (_movPoints[_indexMovPoints].transform.position - transform.position).normalized;
+
+        if (_movPoints != null && _movPoints.Count > 0)
+        {
+            Vector3 initialTarget = GetPointTargetPosition(_indexMovPoints);
+            _dir = (initialTarget - transform.position).normalized;
+        }
+
         _currentState = WalkingArround;
     }
 
@@ -74,7 +99,8 @@ public class Scavanger : MonoBehaviour, IDamagiable
         {
             ResetAnimatorParameters();
             _anim.SetBool("isWalking", true);
-            _dir = (_movPoints[_indexMovPoints].transform.position - transform.position).normalized;
+            Vector3 t = GetPointTargetPosition(_indexMovPoints);
+            _dir = (t - transform.position).normalized;
             _currentState = WalkingArround;
             _canShase = true;
             _canAttack = true;
@@ -108,16 +134,18 @@ public class Scavanger : MonoBehaviour, IDamagiable
                             _currentState = LookToAttack;
                             _canShase = true;
                             _canAttack = false;
-                        } else
+                        }
+                        else
                         {
                             ResetAnimatorParameters();
                             _anim.SetBool("isWalking", true);
-                            _dir = (_movPoints[_indexMovPoints].transform.position - transform.position).normalized;
+                            Vector3 t = GetPointTargetPosition(_indexMovPoints);
+                            _dir = (t - transform.position).normalized;
                             _currentState = WalkingArround;
                             _canShase = true;
                             _canAttack = true;
                         }
-                    } 
+                    }
                 }
                 else
                 {
@@ -134,14 +162,15 @@ public class Scavanger : MonoBehaviour, IDamagiable
                     {
                         ResetAnimatorParameters();
                         _anim.SetBool("isWalking", true);
-                        _dir = (_movPoints[_indexMovPoints].transform.position - transform.position).normalized;
+                        Vector3 t = GetPointTargetPosition(_indexMovPoints);
+                        _dir = (t - transform.position).normalized;
                         _currentState = WalkingArround;
                         _canShase = true;
                         _canAttack = true;
                     }
                 }
             }
-        } 
+        }
         else
         {
             //Salio del rango de vision
@@ -149,15 +178,18 @@ public class Scavanger : MonoBehaviour, IDamagiable
             {
                 ResetAnimatorParameters();
                 _anim.SetBool("isWalking", true);
-                _dir = (_movPoints[_indexMovPoints].transform.position - transform.position).normalized;
+                Vector3 t = GetPointTargetPosition(_indexMovPoints);
+                _dir = (t - transform.position).normalized;
                 _currentState = WalkingArround;
                 _canShase = true;
                 _canAttack = true;
-            }else if (_playerScript._isDeath)
+            }
+            else if (_playerScript._isDeath)
             {
                 ResetAnimatorParameters();
                 _anim.SetBool("isWalking", true);
-                _dir = (_movPoints[_indexMovPoints].transform.position - transform.position).normalized;
+                Vector3 t = GetPointTargetPosition(_indexMovPoints);
+                _dir = (t - transform.position).normalized;
                 _currentState = WalkingArround;
                 _canShase = true;
                 _canAttack = true;
@@ -165,7 +197,6 @@ public class Scavanger : MonoBehaviour, IDamagiable
         }
     }
 
-    
     private void LookToAttack()
     {
         GirarHacia(_playerTransform.position, 1.5f);
@@ -221,27 +252,62 @@ public class Scavanger : MonoBehaviour, IDamagiable
 
     private void WalkingArround()
     {
+        if (_isFlipping) return; // No hacer nada mientras está girando
+
         //Aqui hace la ronda entre los puntos
-        _dir = (_movPoints[_indexMovPoints].transform.position - transform.position).normalized;
+        if (_movPoints == null || _movPoints.Count == 0) return;
+
+        MovPoint currentMP = _movPoints[_indexMovPoints];
+        Vector3 target = GetPointTargetPosition(_indexMovPoints);
+        _dir = (target - transform.position).normalized;
         transform.position += _dir * _speed * Time.deltaTime;
-        GirarHacia(_movPoints[_indexMovPoints].transform.position);
+
+        // Decisión de rotación:
+        // - Si el punto es horizontal -> rotar siempre (como antes)
+        // - Si el punto es vertical -> rotar solo si _rotateOnVertical == true
+        if (!currentMP.isVertical || _rotateOnVertical)
+        {
+            // Si el punto es vertical, al rotar usamos la posición real del punto para orientar correctamente
+            Vector3 lookTarget = currentMP.point != null ? currentMP.point.position : target;
+            GirarHacia(lookTarget);
+        }
 
         Debug.DrawLine(_origen.position, _origen.position + _dir * 6);
 
-        if (Vector3.Distance(transform.position, _movPoints[_indexMovPoints].transform.position) < 1f)
+        // Comprueba llegada usando la posición objetivo ya adaptada al eje correspondiente
+        if (Vector3.Distance(transform.position, target) < _arrivalTolerance)
         {
-            //Llego al punto
+            //Llego al punto, preparar siguiente punto
+            int nextIndex;
             if (_indexMovPoints == _movPoints.Count - 1)
             {
-                _indexMovPoints = 0;
+                nextIndex = 0;
             }
             else
             {
-                _indexMovPoints++;
+                nextIndex = _indexMovPoints + 1;
             }
 
-            //_dir = (_movPoints[_indexMovPoints].transform.position - transform.position).normalized;
+            MovPoint nextMP = _movPoints[nextIndex];
 
+            // Verificar si necesita girar 180 grados (solo en movimiento vertical)
+            if (currentMP.isVertical && nextMP.isVertical)
+            {
+                // Comprobar cambio de dirección vertical
+                float currentVerticalDir = Mathf.Sign(_dir.y);
+                Vector3 nextDir = CalculateDirection(nextMP);
+                float nextVerticalDir = Mathf.Sign(nextDir.y);
+
+                if (currentVerticalDir != nextVerticalDir && currentVerticalDir != 0)
+                {
+                    // Cambió la dirección vertical, girar 180 grados
+                    StartCoroutine(Flip180Coroutine(nextIndex));
+                    return;
+                }
+            }
+
+            // Si no necesita girar, continuar normalmente
+            _indexMovPoints = nextIndex;
 
             ResetAnimatorParameters();
             _anim.SetBool("isIdle", true);
@@ -250,9 +316,59 @@ public class Scavanger : MonoBehaviour, IDamagiable
         }
     }
 
+    // NUEVO: Método para calcular dirección
+    private Vector3 CalculateDirection(MovPoint movPoint)
+    {
+        Vector3 direction = movPoint.point.position - transform.position;
+
+        if (movPoint.isVertical)
+        {
+            return new Vector3(0, direction.y, 0).normalized;
+        }
+        else
+        {
+            direction.y = 0;
+            return direction.normalized;
+        }
+    }
+
+    // NUEVO: Corrutina para girar 180 grados
+    private IEnumerator Flip180Coroutine(int nextIndex)
+    {
+        _isFlipping = true;
+
+        // Pequeña pausa antes de girar
+        yield return new WaitForSeconds(0.2f);
+
+        float duration = 0.8f;
+        float elapsed = 0f;
+
+        Quaternion startRotation = transform.rotation;
+        Quaternion endRotation = startRotation * Quaternion.Euler(0, 180f, 0);
+
+        while (elapsed < duration)
+        {
+            transform.rotation = Quaternion.Slerp(startRotation, endRotation, elapsed / duration);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.rotation = endRotation;
+
+        // Continuar con el siguiente punto
+        _indexMovPoints = nextIndex;
+        _isFlipping = false;
+
+        ResetAnimatorParameters();
+        _anim.SetBool("isIdle", true);
+        StartCoroutine(TimerIdle());
+        _currentState = Idle;
+    }
+
     private void ShasePlayer()
     {
-        transform.position += _dirPlayer * _speed * 1.5f * Time.deltaTime;
+        // MODIFICADO: Usar _speedChase en lugar de _speed * 1.5f
+        transform.position += _dirPlayer * _speedChase * Time.deltaTime;
         GirarHacia(_playerTransform.position, 1.5f);
 
         if (Vector3.Distance(transform.position, _playerTransform.position) < 1f)
@@ -265,7 +381,26 @@ public class Scavanger : MonoBehaviour, IDamagiable
         }
     }
 
-    
+    private Vector3 GetPointTargetPosition(int index)
+    {
+        // Retorna la posición objetivo adaptada al eje que corresponde (vertical u horizontal)
+        if (_movPoints == null || _movPoints.Count == 0) return transform.position;
+
+        MovPoint mp = _movPoints[index];
+        Vector3 p = mp.point != null ? mp.point.position : transform.position;
+
+        if (mp.isVertical)
+        {
+            // Mantener X,Z actuales, moverse sólo en Y
+            return new Vector3(transform.position.x, p.y, transform.position.z);
+        }
+        else
+        {
+            // Mantener Y actual, moverse en X,Z
+            return new Vector3(p.x, transform.position.y, p.z);
+        }
+    }
+
     private void GirarHacia(Vector3 target)
     {
         Vector3 direccion = (target - transform.position);

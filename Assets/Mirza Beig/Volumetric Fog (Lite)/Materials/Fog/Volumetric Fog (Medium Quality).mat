@@ -8,8 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Volumetric Fog (Medium Quality)
-  m_Shader: {fileID: -6465566751694194690, guid: b41208ea9fa867440be4a9ec08db6e2a,
-    type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: b41208ea9fa867440be4a9ec08db6e2a, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
@@ -179,6 +178,7 @@ Material:
     - _MAIN_LIGHT_SHADOWS_ENABLED: 1
     - _Main_Light_Anisotropic_Blend: 0.8
     - _Main_Light_Anisotropy: 0.6
+    - _Main_Light_Anisotropy_Blend: 0.8
     - _Main_Light_Intensity: 0.5
     - _Main_Light_Self_Shadow_Absorption_Coefficient: 0.5
     - _Main_Light_Self_Shadow_Raymarch_Distance: 5
@@ -200,7 +200,7 @@ Material:
     - _Raymarch_Additional_Light_Self_Shadow_Steps: 8
     - _Raymarch_Depth_Fade: 0
     - _Raymarch_Depth_Fade_Power: 2
-    - _Raymarch_Distance: 14
+    - _Raymarch_Distance: 3.2
     - _Raymarch_Distance_Bias: 1
     - _Raymarch_Height_Falloff: 0.456
     - _Raymarch_Height_Offset: 0
@@ -260,7 +260,6 @@ Material:
     - _Voronoi_Noise_Animation: {r: -0.08, g: 0.2, b: -0.2, a: 1}
     - _Voronoi_Noise_Offset: {r: 0, g: 0, b: 0, a: 45}
   m_BuildTextureStacks: []
-  m_AllowLocking: 1
 --- !u!114 &1214869843804668540
 MonoBehaviour:
   m_ObjectHideFlags: 11
