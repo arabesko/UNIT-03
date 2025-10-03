@@ -92,6 +92,16 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 1f;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+
+        // Buscar y manejar el jugador antes de cambiar escena
+        PlayerMovement player = FindObjectOfType<PlayerMovement>();
+        if (player != null)
+        {
+            player.gameObject.SetActive(false);
+            // O si prefieres destruirlo completamente:
+            // Destroy(player.gameObject);
+        }
+
         SceneManager.LoadScene(0);
     }
 

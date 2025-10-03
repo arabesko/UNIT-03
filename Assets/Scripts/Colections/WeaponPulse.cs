@@ -26,7 +26,7 @@ public class WeaponPulse : Weapon
     public override void Initialized(PlayerMovement player)
     {
         base.Initialized(player);
-        
+
     }
 
     public override void PowerElement()

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMovement : MonoBehaviour, IDamagiable
@@ -145,6 +146,15 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
 
     void Awake()
     {
+        // Manejar DontDestroyOnLoad de forma más robusta
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        if (players.Length > 1)
+        {
+            // Si ya existe un jugador, destruir este duplicado
+            Destroy(gameObject);
+            return;
+        }
+
         DontDestroyOnLoad(gameObject);
         Controller = GetComponent<CharacterController>();
     }
@@ -808,6 +818,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
 
     private void OnDisable()
     {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
         // Restaurar colores cuando el objeto se desactiva
         RestoreOriginalColors();
     }
@@ -1119,5 +1130,48 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         return ray.GetPoint(defaultDistance);
     }
 
-    
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Verificar si esta escena necesita el jugador
+        string[] gameScenes = { "SampleScene", "Level2", "Level3" };
+        bool shouldBeActive = System.Array.Exists(gameScenes, x => x == scene.name);
+
+        if (!shouldBeActive)
+        {
+            // En menús, desactivarse
+            gameObject.SetActive(false);
+        }
+        else
+        {
+            gameObject.SetActive(true);
+            // Reinicializar componentes si es necesario
+            InitializeInNewScene();
+        }
+    }
+
+    private void InitializeInNewScene()
+    {
+        // Reinicializar componentes después de cambiar escena
+        if (Controller != null)
+        {
+            Controller.enabled = true;
+        }
+
+        // Resetear velocidad y estado
+        velocity = Vector3.zero;
+        _elementLevitated = null;
+
+        // Buscar nuevas referencias si es necesario
+        if (_pauseMenu == null)
+        {
+            _pauseMenu = FindObjectOfType<PauseMenu>();
+        }
+    }
+
+   
 }

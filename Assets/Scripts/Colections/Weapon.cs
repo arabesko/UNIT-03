@@ -17,7 +17,7 @@ public class Weapon : MonoBehaviour, IModules
     }
     public virtual void Initialized(PlayerMovement player)
     {
-       _player = player;
+        _player = player;
         _render.enabled = false;
     }
     public virtual void PowerElement()

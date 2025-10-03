@@ -162213,7 +162213,7 @@ GameObject:
   - component: {fileID: 2005114454}
   m_Layer: 0
   m_Name: PuntoInicial
-  m_TagString: Untagged
+  m_TagString: Respawn
   m_Icon: {fileID: 8418204508859773708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -162226,13 +162226,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2005114453}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.12303313, y: 0.00021623076, z: -0.000026807213, w: 0.99240255}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: -148.95, y: 1.3499999, z: -72.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &2005370542
 GameObject:
   m_ObjectHideFlags: 0
@@ -189023,17 +189023,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: WeaponPulse
       objectReference: {fileID: 0}
+    - target: {fileID: 4143483469085872424, guid: 54e9a18033407d144b0ecc0cec8ab29c, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5994645229816210631, guid: 54e9a18033407d144b0ecc0cec8ab29c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -222.34
+      value: 211.88
       objectReference: {fileID: 0}
     - target: {fileID: 5994645229816210631, guid: 54e9a18033407d144b0ecc0cec8ab29c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.3942764
+      value: 2.23
       objectReference: {fileID: 0}
     - target: {fileID: 5994645229816210631, guid: 54e9a18033407d144b0ecc0cec8ab29c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -46.418232
+      value: 33.33
       objectReference: {fileID: 0}
     - target: {fileID: 5994645229816210631, guid: 54e9a18033407d144b0ecc0cec8ab29c, type: 3}
       propertyPath: m_LocalRotation.w
