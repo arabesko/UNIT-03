@@ -7,21 +7,28 @@ public class LuzRota : MonoBehaviour
     public float _timeDelay;
 
     [Header("Material Titilante")]
-    public Material materialTitilante; // Asigna el material desde el Inspector
-    public Color colorEncendido = Color.white; // Color cuando está "encendido"
-    public Color colorApagado = Color.black;   // Color cuando está "apagado"
+    public Material materialTitilante; // Solo asigna el material aquí
 
     private Light luz;
     private Color colorOriginal;
+    private Color emissionOriginal;
+    private bool tieneEmission;
 
     void Start()
     {
         luz = GetComponent<Light>();
 
-        // Guardar color original del material si existe
+        // Guardar estado original del material
         if (materialTitilante != null)
         {
             colorOriginal = materialTitilante.color;
+
+            // Verificar si el material tiene propiedad de emisión
+            if (materialTitilante.HasProperty("_EmissionColor"))
+            {
+                tieneEmission = true;
+                emissionOriginal = materialTitilante.GetColor("_EmissionColor");
+            }
         }
     }
 
@@ -40,15 +47,27 @@ public class LuzRota : MonoBehaviour
         // Apagar luz y material
         luz.enabled = false;
         if (materialTitilante != null)
-            materialTitilante.color = colorApagado;
+        {
+            materialTitilante.color = Color.black; // Color apagado
+            if (tieneEmission)
+            {
+                materialTitilante.SetColor("_EmissionColor", Color.black); // Emisión apagada
+            }
+        }
 
         _timeDelay = Random.Range(0.01f, 0.3f);
         yield return new WaitForSeconds(_timeDelay);
 
-        // Encender luz y material
+        // Encender luz y restaurar material a su estado original
         luz.enabled = true;
         if (materialTitilante != null)
-            materialTitilante.color = colorEncendido;
+        {
+            materialTitilante.color = colorOriginal; // Color original
+            if (tieneEmission)
+            {
+                materialTitilante.SetColor("_EmissionColor", emissionOriginal); // Emisión original
+            }
+        }
 
         _timeDelay = Random.Range(0.02f, 0.3f);
         yield return new WaitForSeconds(_timeDelay);
@@ -56,10 +75,29 @@ public class LuzRota : MonoBehaviour
         _titilo = false;
     }
 
-    // Restaurar color original al desactivar
+    // Restaurar estado original al desactivar
     void OnDisable()
     {
         if (materialTitilante != null)
+        {
             materialTitilante.color = colorOriginal;
+            if (tieneEmission)
+            {
+                materialTitilante.SetColor("_EmissionColor", emissionOriginal);
+            }
+        }
+    }
+
+    // También restaurar al destruir
+    void OnDestroy()
+    {
+        if (materialTitilante != null)
+        {
+            materialTitilante.color = colorOriginal;
+            if (tieneEmission)
+            {
+                materialTitilante.SetColor("_EmissionColor", emissionOriginal);
+            }
+        }
     }
 }
