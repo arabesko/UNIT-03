@@ -470,7 +470,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
 
         _elementDetected = null;
 
-        // AÑADIR ESTA ÚNICA LÍNEA: Actualizar el cursor inmediatamente después de recolectar
+        
         UpdateCursorState();
     }
 
