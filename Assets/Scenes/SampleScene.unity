@@ -74735,7 +74735,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &851658474
 RectTransform:
   m_ObjectHideFlags: 0
@@ -74745,7 +74745,7 @@ RectTransform:
   m_GameObject: {fileID: 851658473}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 465}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.0177, y: 1.0177, z: 1.0177}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1002631332}
@@ -74753,7 +74753,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -79, y: 386}
+  m_AnchoredPosition: {x: -81, y: 372}
   m_SizeDelta: {x: 2121.6, y: 262.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &851658475
@@ -86885,8 +86885,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -59, y: 24}
-  m_SizeDelta: {x: 724.4, y: 147.7}
+  m_AnchoredPosition: {x: 160, y: -316}
+  m_SizeDelta: {x: 2180, y: 152.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1002631333
 MonoBehaviour:
@@ -86935,8 +86935,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 150
-  m_fontSizeBase: 150
+  m_fontSize: 300
+  m_fontSizeBase: 300
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -119448,17 +119448,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   titlePanels:
   - {fileID: 851658473}
-  enterClip: {fileID: 0}
+  enterClip: {fileID: 8300000, guid: 1a538860d15e061449d015c8715a0e76, type: 3}
   loopClip: {fileID: 0}
-  exitClip: {fileID: 0}
-  appearDuration: 0.2
-  defaultDisplayDuration: 3
+  exitClip: {fileID: 8300000, guid: e8b4bd6b4542e5f4cb187a1ba480c83a, type: 3}
+  appearDuration: 0.3
+  defaultDisplayDuration: 4
   defaultDelay: 6
   delayBetweenPanels: 1
-  maxJitter: 20
-  enterGlitchRate: 5
+  maxJitter: 3
+  enterGlitchRate: 1000
   visibleGlitchRate: 0
-  exitGlitchRate: 5
+  exitGlitchRate: 1000
   autoShowInPlay: 1
   autoPlaySequence: 1
   autoShowIndex: 0
