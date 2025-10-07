@@ -14,6 +14,7 @@ public class ChargingStation : MonoBehaviour
     [SerializeField] private float batterySpeed = 5f;
     [SerializeField] private float batteryRotationSpeed = 5f;
     [SerializeField] private float offsetY = -90f;
+    public ElementPuzzle myPuzzle;
 
     [Header("Object Movement on Charged")]
     [SerializeField] private Transform objectToMove;
@@ -155,6 +156,9 @@ public class ChargingStation : MonoBehaviour
 
         batteryLightRed.gameObject.SetActive(false);
         batteryLightGreen.gameObject.SetActive(true);
+
+        //Permito que la bateria pueda levitarse nuevamente
+        if (myPuzzle != null) myPuzzle.isLevitable = true;
     }
 
     // Iniciar la secuencia de carga de luces
@@ -280,6 +284,7 @@ public class ChargingStation : MonoBehaviour
         if (other.CompareTag("Battery"))
         {
             PortableBattery battery = other.GetComponent<PortableBattery>();
+
             if (battery != null && !battery.isCharged && !isMovingBattery && !isMovementCompleted)
             {
                 if (_playerScript != null)
@@ -292,6 +297,11 @@ public class ChargingStation : MonoBehaviour
                 }
 
                 isMovingBattery = true;
+
+                //Impide que se colecte la bateria cuando esta yendo a ser cargada//
+                myPuzzle = other.GetComponent<ElementPuzzle>();
+                if (myPuzzle != null) myPuzzle.isLevitable = false;
+
                 currentBattery = battery;
                 currentWaypointIndex = 0;
 
