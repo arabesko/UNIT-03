@@ -22,6 +22,7 @@ public class WeaponInvisible : Weapon
     public override void Initialized(PlayerMovement player)
     {
         base.Initialized(player);
+        nameModule = "Invisible";
     }
 
     public override void PowerElement()

@@ -4,6 +4,7 @@ public class Weapon : MonoBehaviour, IModules
 {
     private MeshRenderer _render;
     protected PlayerMovement _player;
+    protected string nameModule;
 
     [SerializeField] private GameObject _myBodyFBX; public GameObject MyBodyFBX { get { return _myBodyFBX; } }
     [SerializeField] private Animator _myAnimator; public Animator MyAnimator { get { return _myAnimator; } set { _myAnimator = value; } }
@@ -76,4 +77,12 @@ public class Weapon : MonoBehaviour, IModules
         CurrentState = WeaponState.Dropped;
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        PlayerMovement playerMovement = other.GetComponent<PlayerMovement>();
+        if (playerMovement != null)
+        {
+            playerMovement.CollisionWithModule(gameObject);
+        }
+    }
 }

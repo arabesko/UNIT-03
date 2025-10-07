@@ -21,6 +21,7 @@ public class WeaponPulse : Weapon
     {
         _isReadyToShootAgain = true;
         StopAllCoroutines(); // Limpiar cualquier corrutina previa
+        nameModule = "Blaster";
     }
 
     public override void Initialized(PlayerMovement player)

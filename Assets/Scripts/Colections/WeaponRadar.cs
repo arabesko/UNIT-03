@@ -19,6 +19,7 @@ public class WeaponRadar : Weapon
         base.Initialized(player);
         // Obtener referencia al EagleVision del jugador
         _eagleVision = player.GetComponent<EagleVision>();
+        nameModule = "Radar";
     }
 
 
