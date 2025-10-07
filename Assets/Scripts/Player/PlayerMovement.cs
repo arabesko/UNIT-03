@@ -70,6 +70,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     public GameObject ElementDetected
     {
         get { return _elementDetected; }
+        set { _elementDetected = value; }
     }
 
     [SerializeField] private Transform _levitationPoint;
@@ -202,6 +203,20 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     }
 
 
+    public void CollisionWithModule(GameObject myModuleDetected)
+    {
+        if (CanWeaponChange)
+        {
+            //Asignamos manualmente a _elementDetected el modulo con el que el player colisiono siempre que se pues equipar el modulo
+            _elementDetected = myModuleDetected;
+
+            //Se activa el modulo colisionado
+            AddModules(_module1);
+        }
+    }
+
+
+
     void LateUpdate()
     {
         
@@ -229,12 +244,12 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
 
         if (dontDoNothing) return;
         // Press
-        if (Input.GetKeyDown(KeyCode.E) && CollectWeapon() && CanWeaponChange)
-        {
-            //Weapon myWeapon = _elementDetected.GetComponent<Weapon>();
-            //if (myWeapon != null)
-                AddModules(_module1);
-        }
+        //if (Input.GetKeyDown(KeyCode.E) && CollectWeapon() && CanWeaponChange)
+        //{
+        //    //Weapon myWeapon = _elementDetected.GetComponent<Weapon>();
+        //    //if (myWeapon != null)
+        //        AddModules(_module1);
+        //}
 
         if (Input.GetKeyDown(KeyCode.E))
         {
