@@ -51,6 +51,8 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     public float maxDistanceFromPlayer = 3f;
     public float levitationRotationSpeed = 30f;
     private float levitationOffset = 0f;
+    [SerializeField] private LayerMask _ObstructionLayer;
+    public Transform myRayo;
 
     [SerializeField] private float _viewRadius;
     [SerializeField] private float _viewAngle;
@@ -630,12 +632,33 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
 
         if (elementCloser != null)
         {
+            //Determinar si hay alguna pared que impida 
             //Hay un elemento que es mas cercano que todos los detectados
-            _elementDetected = elementCloser;
-            return true;
+            if (FreeViewToLevitateObject(elementCloser))
+            {
+                _elementDetected = elementCloser;
+                return true;
+            }
         }
 
+        //Si el rayo toca una pared o no hay objetos levitables alrededor
+        elementCloser = null;
         return false;
+    }
+
+    public bool FreeViewToLevitateObject(GameObject obj)
+    {
+        Vector3 dir = obj.transform.position - myRayo.transform.position;
+        float dist = Vector3.Distance(obj.transform.position, myRayo.transform.position);
+        if (Physics.Raycast(myRayo.transform.position, dir, out RaycastHit hit, dist, _ObstructionLayer))
+        {
+            //Hay una pared en mi camino
+            Debug.DrawLine(myRayo.transform.position, obj.transform.position, Color.magenta);
+            return false;
+        }
+
+        //No hay pared en el camino
+        return true;
     }
 
     public bool FieldOfView(GameObject obj)
