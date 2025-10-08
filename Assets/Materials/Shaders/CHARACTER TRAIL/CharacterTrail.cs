@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// CharacterTrail - actualizado para controlar una propiedad "alpha" del shader (_alpha por defecto)
-/// - Soporta DrawMesh (MaterialPropertyBlock) y GameObject instanciados.
-/// - Ajusta alpha usando la propiedad del shader o cae a _Color/_BaseColor si no existe.
+/// CharacterTrail - con activación por Shift
+/// - Mientras mantienes Shift presionado, se generan los vestigios.
+/// - Al soltar Shift, deja de generar nuevos vestigios, los existentes siguen su fade.
+/// - Si alwaysOn = true, el efecto siempre está activo (comportamiento clásico).
 /// </summary>
 [DisallowMultipleComponent]
 public class CharacterTrail : MonoBehaviour
@@ -27,6 +28,12 @@ public class CharacterTrail : MonoBehaviour
     [Tooltip("Nombre de la propiedad alpha en tu Shader Graph (ej: _alpha)")]
     public string alphaPropertyName = "_alpha";
 
+    [Header("Activation")]
+    [Tooltip("Si true, el efecto está siempre activo (ignora Shift). Si false, requiere mantener Shift para activar.")]
+    public bool alwaysOn = false;
+    [Tooltip("Si true, acepta cualquiera de los dos Shift (Left o Right).")]
+    public bool acceptEitherShift = true;
+
     // internal caches
     private int alphaPropID;
     private int colorPropID;
@@ -42,6 +49,8 @@ public class CharacterTrail : MonoBehaviour
     private List<TrailEntry> trailEntries = new List<TrailEntry>();
     private List<GameObject> spawnedTrailObjects = new List<GameObject>();
 
+    private Coroutine sampleRoutineCoroutine = null;
+
     private void Awake()
     {
         alphaPropID = Shader.PropertyToID(alphaPropertyName);
@@ -51,13 +60,110 @@ public class CharacterTrail : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(SampleRoutine());
+        // Si alwaysOn, arrancamos el muestreo inmediatamente
+        if (alwaysOn)
+        {
+            StartSamplingIfNeeded();
+        }
     }
 
     private void OnDisable()
     {
-        StopAllCoroutines();
+        StopSamplingIfNeeded();
         ClearTrailsImmediate();
+    }
+
+    private void Update()
+    {
+        // Check Shift (either left or right)
+        bool shiftHeld = false;
+        if (acceptEitherShift)
+            shiftHeld = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+        else
+            shiftHeld = Input.GetKey(KeyCode.LeftShift); // por defecto LeftShift si querés
+
+        if (alwaysOn)
+        {
+            // si siempre activo, aseguramos que el muestreo esté corriendo
+            StartSamplingIfNeeded();
+        }
+        else
+        {
+            // si se mantiene Shift -> arrancar muestreo, si se suelta -> parar muestreo
+            if (shiftHeld && sampleRoutineCoroutine == null)
+            {
+                // tomamos una muestra inmediata para respuesta instantánea
+                SampleOnce();
+                StartSamplingIfNeeded();
+            }
+            else if (!shiftHeld && sampleRoutineCoroutine != null)
+            {
+                StopSamplingIfNeeded();
+                // NOTA: no borramos los vestigios ya creados, los dejamos fadear
+            }
+        }
+
+        // Render / actualizar fades (si estamos usando Graphics.DrawMesh)
+        if (useGraphicsDraw)
+        {
+            float now = Time.time;
+            MaterialPropertyBlock pb = new MaterialPropertyBlock();
+
+            if (trailMaterial == null) return;
+
+            for (int i = trailEntries.Count - 1; i >= 0; i--)
+            {
+                var e = trailEntries[i];
+                float age = now - e.spawnTime;
+                if (age >= lifeTime)
+                {
+                    if (e.mesh != null) Destroy(e.mesh);
+                    trailEntries.RemoveAt(i);
+                    continue;
+                }
+                float t = Mathf.Clamp01(age / lifeTime);
+                float alpha = Mathf.Lerp(1f, 0f, t);
+
+                if (trailMaterial.HasProperty(alphaPropID))
+                {
+                    pb.SetFloat(alphaPropID, alpha);
+                }
+                else if (trailMaterial.HasProperty(colorPropID))
+                {
+                    Color col = e.color;
+                    col.a *= alpha;
+                    pb.SetColor(colorPropID, col);
+                }
+                else if (trailMaterial.HasProperty(baseColorPropID))
+                {
+                    Color col = e.color;
+                    col.a *= alpha;
+                    pb.SetColor(baseColorPropID, col);
+                }
+
+                Graphics.DrawMesh(e.mesh, e.matrix, trailMaterial, gameObject.layer, null, 0, pb);
+            }
+        }
+
+        // limpieza de lista de GO instanciados
+        for (int i = spawnedTrailObjects.Count - 1; i >= 0; i--)
+            if (spawnedTrailObjects[i] == null)
+                spawnedTrailObjects.RemoveAt(i);
+    }
+
+    private void StartSamplingIfNeeded()
+    {
+        if (sampleRoutineCoroutine == null)
+            sampleRoutineCoroutine = StartCoroutine(SampleRoutine());
+    }
+
+    private void StopSamplingIfNeeded()
+    {
+        if (sampleRoutineCoroutine != null)
+        {
+            StopCoroutine(sampleRoutineCoroutine);
+            sampleRoutineCoroutine = null;
+        }
     }
 
     private IEnumerator SampleRoutine()
@@ -73,6 +179,7 @@ public class CharacterTrail : MonoBehaviour
     {
         float now = Time.time;
 
+        // Skinned mesh renderers
         if (skinnedSources != null)
         {
             foreach (var smr in skinnedSources)
@@ -94,6 +201,7 @@ public class CharacterTrail : MonoBehaviour
             }
         }
 
+        // Static MeshRenderers
         if (meshSources != null)
         {
             foreach (var mr in meshSources)
@@ -200,54 +308,6 @@ public class CharacterTrail : MonoBehaviour
         }
 
         Destroy(go);
-    }
-
-    private void Update()
-    {
-        if (useGraphicsDraw)
-        {
-            float now = Time.time;
-            MaterialPropertyBlock pb = new MaterialPropertyBlock();
-
-            if (trailMaterial == null) return;
-
-            for (int i = trailEntries.Count - 1; i >= 0; i--)
-            {
-                var e = trailEntries[i];
-                float age = now - e.spawnTime;
-                if (age >= lifeTime)
-                {
-                    if (e.mesh != null) Destroy(e.mesh);
-                    trailEntries.RemoveAt(i);
-                    continue;
-                }
-                float t = Mathf.Clamp01(age / lifeTime);
-                float alpha = Mathf.Lerp(1f, 0f, t);
-
-                // si el shader tiene _alpha
-                if (trailMaterial.HasProperty(alphaPropID))
-                {
-                    pb.SetFloat(alphaPropID, alpha);
-                }
-                else if (trailMaterial.HasProperty(colorPropID))
-                {
-                    Color col = e.color;
-                    col.a *= alpha;
-                    pb.SetColor(colorPropID, col);
-                }
-                else if (trailMaterial.HasProperty(baseColorPropID))
-                {
-                    Color col = e.color;
-                    col.a *= alpha;
-                    pb.SetColor(baseColorPropID, col);
-                }
-
-                Graphics.DrawMesh(e.mesh, e.matrix, trailMaterial, gameObject.layer, null, 0, pb);
-            }
-        }
-
-        for (int i = spawnedTrailObjects.Count - 1; i >= 0; i--)
-            if (spawnedTrailObjects[i] == null) spawnedTrailObjects.RemoveAt(i);
     }
 
     private void ClearTrailsImmediate()
