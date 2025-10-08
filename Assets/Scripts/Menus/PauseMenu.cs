@@ -51,6 +51,9 @@ public class PauseMenu : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
+        // Pausar todos los ProjectorControllers en la escena
+        PauseAllProjectors(true);
+
         // Si tus sliders están en el panel de pausa, reconectar UI (esperamos 1 frame)
         StartCoroutine(RefreshAudioBindingsNextFrame());
     }
@@ -61,6 +64,9 @@ public class PauseMenu : MonoBehaviour
         if (optionsPanel != null) optionsPanel.SetActive(false);
         Time.timeScale = 1f;
         isPaused = false;
+
+        // Reanudar todos los ProjectorControllers en la escena
+        PauseAllProjectors(false);
 
         // Dejar que PlayerMovement maneje el estado del cursor
         if (playerMovement != null)
@@ -120,6 +126,16 @@ public class PauseMenu : MonoBehaviour
         if (MusicManager.Instance != null)
         {
             MusicManager.Instance.RefreshUIBindings();
+        }
+    }
+
+    // Método para pausar/reanudar todos los ProjectorControllers
+    private void PauseAllProjectors(bool pause)
+    {
+        ProjectorController[] allProjectors = FindObjectsOfType<ProjectorController>();
+        foreach (ProjectorController projector in allProjectors)
+        {
+            projector.SetPaused(pause);
         }
     }
 }
