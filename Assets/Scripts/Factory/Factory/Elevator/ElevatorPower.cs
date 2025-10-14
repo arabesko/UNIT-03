@@ -120,6 +120,10 @@ public class ElevatorPower : MonoBehaviour
                 _rbBattery.isKinematic = true;
                 _isInstalling = true;
                 _indexBattery = 0; // Resetear índice
+
+                //Impide que se colecte la bateria cuando esta yendo a ser cargada//
+                ElementPuzzle myPuzzle = other.GetComponent<ElementPuzzle>();
+                if (myPuzzle != null) myPuzzle.isLevitable = false;
             }
         }
     }
