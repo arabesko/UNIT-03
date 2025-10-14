@@ -89,7 +89,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
 
     [Header("Interaction Settings")]
     [Tooltip("Radio de interacción para objetos interactuables")]
-    public float interactRadius = 2f;
+    public float interactRadius = 5f;
     [Tooltip("Layers que el player puede interactuar (configurable en Inspector)")]
     public LayerMask interactLayers;
 

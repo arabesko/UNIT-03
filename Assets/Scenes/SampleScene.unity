@@ -75860,6 +75860,7 @@ Transform:
   - {fileID: 1701487966}
   - {fileID: 1785886825}
   - {fileID: 265937999}
+  - {fileID: 905050190}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &747970034 stripped
@@ -87199,6 +87200,127 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1382899531825314997, guid: ccbe19597acd08c46b954ee9ec185131, type: 3}
   m_PrefabInstance: {fileID: 665846488}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &905050189
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 905050190}
+  - component: {fileID: 905050194}
+  - component: {fileID: 905050193}
+  - component: {fileID: 905050192}
+  - component: {fileID: 905050191}
+  m_Layer: 0
+  m_Name: elevador
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &905050190
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 905050189}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 218.9, y: -65.35602, z: 163.15}
+  m_LocalScale: {x: 17.363989, y: 4.419657, z: 18.191107}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 746833496}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &905050191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 905050189}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b1b1a61f66ba4e43b44dc131fb37833, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueId: elevador
+  projectorController: {fileID: 952916035}
+  onlyOnce: 1
+--- !u!65 &905050192
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 905050189}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.87446886, y: 1, z: 0.8594832}
+  m_Center: {x: -0.27214858, y: 0, z: 0.21704751}
+--- !u!23 &905050193
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 905050189}
+  m_Enabled: 0
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &905050194
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 905050189}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &906752378
 GameObject:
   m_ObjectHideFlags: 0
@@ -91643,6 +91765,12 @@ MonoBehaviour:
     lines:
     - text: Parece ser una estacion de carga...
       voiceClip: {fileID: 8300000, guid: d85994e0abb7fad4b8a815c1edc1d6bd, type: 3}
+      autoAdvanceAfter: 2
+    closeWhenDone: 1
+  - id: elevador
+    lines:
+    - text: El elevador no funciona, le falta energia.
+      voiceClip: {fileID: 8300000, guid: 0ec89e4a9dc8031428e05ee845eba86c, type: 3}
       autoAdvanceAfter: 2
     closeWhenDone: 1
   skipKey: 101
@@ -202225,6 +202353,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1321488793475194641, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
+      propertyPath: MinDistance
+      value: 1.4214935
+      objectReference: {fileID: 0}
     - target: {fileID: 1340501492589267834, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.00000333786
@@ -202269,6 +202401,10 @@ PrefabInstance:
       propertyPath: puntoF4
       value: 
       objectReference: {fileID: 90377363}
+    - target: {fileID: 4209467285548343146, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
+      propertyPath: MinDistance
+      value: 1.4031906
+      objectReference: {fileID: 0}
     - target: {fileID: 4423528831913206600, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
       propertyPath: m_Priority
       value: 22
@@ -202425,6 +202561,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 3.42
       objectReference: {fileID: 0}
+    - target: {fileID: 7010779389626687229, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
+      propertyPath: MinDistance
+      value: 1.39711
+      objectReference: {fileID: 0}
     - target: {fileID: 7162948252423548670, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.9636033
@@ -202491,7 +202631,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8437216206037023219, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
       propertyPath: interactRadius
-      value: 5
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 8437216206037023219, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
       propertyPath: _elementDetected
