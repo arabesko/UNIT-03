@@ -24,7 +24,7 @@ public class ElementPuzzle : PuzzleMother
     {
         foreach (var part in _MyParts)
         {
-            //_MyPartsBackup.Add(part.material);
+            _MyPartsBackup.Add(part.material);
         }
     }
 
