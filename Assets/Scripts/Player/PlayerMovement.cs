@@ -483,9 +483,12 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         Rigidbody rb = _weaponSelected.GetComponent<Rigidbody>();
         if (rb != null) rb.isKinematic = true;
 
-        Collider myCol = _weaponSelected.GetComponent<Collider>();
-        if (myCol != null) myCol.enabled = false;
-
+        Collider[] myCol = _weaponSelected.GetComponents<Collider>();
+        foreach (Collider item in myCol)
+        {
+            item.enabled = false;
+        }
+        
         SelectModule(_inventory.WeaponSelected);
         myDriver.Initialized(this);
 
