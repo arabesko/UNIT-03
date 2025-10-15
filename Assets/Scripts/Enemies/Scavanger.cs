@@ -91,6 +91,17 @@ public class Scavanger : MonoBehaviour, IDamagiable
         }
 
         _currentState = WalkingArround;
+
+        if (_playerScript == null)
+        {
+            PlayerMovement myPlayer = GameReference.Instance.player.GetComponent<PlayerMovement>();
+            if (myPlayer != null)
+            {
+                _playerScript = myPlayer;
+                _playerTransform = myPlayer.myRayo;
+            }
+            
+        }
     }
 
     private void Update()

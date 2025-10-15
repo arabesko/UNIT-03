@@ -15908,11 +15908,11 @@ PrefabInstance:
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _playerScript
       value: 
-      objectReference: {fileID: 7326339120592517016}
+      objectReference: {fileID: 0}
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _playerTransform
       value: 
-      objectReference: {fileID: 1231961126}
+      objectReference: {fileID: 0}
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _movPoints.Array.data[0]
       value: 
@@ -50496,6 +50496,51 @@ Transform:
   m_Children: []
   m_Father: {fileID: 575873786}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &547933279
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 547933280}
+  - component: {fileID: 547933281}
+  m_Layer: 0
+  m_Name: GameReference
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &547933280
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 547933279}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1203203914}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &547933281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 547933279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 479149b3979fc9b4d83e8ae1a0068f7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 3793123543040637903}
 --- !u!1 &551463939
 GameObject:
   m_ObjectHideFlags: 0
@@ -51074,11 +51119,11 @@ PrefabInstance:
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _playerScript
       value: 
-      objectReference: {fileID: 7326339120592517016}
+      objectReference: {fileID: 0}
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _playerTransform
       value: 
-      objectReference: {fileID: 1231961126}
+      objectReference: {fileID: 0}
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _rotateOnVertical
       value: 0
@@ -101209,11 +101254,11 @@ PrefabInstance:
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _playerScript
       value: 
-      objectReference: {fileID: 7326339120592517016}
+      objectReference: {fileID: 0}
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _playerTransform
       value: 
-      objectReference: {fileID: 1231961126}
+      objectReference: {fileID: 0}
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _movPoints.Array.data[0]
       value: 
@@ -101585,11 +101630,11 @@ PrefabInstance:
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _playerScript
       value: 
-      objectReference: {fileID: 7326339120592517016}
+      objectReference: {fileID: 0}
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _playerTransform
       value: 
-      objectReference: {fileID: 1231961126}
+      objectReference: {fileID: 0}
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _rotateOnVertical
       value: 0
@@ -108584,11 +108629,11 @@ PrefabInstance:
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _playerScript
       value: 
-      objectReference: {fileID: 7326339120592517016}
+      objectReference: {fileID: 0}
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _playerTransform
       value: 
-      objectReference: {fileID: 1231961126}
+      objectReference: {fileID: 0}
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _movPoints.Array.data[0]
       value: 
@@ -110609,6 +110654,7 @@ Transform:
   - {fileID: 1144401313}
   - {fileID: 1462088682}
   - {fileID: 2119571470}
+  - {fileID: 547933280}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1205399913
@@ -114337,11 +114383,11 @@ PrefabInstance:
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _playerScript
       value: 
-      objectReference: {fileID: 7326339120592517016}
+      objectReference: {fileID: 0}
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _playerTransform
       value: 
-      objectReference: {fileID: 1231961126}
+      objectReference: {fileID: 0}
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _rotateOnVertical
       value: 0
@@ -115111,11 +115157,11 @@ PrefabInstance:
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _playerScript
       value: 
-      objectReference: {fileID: 7326339120592517016}
+      objectReference: {fileID: 0}
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _playerTransform
       value: 
-      objectReference: {fileID: 1231961126}
+      objectReference: {fileID: 0}
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _movPoints.Array.data[0]
       value: 
@@ -118361,11 +118407,11 @@ PrefabInstance:
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _playerScript
       value: 
-      objectReference: {fileID: 7326339120592517016}
+      objectReference: {fileID: 0}
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _playerTransform
       value: 
-      objectReference: {fileID: 1231961126}
+      objectReference: {fileID: 0}
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _movPoints.Array.data[0]
       value: 
@@ -140824,7 +140870,7 @@ Transform:
   m_GameObject: {fileID: 1573691542}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 98.7, y: 6.58, z: 125.9}
+  m_LocalPosition: {x: 67.8, y: 6.58, z: 61}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -186059,11 +186105,11 @@ PrefabInstance:
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _playerScript
       value: 
-      objectReference: {fileID: 7326339120592517016}
+      objectReference: {fileID: 0}
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _playerTransform
       value: 
-      objectReference: {fileID: 1231961126}
+      objectReference: {fileID: 0}
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _movPoints.Array.data[0]
       value: 
@@ -209819,11 +209865,11 @@ PrefabInstance:
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _playerScript
       value: 
-      objectReference: {fileID: 7326339120592517016}
+      objectReference: {fileID: 0}
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _playerTransform
       value: 
-      objectReference: {fileID: 1231961126}
+      objectReference: {fileID: 0}
     - target: {fileID: 3340849973227656088, guid: b42075584eef66e4a8f77fa0c389b19c, type: 3}
       propertyPath: _movPoints.Array.data[0]
       value: 
