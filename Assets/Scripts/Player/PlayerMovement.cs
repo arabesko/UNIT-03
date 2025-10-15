@@ -122,6 +122,9 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     private bool isPlayingWakeAnimation = false;
     private Coroutine wakeCoroutine;
 
+    [Header("Conexion camara")]
+    public Transform puntoCamaraFBX;
+
 
     public bool IsInvisible
     {

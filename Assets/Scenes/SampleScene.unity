@@ -21358,7 +21358,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -748, y: 450}
+  m_AnchoredPosition: {x: -748.00006, y: 450}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &249600256
@@ -31334,7 +31334,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: -0.042, y: -0.016, z: 0.004}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 91, y: -179.00002}
+  m_AnchoredPosition: {x: 91, y: -179}
   m_SizeDelta: {x: -0.00024414062, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &364283410
@@ -39239,6 +39239,7 @@ GameObject:
   - component: {fileID: 466082955}
   - component: {fileID: 466082957}
   - component: {fileID: 466082956}
+  - component: {fileID: 466082958}
   m_Layer: 0
   m_Name: FL Camera Escalera
   m_TagString: Untagged
@@ -39313,7 +39314,7 @@ MonoBehaviour:
   m_Priority: 22
   m_StandbyUpdate: 2
   m_LookAt: {fileID: 0}
-  m_Follow: {fileID: 3793123543040637901}
+  m_Follow: {fileID: 0}
   m_CommonLens: 1
   m_Lens:
     FieldOfView: 42.2
@@ -39399,6 +39400,18 @@ MonoBehaviour:
   - {fileID: 1520637970}
   - {fileID: 815464752}
   - {fileID: 2000010220}
+--- !u!114 &466082958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 466082954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 530765e07a7607e4f9a2e22bd21fdc5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &467551536
 GameObject:
   m_ObjectHideFlags: 0
@@ -39655,7 +39668,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: -0.042, y: -0.016, z: 0.004}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 91, y: -179.00002}
+  m_AnchoredPosition: {x: 91, y: -179}
   m_SizeDelta: {x: -0.00024414062, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &467586392
@@ -146556,6 +146569,18 @@ MonoBehaviour:
   m_Events:
     m_Signals: []
     m_Events: []
+--- !u!114 &1651247845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1651247840}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 530765e07a7607e4f9a2e22bd21fdc5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1651460552
 GameObject:
   m_ObjectHideFlags: 0
@@ -202367,6 +202392,10 @@ PrefabInstance:
       value: 1.4031906
       objectReference: {fileID: 0}
     - target: {fileID: 4423528831913206600, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
+      propertyPath: m_Follow
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 4423528831913206600, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
       propertyPath: m_Priority
       value: 22
       objectReference: {fileID: 0}
@@ -202595,6 +202624,10 @@ PrefabInstance:
       value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 8437216206037023219, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
+      propertyPath: puntoCamaraFBX
+      value: 
+      objectReference: {fileID: 3793123543040637901}
+    - target: {fileID: 8437216206037023219, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
       propertyPath: _elementDetected
       value: 
       objectReference: {fileID: 1471389672}
@@ -202695,6 +202728,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7888413409384634533, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1651247844}
+    - targetCorrespondingSourceObject: {fileID: 7888413409384634533, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1651247845}
   m_SourcePrefab: {fileID: 100100000, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
 --- !u!4 &3793123543040637901 stripped
 Transform:
