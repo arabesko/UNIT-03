@@ -28,6 +28,11 @@ public class PuzzleFusibles : MonoBehaviour
     public Transform door3; // Segunda puerta adicional (67%)
     public Transform door3OpenPosition;
 
+    // Point Lights para cada puerta
+    public List<Light> door1Lights; // Luces para puerta 1 (100%)
+    public List<Light> door2Lights; // Luces para puerta 2 (34%)
+    public List<Light> door3Lights; // Luces para puerta 3 (67%)
+
     public AudioSource doorAudioSource;
     public AudioClip doorOpenSound;
     public AudioClip fuseInsertSound;
@@ -54,6 +59,30 @@ public class PuzzleFusibles : MonoBehaviour
             if (!fuseDictionary.ContainsKey(assignment.fuseID))
             {
                 fuseDictionary.Add(assignment.fuseID, assignment);
+            }
+        }
+
+        // Inicializar luces en rojo
+        InitializeLights();
+    }
+
+    private void InitializeLights()
+    {
+        // Configurar todas las luces en rojo al inicio
+        SetLightsColor(door1Lights, Color.red);
+        SetLightsColor(door2Lights, Color.red);
+        SetLightsColor(door3Lights, Color.red);
+    }
+
+    private void SetLightsColor(List<Light> lights, Color color)
+    {
+        foreach (Light light in lights)
+        {
+            if (light != null)
+            {
+                light.color = color;
+                // Asegurarnos de que las luces estén encendidas
+                light.enabled = true;
             }
         }
     }
@@ -103,12 +132,19 @@ public class PuzzleFusibles : MonoBehaviour
         // Posicionar el fusible en su slot asignado
         if (assignment.placementPoint != null)
         {
-            StartCoroutine(MoveBatteryToPosition(fuse.transform, assignment.PointsMovement, 0));
+            StartCoroutine(MoveBatteryToPosition(fuse.transform, assignment.PointsMovement, 0, fuse));
         }
         else
         {
             fuse.transform.localPosition = Vector3.zero;
             fuse.transform.localRotation = Quaternion.identity;
+
+            // Si no hay movimiento, actualizar el porcentaje inmediatamente
+            totalPercent += fuse.MyReturnNumber();
+            percentText.text = totalPercent.ToString() + "%";
+
+            // Y verificar puertas inmediatamente
+            CheckDoors();
         }
 
         fuse.transform.localScale = Vector3.one;
@@ -127,40 +163,9 @@ public class PuzzleFusibles : MonoBehaviour
         if (fuseCollider != null) fuseCollider.enabled = true;
 
         fuse.Desactivate();
-
-        // Actualizar porcentaje
-        totalPercent += fuse.MyReturnNumber();
-        percentText.text = totalPercent.ToString() + "%";
-
-        // Verificar condiciones de las puertas
-        CheckDoors();
     }
 
-    private void CheckDoors()
-    {
-        // Verificar puerta 2 (34%)
-        if (!isDoor2Open && totalPercent >= 34)
-        {
-            StartCoroutine(OpenDoor(door2, door2OpenPosition));
-            isDoor2Open = true;
-        }
-
-        // Verificar puerta 3 (67%)
-        if (!isDoor3Open && totalPercent >= 67)
-        {
-            StartCoroutine(OpenDoor(door3, door3OpenPosition));
-            isDoor3Open = true;
-        }
-
-        // Verificar puerta original (100%)
-        if (!isDoorOpen && totalPercent >= 100)
-        {
-            StartCoroutine(OpenDoor(door, doorOpenPosition));
-            isDoorOpen = true;
-        }
-    }
-
-    public IEnumerator MoveBatteryToPosition(Transform fusible, List<Transform> points, int index)
+    public IEnumerator MoveBatteryToPosition(Transform fusible, List<Transform> points, int index, ElementPuzzle fuse)
     {
         bool swFin = false;
         Vector3 dir = (points[index].transform.position - fusible.transform.position).normalized;
@@ -190,6 +195,37 @@ public class PuzzleFusibles : MonoBehaviour
         {
             doorAudioSource.PlayOneShot(fuseInsertSound);
         }
+
+        // Actualizar el porcentaje solo cuando el fusible llegue a su posición final
+        totalPercent += fuse.MyReturnNumber();
+        percentText.text = totalPercent.ToString() + "%";
+
+        // Verificar condiciones de las puertas después de que el fusible se haya colocado
+        CheckDoors();
+    }
+
+    private void CheckDoors()
+    {
+        // Verificar puerta 2 (34%)
+        if (!isDoor2Open && totalPercent >= 34)
+        {
+            StartCoroutine(OpenDoor(door2, door2OpenPosition, door2Lights));
+            isDoor2Open = true;
+        }
+
+        // Verificar puerta 3 (67%)
+        if (!isDoor3Open && totalPercent >= 67)
+        {
+            StartCoroutine(OpenDoor(door3, door3OpenPosition, door3Lights));
+            isDoor3Open = true;
+        }
+
+        // Verificar puerta original (100%)
+        if (!isDoorOpen && totalPercent >= 100)
+        {
+            StartCoroutine(OpenDoor(door, doorOpenPosition, door1Lights));
+            isDoorOpen = true;
+        }
     }
 
     private void RotateTowards(GameObject fusible, Vector3 target)
@@ -205,8 +241,11 @@ public class PuzzleFusibles : MonoBehaviour
                                               _fusibleSpeedRotation * Time.deltaTime);
     }
 
-    private IEnumerator OpenDoor(Transform doorToOpen, Transform openPosition)
+    private IEnumerator OpenDoor(Transform doorToOpen, Transform openPosition, List<Light> lightsToChange)
     {
+        // Cambiar las luces a verde antes de abrir la puerta
+        SetLightsColor(lightsToChange, Color.green);
+
         if (doorAudioSource != null && doorOpenSound != null)
         {
             doorAudioSource.PlayOneShot(doorOpenSound);
