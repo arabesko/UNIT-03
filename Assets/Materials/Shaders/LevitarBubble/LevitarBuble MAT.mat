@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-74360713309202600
+--- !u!114 &-885766968480228185
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,8 +20,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: EagleVisionMat
-  m_Shader: {fileID: -6465566751694194690, guid: 906beaf16bf22f44db7f9f8544c8957b, type: 3}
+  m_Name: LevitarBuble MAT
+  m_Shader: {fileID: -6465566751694194690, guid: 2f14711cef849c54b952d6af1f2555fe, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -36,8 +36,12 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _SampleTexture2D_456d175b5c5c44b2860be165f4dbad81_Texture_1_Texture2D:
-        m_Texture: {fileID: 0}
+    - _SampleTexture2D_5003086c6eb945c384aa2635766bf640_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 6ba6909ba0630c941b36d5a807e3404b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_9d9919565eca4432ab8f52bf59e8d6eb_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 6ba6909ba0630c941b36d5a807e3404b, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -54,16 +58,21 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _FadeDuration: 0
-    - _QueueControl: 0
+    - _Disolve: 0
+    - _Float_Distorsion: 0.3
+    - _Float_Vertex: 0.04
+    - _Float_Vertex_Displacement: 0.04
+    - _Fresnel_Power: 5
+    - _Noise_Scale_Vertex: 4
+    - _NormalStrenght: 1
+    - _NormalTiling: 1
+    - _QueueControl: 1
     - _QueueOffset: 0
-    - _WaveFade: 0
-    - _WavePower: 0.2
-    - _WaveQuantity: 2
-    - _WaveRadius: 0
-    - _WaveWidth: 0.5
+    - _Smooothness: 50
+    - _Speed_Noise: 0.1
+    - _Speed_Noise_1: 0.1
+    - _Speed_Noise_2: -0.02
+    - _Speed_Vertex: 0.3
     m_Colors:
-    - _Color: {r: 0, g: 3.5959585, b: 3.9999998, a: 0}
-    - _WaveCenter: {r: -15.599999, g: 7.8, b: 28.98, a: 0}
-    - _WaveColor: {r: 0, g: 0.8, b: 1, a: 0.7}
+    - _Specular_Color: {r: 0.0005205262, g: 0.00095317606, b: 0.0009765625, a: 0}
   m_BuildTextureStacks: []

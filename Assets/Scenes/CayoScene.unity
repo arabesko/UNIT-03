@@ -5324,6 +5324,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: WeaponPulse
       objectReference: {fileID: 0}
+    - target: {fileID: 4143483469085872424, guid: 54e9a18033407d144b0ecc0cec8ab29c, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5994645229816210631, guid: 54e9a18033407d144b0ecc0cec8ab29c, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.5427958
@@ -5567,7 +5571,7 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 0.33383763, g: 0.3785928, b: 0.5849056, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 0.57
   m_Range: 10
   m_SpotAngle: 30
@@ -6175,6 +6179,10 @@ PrefabInstance:
     - target: {fileID: 2259154818817081336, guid: b930621d1ca17c041a3ea06b9e9e06b1, type: 3}
       propertyPath: m_Name
       value: WeaponInvisible
+      objectReference: {fileID: 0}
+    - target: {fileID: 2259154818817081336, guid: b930621d1ca17c041a3ea06b9e9e06b1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4307485524462670786, guid: b930621d1ca17c041a3ea06b9e9e06b1, type: 3}
       propertyPath: m_LocalScale.x
@@ -8012,6 +8020,111 @@ MonoBehaviour:
   Position: {x: 0, y: 0, z: 0}
   Materials: []
   InitialAlpha: 0
+--- !u!1 &1822389948
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1822389952}
+  - component: {fileID: 1822389951}
+  - component: {fileID: 1822389950}
+  - component: {fileID: 1822389949}
+  m_Layer: 0
+  m_Name: LevitarBuble
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!135 &1822389949
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1822389948}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &1822389950
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1822389948}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 59311d07423b8634c9ac92d8e3f629fc, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1822389951
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1822389948}
+  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1822389952
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1822389948}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 24.5, y: 28.8, z: -48.477665}
+  m_LocalScale: {x: 32.643, y: 32.643, z: 32.643}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1843624526
 GameObject:
   m_ObjectHideFlags: 0
@@ -8072,6 +8185,10 @@ PrefabInstance:
     - target: {fileID: 2951137559088691469, guid: 8ed968a8335b56645b4af16c2449dda8, type: 3}
       propertyPath: m_Name
       value: WeaponRadar
+      objectReference: {fileID: 0}
+    - target: {fileID: 2951137559088691469, guid: 8ed968a8335b56645b4af16c2449dda8, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5996564011418500680, guid: 8ed968a8335b56645b4af16c2449dda8, type: 3}
       propertyPath: m_Constraints
@@ -8890,3 +9007,4 @@ SceneRoots:
   - {fileID: 2002480136}
   - {fileID: 1200499974}
   - {fileID: 549068029}
+  - {fileID: 1822389952}
