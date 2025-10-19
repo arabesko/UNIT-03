@@ -210,7 +210,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     {
         if (CanWeaponChange)
         {
-            //Asignamos manualmente a _elementDetected el modulo con el que el player colisiono siempre que se pues equipar el modulo
+            //Asignamos manualmente a _elementDetected el modulo con el que el player colisiono siempre que se pueda equipar el modulo
             _elementDetected = myModuleDetected;
 
             //Se activa el modulo colisionado
@@ -287,13 +287,16 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         // Levitar objetos
         if (Input.GetKeyDown(KeyCode.R) && CollectWeapon() && _elementLevitated == null)
         {
+
             _elementLevitated = _elementDetected;
             IPuzzlesElements myPuzzle = _elementLevitated.GetComponent<IPuzzlesElements>();
+
             if (myPuzzle == null)
             {
                 _elementLevitated = null;
                 return;
             }
+
 
             Rigidbody rb = _elementLevitated.GetComponent<Rigidbody>();
             if (rb != null)
@@ -366,9 +369,27 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     }
 
 
-
+    public Transform target;
+    public Transform levitationPointTarget;
+    public Transform levitationPointWhenIsCloseWall;
+    public LayerMask obstructionToLevitationPoint;
     private void HandleLevitatingObject()
     {
+        Vector3 dir = levitationPointTarget.position - myRayo.transform.position;
+        float dist = Vector3.Distance(levitationPointTarget.position, myRayo.transform.position);
+        //Evaluo si esta mirando hacia una pared mientras levita algo
+        if (Physics.Raycast(myRayo.transform.position, dir, out RaycastHit hit, dist, obstructionToLevitationPoint))
+        {
+            //Hay una pared o algo
+            target = levitationPointWhenIsCloseWall;
+        }
+        else
+        {
+            //Esta libre
+            target = levitationPointTarget;
+        }
+
+
         levitationOffset += Time.deltaTime * levitationFrequency;
         float yOffset = Mathf.Sin(levitationOffset) * levitationAmplitude;
 
@@ -390,7 +411,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
 
         _elementLevitated.transform.position = Vector3.Lerp(
             _elementLevitated.transform.position,
-            targetPosition,
+            target.position,
             Time.deltaTime * 5f
         );
 
@@ -403,6 +424,42 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
             );
         }
     }
+    //private void HandleLevitatingObject()
+    //{
+    //    levitationOffset += Time.deltaTime * levitationFrequency;
+    //    float yOffset = Mathf.Sin(levitationOffset) * levitationAmplitude;
+
+    //    Vector3 targetPosition = _levitationPoint.position + new Vector3(0, yOffset, 0);
+
+    //    float minHeight = transform.position.y + levitationHeightRange.x;
+    //    float maxHeight = transform.position.y + levitationHeightRange.y;
+    //    targetPosition.y = Mathf.Clamp(targetPosition.y, minHeight, maxHeight);
+
+    //    Vector3 horizontalDirection = targetPosition - transform.position;
+    //    horizontalDirection.y = 0;
+
+    //    if (horizontalDirection.magnitude > maxDistanceFromPlayer)
+    //    {
+    //        horizontalDirection = horizontalDirection.normalized * maxDistanceFromPlayer;
+    //        targetPosition = transform.position + horizontalDirection;
+    //        targetPosition.y = Mathf.Clamp(targetPosition.y, minHeight, maxHeight);
+    //    }
+
+    //    _elementLevitated.transform.position = Vector3.Lerp(
+    //        _elementLevitated.transform.position,
+    //        targetPosition,
+    //        Time.deltaTime * 5f
+    //    );
+
+    //    if (levitationRotationSpeed > 0)
+    //    {
+    //        _elementLevitated.transform.Rotate(
+    //            Vector3.up,
+    //            levitationRotationSpeed * Time.deltaTime,
+    //            Space.World
+    //        );
+    //    }
+    //}
 
     private void HandleLevitationSphere()
     {
@@ -1217,5 +1274,10 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         }
     }
 
-   
+    #region SolucionLevitacionEnParedes
+
+    
+
+    #endregion
+
 }
