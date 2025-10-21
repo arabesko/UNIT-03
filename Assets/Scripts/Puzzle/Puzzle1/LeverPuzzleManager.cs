@@ -13,9 +13,12 @@ public class LeverPuzzleManager : MonoBehaviour
     public List<Light> lever1Lights; // Luces para la palanca 1
     public List<Light> lever2Lights; // Luces para la palanca 2
 
-    [Header("Audio")]
-    public AudioSource audioSource;
+    [Header("Audio - Palancas")]
+    public AudioSource leverAudioSource;
     public AudioClip leverActivateSound;
+
+    [Header("Audio - Puerta")]
+    public AudioSource doorAudioSource;
     public AudioClip doorOpenSound;
 
     private bool lever1Activated = false;
@@ -35,9 +38,9 @@ public class LeverPuzzleManager : MonoBehaviour
                     lever1Activated = true;
                     SetLightsColor(lever1Lights, Color.green);
 
-                    if (audioSource != null && leverActivateSound != null)
+                    if (leverAudioSource != null && leverActivateSound != null)
                     {
-                        audioSource.PlayOneShot(leverActivateSound);
+                        leverAudioSource.PlayOneShot(leverActivateSound);
                     }
 
                     CheckPuzzleCompletion();
@@ -50,9 +53,9 @@ public class LeverPuzzleManager : MonoBehaviour
                     lever2Activated = true;
                     SetLightsColor(lever2Lights, Color.green);
 
-                    if (audioSource != null && leverActivateSound != null)
+                    if (leverAudioSource != null && leverActivateSound != null)
                     {
-                        audioSource.PlayOneShot(leverActivateSound);
+                        leverAudioSource.PlayOneShot(leverActivateSound);
                     }
 
                     CheckPuzzleCompletion();
@@ -87,9 +90,9 @@ public class LeverPuzzleManager : MonoBehaviour
     // Corrutina para abrir la puerta
     private IEnumerator OpenDoor()
     {
-        if (audioSource != null && doorOpenSound != null)
+        if (doorAudioSource != null && doorOpenSound != null)
         {
-            audioSource.PlayOneShot(doorOpenSound);
+            doorAudioSource.PlayOneShot(doorOpenSound);
         }
 
         float t = 0;
