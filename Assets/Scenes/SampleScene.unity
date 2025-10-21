@@ -24535,7 +24535,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -748.00006, y: 450}
+  m_AnchoredPosition: {x: -748, y: 450}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &249600256
@@ -36486,7 +36486,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: -0.042, y: -0.016, z: 0.004}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 91, y: -179}
+  m_AnchoredPosition: {x: 91, y: -179.00002}
   m_SizeDelta: {x: -0.00024414062, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &364283410
@@ -45682,7 +45682,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: -0.042, y: -0.016, z: 0.004}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 91, y: -179}
+  m_AnchoredPosition: {x: 91, y: -179.00002}
   m_SizeDelta: {x: -0.00024414062, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &467586392
@@ -84296,7 +84296,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   leverNumber: 1
   puzzleManager: {fileID: 657802215}
-  requiredFuseBox: {fileID: 2068246438}
+  requiredFuseBox: {fileID: 0}
   requireFuseBoxCompletion: 0
 --- !u!65 &741088655
 BoxCollider:
@@ -223233,7 +223233,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2068246434}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59112017dd4a56a46947ec3dc10d31ea, type: 3}
+  m_Script: {fileID: 11500000, guid: 3b2914b156ab5d645b84535bb8cf36ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   fuseAssignments:
@@ -223241,30 +223241,20 @@ MonoBehaviour:
     slotTransform: {fileID: 1277713848}
     placementPoint: {fileID: 1912470079}
     isOccupied: 0
-    PointsMovement:
-    - {fileID: 1912470079}
+    PointsMovement: []
   - fuseID: FuseAmarillo2
     slotTransform: {fileID: 736959190}
-    placementPoint: {fileID: 56439423}
+    placementPoint: {fileID: 1635219370}
     isOccupied: 0
-    PointsMovement:
-    - {fileID: 56439423}
+    PointsMovement: []
   - fuseID: Fuse3
     slotTransform: {fileID: 36174328}
     placementPoint: {fileID: 1635219370}
     isOccupied: 0
-    PointsMovement:
-    - {fileID: 1635219370}
+    PointsMovement: []
   percentText: {fileID: 638343312}
-  enableDoor: 1
-  door: {fileID: 0}
-  doorOpenPosition: {fileID: 0}
-  enableLights: 1
-  successLights: []
-  doorAudioSource: {fileID: 2068246436}
-  doorOpenSound: {fileID: 8300000, guid: 1b97e0846188fbf4b979300647d8b4f7, type: 3}
+  audioSource: {fileID: 2068246436}
   fuseInsertSound: {fileID: 8300000, guid: a2905c9366ff6054db98a8b9bf2cda83, type: 3}
-  openSpeed: 0.3
   onPuzzleComplete:
     m_PersistentCalls:
       m_Calls: []

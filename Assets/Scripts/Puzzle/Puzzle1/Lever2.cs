@@ -2,15 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Lever : MonoBehaviour
+public class Lever2 : MonoBehaviour
 {
     [Header("Configuración de Palanca")]
     public int leverNumber = 1;
     public LeverPuzzleManager puzzleManager;
 
     [Header("Dependencia de Fusibles")]
-    public PuzzleFusibles requiredFuseBox; // Caja de fusibles requerida
-   
+    public PuzzleFusiblesSoloPorcentaje requiredFuseBox2; // Caja de fusibles requerida
+
     public bool requireFuseBoxCompletion = false; // Si requiere que la caja esté completa
 
     private bool playerInRange = false;
@@ -21,9 +21,9 @@ public class Lever : MonoBehaviour
         // Verificar si se puede activar la palanca
         bool canActivate = !isActivated;
 
-        if (requireFuseBoxCompletion && requiredFuseBox != null)
+        if (requireFuseBoxCompletion && requiredFuseBox2 != null)
         {
-            canActivate = canActivate && requiredFuseBox.IsPuzzleComplete;
+            canActivate = canActivate && requiredFuseBox2.IsPuzzleComplete;
         }
 
         if (playerInRange && Input.GetKeyDown(KeyCode.E) && canActivate)
