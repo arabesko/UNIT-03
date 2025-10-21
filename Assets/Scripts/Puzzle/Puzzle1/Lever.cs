@@ -5,31 +5,29 @@ using UnityEngine;
 public class Lever : MonoBehaviour
 {
     [Header("Configuración de Palanca")]
-    public int leverNumber = 1; // 1 o 2, para identificar qué palanca es
+    public int leverNumber = 1;
     public LeverPuzzleManager puzzleManager;
 
-    [Header("Animación")]
-    public Animator leverAnimator;
-    public string activateAnimationName = "Activate";
-
-    [Header("UI")]
-    public GameObject interactionPrompt; // Texto o UI que muestra "Presiona E"
+    [Header("Dependencia de Fusibles")]
+    public PuzzleFusibles requiredFuseBox; // Caja de fusibles requerida
+    public bool requireFuseBoxCompletion = false; // Si requiere que la caja esté completa
 
     private bool playerInRange = false;
     private bool isActivated = false;
 
     private void Update()
     {
-        // Verificar si el jugador está en rango y presiona E
-        if (playerInRange && Input.GetKeyDown(KeyCode.E) && !isActivated)
+        // Verificar si se puede activar la palanca
+        bool canActivate = !isActivated;
+
+        if (requireFuseBoxCompletion && requiredFuseBox != null)
         {
-            ActivateLever();
+            canActivate = canActivate && requiredFuseBox.IsPuzzleComplete;
         }
 
-        // Mostrar/ocultar prompt de interacción
-        if (interactionPrompt != null)
+        if (playerInRange && Input.GetKeyDown(KeyCode.E) && canActivate)
         {
-            interactionPrompt.SetActive(playerInRange && !isActivated);
+            ActivateLever();
         }
     }
 
@@ -55,22 +53,9 @@ public class Lever : MonoBehaviour
 
         isActivated = true;
 
-        // Reproducir animación
-        if (leverAnimator != null)
-        {
-            leverAnimator.Play(activateAnimationName);
-        }
-
-        // Notificar al manager
         if (puzzleManager != null)
         {
             puzzleManager.ActivateLever(leverNumber);
-        }
-
-        // Ocultar prompt
-        if (interactionPrompt != null)
-        {
-            interactionPrompt.SetActive(false);
         }
     }
 }

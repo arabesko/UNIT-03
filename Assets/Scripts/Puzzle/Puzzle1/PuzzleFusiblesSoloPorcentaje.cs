@@ -4,7 +4,7 @@ using TMPro;
 using System.Collections;
 using UnityEngine.Events;
 
-public class PuzzleFusibles : MonoBehaviour
+public class PuzzleFusiblesSoloPorcentaje : MonoBehaviour
 {
     [System.Serializable]
     public class FuseAssignment
@@ -18,22 +18,11 @@ public class PuzzleFusibles : MonoBehaviour
 
     [Header("Configuración General")]
     public List<FuseAssignment> fuseAssignments = new List<FuseAssignment>();
-    public TMP_Text percentText;
-
-    [Header("Comportamiento de Puerta")]
-    public bool enableDoor = true;
-    public Transform door;
-    public Transform doorOpenPosition;
-
-    [Header("Comportamiento de Luces")]
-    public bool enableLights = true;
-    public List<Light> successLights;
+    public TMP_Text percentText; // Opcional: si quieres mostrar el porcentaje
 
     [Header("Audio")]
-    public AudioSource doorAudioSource;
-    public AudioClip doorOpenSound;
+    public AudioSource audioSource;
     public AudioClip fuseInsertSound;
-    public float openSpeed = 1f;
 
     [Header("Eventos")]
     public UnityEvent onPuzzleComplete; // Evento que se dispara cuando se completa al 100%
@@ -41,7 +30,6 @@ public class PuzzleFusibles : MonoBehaviour
     private Dictionary<string, FuseAssignment> fuseDictionary = new Dictionary<string, FuseAssignment>();
     private List<GameObject> insertedFuses = new List<GameObject>();
     private int totalPercent = 0;
-    private bool isDoorOpen = false;
     private bool isPuzzleComplete = false;
 
     [SerializeField] private int _fusibleSpeed;
@@ -61,33 +49,11 @@ public class PuzzleFusibles : MonoBehaviour
                 fuseDictionary.Add(assignment.fuseID, assignment);
             }
         }
-
-        if (enableLights)
-        {
-            InitializeLights();
-        }
-    }
-
-    private void InitializeLights()
-    {
-        SetLightsColor(successLights, Color.red);
-    }
-
-    private void SetLightsColor(List<Light> lights, Color color)
-    {
-        foreach (Light light in lights)
-        {
-            if (light != null)
-            {
-                light.color = color;
-                light.enabled = true;
-            }
-        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (isDoorOpen) return;
+        if (isPuzzleComplete) return;
 
         ElementPuzzle fuse = other.GetComponent<ElementPuzzle>();
         if (fuse == null || insertedFuses.Contains(fuse.gameObject)) return;
@@ -133,7 +99,8 @@ public class PuzzleFusibles : MonoBehaviour
             fuse.transform.localRotation = Quaternion.identity;
 
             totalPercent += fuse.MyReturnNumber();
-            percentText.text = totalPercent.ToString() + "%";
+            if (percentText != null)
+                percentText.text = totalPercent.ToString() + "%";
             CheckCompletion();
         }
 
@@ -171,13 +138,14 @@ public class PuzzleFusibles : MonoBehaviour
         fusible.transform.position = points[0].transform.position;
         fusible.transform.rotation = points[0].transform.rotation;
 
-        if (doorAudioSource != null && fuseInsertSound != null)
+        if (audioSource != null && fuseInsertSound != null)
         {
-            doorAudioSource.PlayOneShot(fuseInsertSound);
+            audioSource.PlayOneShot(fuseInsertSound);
         }
 
         totalPercent += fuse.MyReturnNumber();
-        percentText.text = totalPercent.ToString() + "%";
+        if (percentText != null)
+            percentText.text = totalPercent.ToString() + "%";
         CheckCompletion();
     }
 
@@ -186,39 +154,7 @@ public class PuzzleFusibles : MonoBehaviour
         if (totalPercent >= 100 && !isPuzzleComplete)
         {
             isPuzzleComplete = true;
-
-            // Disparar evento
             onPuzzleComplete?.Invoke();
-
-            if (enableLights)
-            {
-                SetLightsColor(successLights, Color.green);
-            }
-
-            if (enableDoor)
-            {
-                StartCoroutine(OpenDoor());
-                isDoorOpen = true;
-            }
-        }
-    }
-
-    private IEnumerator OpenDoor()
-    {
-        if (doorAudioSource != null && doorOpenSound != null)
-        {
-            doorAudioSource.PlayOneShot(doorOpenSound);
-        }
-
-        float t = 0;
-        Vector3 startPos = door.position;
-        Vector3 endPos = doorOpenPosition.position;
-
-        while (t < 1f)
-        {
-            t += Time.deltaTime * openSpeed;
-            door.position = Vector3.Lerp(startPos, endPos, t);
-            yield return null;
         }
     }
 
