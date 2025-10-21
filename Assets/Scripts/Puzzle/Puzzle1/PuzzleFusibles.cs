@@ -29,10 +29,15 @@ public class PuzzleFusibles : MonoBehaviour
     public bool enableLights = true;
     public List<Light> successLights;
 
-    [Header("Audio")]
+    [Header("Audio - Puerta")]
     public AudioSource doorAudioSource;
     public AudioClip doorOpenSound;
+
+    [Header("Audio - Fusibles")]
+    public AudioSource fuseAudioSource;
     public AudioClip fuseInsertSound;
+
+    [Header("Configuración General")]
     public float openSpeed = 1f;
 
     [Header("Eventos")]
@@ -171,9 +176,10 @@ public class PuzzleFusibles : MonoBehaviour
         fusible.transform.position = points[0].transform.position;
         fusible.transform.rotation = points[0].transform.rotation;
 
-        if (doorAudioSource != null && fuseInsertSound != null)
+        // Usar el AudioSource específico para fusibles
+        if (fuseAudioSource != null && fuseInsertSound != null)
         {
-            doorAudioSource.PlayOneShot(fuseInsertSound);
+            fuseAudioSource.PlayOneShot(fuseInsertSound);
         }
 
         totalPercent += fuse.MyReturnNumber();
@@ -205,6 +211,7 @@ public class PuzzleFusibles : MonoBehaviour
 
     private IEnumerator OpenDoor()
     {
+        // Usar el AudioSource específico para la puerta
         if (doorAudioSource != null && doorOpenSound != null)
         {
             doorAudioSource.PlayOneShot(doorOpenSound);
