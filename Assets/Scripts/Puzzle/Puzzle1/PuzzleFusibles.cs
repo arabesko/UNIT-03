@@ -20,18 +20,12 @@ public class PuzzleFusibles : MonoBehaviour
     public List<FuseAssignment> fuseAssignments = new List<FuseAssignment>();
     public TMP_Text percentText;
 
-    // Puertas y sus posiciones
+    // Puerta única
     public Transform door; // Puerta original (100%)
     public Transform doorOpenPosition;
-    public Transform door2; // Primera puerta adicional (34%)
-    public Transform door2OpenPosition;
-    public Transform door3; // Segunda puerta adicional (67%)
-    public Transform door3OpenPosition;
 
-    // Point Lights para cada puerta
-    public List<Light> door1Lights; // Luces para puerta 1 (100%)
-    public List<Light> door2Lights; // Luces para puerta 2 (34%)
-    public List<Light> door3Lights; // Luces para puerta 3 (67%)
+    // Point Lights que cambian cuando se abre la puerta
+    public List<Light> successLights; // Luces que se encienden al 100%
 
     public AudioSource doorAudioSource;
     public AudioClip doorOpenSound;
@@ -42,10 +36,8 @@ public class PuzzleFusibles : MonoBehaviour
     private List<GameObject> insertedFuses = new List<GameObject>();
     private int totalPercent = 0;
 
-    // Estados de las puertas
+    // Estado de la puerta
     private bool isDoorOpen = false;
-    private bool isDoor2Open = false;
-    private bool isDoor3Open = false;
 
     [SerializeField] private int _fusibleSpeed;
     [SerializeField] private int _fusibleSpeedRotation;
@@ -69,9 +61,7 @@ public class PuzzleFusibles : MonoBehaviour
     private void InitializeLights()
     {
         // Configurar todas las luces en rojo al inicio
-        SetLightsColor(door1Lights, Color.red);
-        SetLightsColor(door2Lights, Color.red);
-        SetLightsColor(door3Lights, Color.red);
+        SetLightsColor(successLights, Color.red);
     }
 
     private void SetLightsColor(List<Light> lights, Color color)
@@ -89,7 +79,7 @@ public class PuzzleFusibles : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (isDoorOpen && isDoor2Open && isDoor3Open) return;
+        if (isDoorOpen) return;
 
         ElementPuzzle fuse = other.GetComponent<ElementPuzzle>();
         if (fuse == null || insertedFuses.Contains(fuse.gameObject)) return;
@@ -143,8 +133,8 @@ public class PuzzleFusibles : MonoBehaviour
             totalPercent += fuse.MyReturnNumber();
             percentText.text = totalPercent.ToString() + "%";
 
-            // Y verificar puertas inmediatamente
-            CheckDoors();
+            // Y verificar si se completó el puzzle
+            CheckCompletion();
         }
 
         fuse.transform.localScale = Vector3.one;
@@ -200,30 +190,20 @@ public class PuzzleFusibles : MonoBehaviour
         totalPercent += fuse.MyReturnNumber();
         percentText.text = totalPercent.ToString() + "%";
 
-        // Verificar condiciones de las puertas después de que el fusible se haya colocado
-        CheckDoors();
+        // Verificar si se completó el puzzle después de que el fusible se haya colocado
+        CheckCompletion();
     }
 
-    private void CheckDoors()
+    private void CheckCompletion()
     {
-        // Verificar puerta 2 (34%)
-        if (!isDoor2Open && totalPercent >= 34)
-        {
-            StartCoroutine(OpenDoor(door2, door2OpenPosition, door2Lights));
-            isDoor2Open = true;
-        }
-
-        // Verificar puerta 3 (67%)
-        if (!isDoor3Open && totalPercent >= 67)
-        {
-            StartCoroutine(OpenDoor(door3, door3OpenPosition, door3Lights));
-            isDoor3Open = true;
-        }
-
-        // Verificar puerta original (100%)
+        // Verificar si alcanzamos el 100% y abrir puerta
         if (!isDoorOpen && totalPercent >= 100)
         {
-            StartCoroutine(OpenDoor(door, doorOpenPosition, door1Lights));
+            // Cambiar las luces a verde
+            SetLightsColor(successLights, Color.green);
+
+            // Abrir la puerta
+            StartCoroutine(OpenDoor());
             isDoorOpen = true;
         }
     }
@@ -241,24 +221,21 @@ public class PuzzleFusibles : MonoBehaviour
                                               _fusibleSpeedRotation * Time.deltaTime);
     }
 
-    private IEnumerator OpenDoor(Transform doorToOpen, Transform openPosition, List<Light> lightsToChange)
+    private IEnumerator OpenDoor()
     {
-        // Cambiar las luces a verde antes de abrir la puerta
-        SetLightsColor(lightsToChange, Color.green);
-
         if (doorAudioSource != null && doorOpenSound != null)
         {
             doorAudioSource.PlayOneShot(doorOpenSound);
         }
 
         float t = 0;
-        Vector3 startPos = doorToOpen.position;
-        Vector3 endPos = openPosition.position;
+        Vector3 startPos = door.position;
+        Vector3 endPos = doorOpenPosition.position;
 
         while (t < 1f)
         {
             t += Time.deltaTime * openSpeed;
-            doorToOpen.position = Vector3.Lerp(startPos, endPos, t);
+            door.position = Vector3.Lerp(startPos, endPos, t);
             yield return null;
         }
     }
