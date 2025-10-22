@@ -9,14 +9,14 @@ public class Lever2 : MonoBehaviour
     public LeverPuzzleManager puzzleManager;
 
     [Header("Dependencia de Fusibles")]
-    public PuzzleFusiblesSoloPorcentaje requiredFuseBox2; // Caja de fusibles requerida
-    public bool requireFuseBoxCompletion = false; // Si requiere que la caja esté completa
+    public PuzzleFusiblesSoloPorcentaje requiredFuseBox2;
+    public bool requireFuseBoxCompletion = false;
 
     [Header("Movimiento de Palanca")]
-    public Transform leverPivot; // Pivote principal
-    public float rotationAngle = 180f; // Ángulo total (de arriba a abajo)
+    public Transform leverPivot;
+    public float rotationAngle = 180f;
     public float rotationSpeed = 3f;
-    public bool moveDownward = true; // True = hacia abajo
+    public bool moveDownward = true;
 
     [Header("Interacción")]
     public float interactionRadius = 2f;
@@ -26,7 +26,6 @@ public class Lever2 : MonoBehaviour
     public AudioClip activateSound;
     public float soundMaxDistance = 10f;
 
-    // Variables internas
     private bool isActivated = false;
     private bool isMoving = false;
     private Quaternion initialRotation;
@@ -45,43 +44,53 @@ public class Lever2 : MonoBehaviour
         initialRotation = leverPivot.localRotation;
         targetRotation = initialRotation;
 
-        // Configurar o crear AudioSource
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
             audioSource = gameObject.AddComponent<AudioSource>();
 
-        // Configuración básica del sonido 3D
         audioSource.playOnAwake = false;
-        audioSource.spatialBlend = 1f; // Sonido 3D
+        audioSource.spatialBlend = 1f;
         audioSource.rolloffMode = AudioRolloffMode.Linear;
         audioSource.maxDistance = soundMaxDistance;
     }
 
     void Update()
     {
-        // Verificar si el jugador está dentro del rango
-        if (player != null)
+        if (player == null) return;
+
+        Vector3 interactionPoint = transform.position + interactionOffset;
+        float distance = Vector3.Distance(interactionPoint, player.position);
+        playerInRange = distance <= interactionRadius;
+
+        // VERIFICACIÓN CORREGIDA
+        if (playerInRange && Input.GetKeyDown(KeyCode.E) && !isActivated && !isMoving)
         {
-            Vector3 interactionPoint = transform.position + interactionOffset;
-            float distance = Vector3.Distance(interactionPoint, player.position);
-            playerInRange = distance <= interactionRadius;
+            bool canActivate = true;
+
+            if (requireFuseBoxCompletion)
+            {
+                if (requiredFuseBox2 != null)
+                {
+                    canActivate = requiredFuseBox2.IsPuzzleComplete;
+
+                    if (!canActivate)
+                    {
+                        Debug.Log($"Palanca {leverNumber}: La caja de fusibles no está completa. Porcentaje: {requiredFuseBox2.TotalPercent}%");
+                    }
+                }
+                else
+                {
+                    Debug.LogError($"Palanca {leverNumber}: requireFuseBoxCompletion está activado pero requiredFuseBox2 no está asignado!");
+                    canActivate = false;
+                }
+            }
+
+            if (canActivate)
+            {
+                ActivateLever();
+            }
         }
 
-        // Verificar si se puede activar la palanca
-        bool canActivate = !isActivated && !isMoving;
-
-        if (requireFuseBoxCompletion && requiredFuseBox2 != null)
-        {
-            canActivate = canActivate && requiredFuseBox2.IsPuzzleComplete;
-        }
-
-        // Input de activación
-        if (playerInRange && Input.GetKeyDown(KeyCode.E) && canActivate)
-        {
-            ActivateLever();
-        }
-
-        // Rotación suave del pivote
         if (isMoving)
         {
             leverPivot.localRotation = Quaternion.Slerp(
@@ -92,22 +101,6 @@ public class Lever2 : MonoBehaviour
 
             if (Quaternion.Angle(leverPivot.localRotation, targetRotation) < 0.5f)
                 isMoving = false;
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player") && !isActivated)
-        {
-            playerInRange = true;
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            playerInRange = false;
         }
     }
 
@@ -124,9 +117,7 @@ public class Lever2 : MonoBehaviour
         PlaySound(activateSound);
 
         if (puzzleManager != null)
-        {
             puzzleManager.ActivateLever(leverNumber);
-        }
     }
 
     private void PlaySound(AudioClip clip)
@@ -148,11 +139,9 @@ public class Lever2 : MonoBehaviour
 
     void OnDrawGizmosSelected()
     {
-        // Área de interacción
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position + interactionOffset, interactionRadius);
 
-        // Pivote
         Gizmos.color = Color.red;
         Vector3 pivotPoint = leverPivot != null ? leverPivot.position : transform.position;
         Gizmos.DrawSphere(pivotPoint, 0.05f);

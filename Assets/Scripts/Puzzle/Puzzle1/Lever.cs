@@ -13,10 +13,10 @@ public class Lever : MonoBehaviour
     public bool requireFuseBoxCompletion = false;
 
     [Header("Movimiento de Palanca")]
-    public Transform leverPivot; // Pivote principal
-    public float rotationAngle = 180f; // Ángulo total (de arriba a abajo)
+    public Transform leverPivot;
+    public float rotationAngle = 180f;
     public float rotationSpeed = 3f;
-    public bool moveDownward = true; // True = hacia abajo
+    public bool moveDownward = true;
 
     [Header("Interacción")]
     public float interactionRadius = 2f;
@@ -44,43 +44,55 @@ public class Lever : MonoBehaviour
         initialRotation = leverPivot.localRotation;
         targetRotation = initialRotation;
 
-        // Configurar o crear AudioSource
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
             audioSource = gameObject.AddComponent<AudioSource>();
 
-        // Configuración básica del sonido 3D
         audioSource.playOnAwake = false;
-        audioSource.spatialBlend = 1f; // Sonido 3D
+        audioSource.spatialBlend = 1f;
         audioSource.rolloffMode = AudioRolloffMode.Linear;
         audioSource.maxDistance = soundMaxDistance;
     }
 
     void Update()
     {
-        // Verificar si el jugador está dentro del rango
-        if (player != null)
+        if (player == null) return;
+
+        Vector3 interactionPoint = transform.position + interactionOffset;
+        float distance = Vector3.Distance(interactionPoint, player.position);
+        playerInRange = distance <= interactionRadius;
+
+        // VERIFICACIÓN CORREGIDA - Esta es la parte importante
+        if (playerInRange && Input.GetKeyDown(KeyCode.E) && !isActivated && !isMoving)
         {
-            Vector3 interactionPoint = transform.position + interactionOffset;
-            float distance = Vector3.Distance(interactionPoint, player.position);
-            playerInRange = distance <= interactionRadius;
+            // Verificar si puede activarse
+            bool canActivate = true;
+
+            if (requireFuseBoxCompletion)
+            {
+                if (requiredFuseBox != null)
+                {
+                    canActivate = requiredFuseBox.IsPuzzleComplete;
+
+                    // Debug para verificar el estado
+                    if (!canActivate)
+                    {
+                        Debug.Log($"Palanca {leverNumber}: La caja de fusibles no está completa. Porcentaje: {requiredFuseBox.TotalPercent}%");
+                    }
+                }
+                else
+                {
+                    Debug.LogError($"Palanca {leverNumber}: requireFuseBoxCompletion está activado pero requiredFuseBox no está asignado!");
+                    canActivate = false;
+                }
+            }
+
+            if (canActivate)
+            {
+                ActivateLever();
+            }
         }
 
-        // Verificar si se puede activar la palanca
-        bool canActivate = !isActivated && !isMoving;
-
-        if (requireFuseBoxCompletion && requiredFuseBox != null)
-        {
-            canActivate = canActivate && requiredFuseBox.IsPuzzleComplete;
-        }
-
-        // Input de activación
-        if (playerInRange && Input.GetKeyDown(KeyCode.E) && canActivate)
-        {
-            ActivateLever();
-        }
-
-        // Rotación suave del pivote
         if (isMoving)
         {
             leverPivot.localRotation = Quaternion.Slerp(
