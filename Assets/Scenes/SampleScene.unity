@@ -94793,7 +94793,7 @@ GameObject:
   - component: {fileID: 849733060}
   - component: {fileID: 849733059}
   m_Layer: 0
-  m_Name: palancas (1)
+  m_Name: radar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -94826,7 +94826,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b1b1a61f66ba4e43b44dc131fb37833, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogueId: palancas
+  dialogueId: radar
   projectorController: {fileID: 952916035}
   onlyOnce: 1
 --- !u!65 &849733060
@@ -104730,6 +104730,18 @@ MonoBehaviour:
     lines:
     - text: El elevador no funciona, le falta energia.
       voiceClip: {fileID: 8300000, guid: 0ec89e4a9dc8031428e05ee845eba86c, type: 3}
+      autoAdvanceAfter: 2
+    closeWhenDone: 1
+  - id: radar
+    lines:
+    - text: Perdon por no mencionarlo antes...
+      voiceClip: {fileID: 8300000, guid: 8b80494db16032a4d80ffe6536d9ef98, type: 3}
+      autoAdvanceAfter: 2
+    - text: Pero revisando el sistema note que contamos con un radar
+      voiceClip: {fileID: 8300000, guid: 0ec89e4a9dc8031428e05ee845eba86c, type: 3}
+      autoAdvanceAfter: 2
+    - text: Podrias usarlo para detectar objetos interesantes...
+      voiceClip: {fileID: 8300000, guid: d85994e0abb7fad4b8a815c1edc1d6bd, type: 3}
       autoAdvanceAfter: 2
     closeWhenDone: 1
   skipKey: 101
@@ -119298,7 +119310,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 5824536942356235179, guid: 2b594efe2f06c9346898fe12cd7e868f, type: 2}
   m_audioClip: {fileID: 8300000, guid: 1b97e0846188fbf4b979300647d8b4f7, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.712
+  m_Volume: 0.742
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -119307,7 +119319,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 0
   MinDistance: 1
-  MaxDistance: 55
+  MaxDistance: 58
   Pan2D: 0
   rolloffMode: 2
   BypassEffects: 0
@@ -185400,7 +185412,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1706002706
 MonoBehaviour:
   m_ObjectHideFlags: 0
