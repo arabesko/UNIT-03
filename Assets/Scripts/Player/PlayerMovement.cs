@@ -54,6 +54,12 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     [SerializeField] private LayerMask _ObstructionLayer;
     public Transform myRayo;
 
+    [Header("Levitation Particles")]
+    [SerializeField] private ParticleSystem rayosLevitar;
+    [SerializeField] private ParticleSystem arosLevitar;
+    private ParticleSystem currentRayosLevitar;
+    private ParticleSystem currentArosLevitar;
+
     [SerializeField] private float _viewRadius;
     [SerializeField] private float _viewAngle;
     public List<GameObject> colectables;
@@ -287,7 +293,6 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         // Levitar objetos
         if (Input.GetKeyDown(KeyCode.R) && CollectWeapon() && _elementLevitated == null)
         {
-
             _elementLevitated = _elementDetected;
             IPuzzlesElements myPuzzle = _elementLevitated.GetComponent<IPuzzlesElements>();
 
@@ -296,7 +301,6 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
                 _elementLevitated = null;
                 return;
             }
-
 
             Rigidbody rb = _elementLevitated.GetComponent<Rigidbody>();
             if (rb != null)
@@ -328,6 +332,29 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
                     if (dissolveCoroutine != null) StopCoroutine(dissolveCoroutine);
                     dissolveCoroutine = StartCoroutine(DissolveSphere(1f, 0f, 0.5f, false));
                 }
+            }
+
+            // AGREGAR SISTEMAS DE PARTÍCULAS - CENTRO DE LA ESFERA
+            if (rayosLevitar != null)
+            {
+                currentRayosLevitar = Instantiate(
+                    rayosLevitar,
+                    levitationSphereInstance.transform.position,
+                    Quaternion.identity,
+                    levitationSphereInstance.transform
+                );
+                currentRayosLevitar.Play();
+            }
+
+            if (arosLevitar != null)
+            {
+                currentArosLevitar = Instantiate(
+                    arosLevitar,
+                    levitationSphereInstance.transform.position,
+                    Quaternion.identity,
+                    levitationSphereInstance.transform
+                );
+                currentArosLevitar.Play();
             }
         }
         // Soltar objeto
@@ -488,6 +515,18 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
 
         _elementLevitated.GetComponent<IPuzzlesElements>()?.Desactivate();
         _elementLevitated = null;
+
+        // Detener partículas de levitación
+        if (currentRayosLevitar != null)
+        {
+            currentRayosLevitar.Stop();
+            Destroy(currentRayosLevitar.gameObject, 2f); // Destruir después de que terminen
+        }
+        if (currentArosLevitar != null)
+        {
+            currentArosLevitar.Stop();
+            Destroy(currentArosLevitar.gameObject, 2f);
+        }
 
         // Disolver la esfera antes de destruirla
         if (levitationSphereInstance != null && sphereMaterial != null)
