@@ -6,25 +6,30 @@ using UnityEngine;
 public class AisleCamera : MonoBehaviour
 {
     [SerializeField] private CinemachineFreeLook myVirtualCamera;
-    //[SerializeField] private CinemachineVirtualCameraBase myVirtualCameraBase;
+    [Tooltip("Seleccioná aquí el layer del player (por ejemplo: Player)")]
+    [SerializeField] private LayerMask playerLayer; // seleccionar el layer del player en el Inspector
 
     private void Start()
     {
-        myVirtualCamera.gameObject.SetActive(false);
-        //myVirtualCameraBase.gameObject.SetActive(false);
+        if (myVirtualCamera != null)
+            myVirtualCamera.gameObject.SetActive(false);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        myVirtualCamera.gameObject.SetActive(true);
-        //myVirtualCameraBase.gameObject.SetActive(true);
+        // comprobamos que el layer del 'other' esté dentro del LayerMask seleccionado
+        if (((1 << other.gameObject.layer) & playerLayer.value) == 0) return;
 
+        if (myVirtualCamera != null)
+            myVirtualCamera.gameObject.SetActive(true);
     }
 
     private void OnTriggerExit(Collider other)
     {
-        myVirtualCamera.gameObject.SetActive(false);
-        //myVirtualCameraBase.gameObject.SetActive(false);
-    }
+        // misma comprobación al salir
+        if (((1 << other.gameObject.layer) & playerLayer.value) == 0) return;
 
+        if (myVirtualCamera != null)
+            myVirtualCamera.gameObject.SetActive(false);
+    }
 }
