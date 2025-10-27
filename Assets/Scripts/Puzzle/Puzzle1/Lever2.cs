@@ -26,13 +26,18 @@ public class Lever2 : MonoBehaviour
     public AudioClip activateSound;
     public float soundMaxDistance = 10f;
 
-    // AGREGAR SISTEMA DE LUCES
     [Header("Sistema de Luces")]
-    public Light pointLight; // Referencia al Point Light
+    public Light pointLight;
     public Color inactiveColor = Color.red;
-    public Color activeColor = Color.green;
+    public Color readyColor = Color.green;
     public float lightIntensity = 2f;
     public float lightRange = 3f;
+
+    [Header("Sistema de Materiales")]
+    public List<Renderer> materialRenderers;
+    public Color inactiveEmissionColor = Color.red;
+    public Color readyEmissionColor = Color.green;
+    public float emissionIntensity = 1f;
 
     private bool isActivated = false;
     private bool isMoving = false;
@@ -41,6 +46,8 @@ public class Lever2 : MonoBehaviour
     public AudioSource audioSource;
     private Transform player;
     private bool playerInRange = false;
+    private bool wasFuseBoxComplete = false;
+    private List<Color> originalEmissionColors = new List<Color>();
 
     void Start()
     {
@@ -61,8 +68,8 @@ public class Lever2 : MonoBehaviour
         audioSource.rolloffMode = AudioRolloffMode.Linear;
         audioSource.maxDistance = soundMaxDistance;
 
-        // INICIALIZAR SISTEMA DE LUCES
         InitializeLightSystem();
+        InitializeMaterialSystem();
     }
 
     void Update()
@@ -73,7 +80,8 @@ public class Lever2 : MonoBehaviour
         float distance = Vector3.Distance(interactionPoint, player.position);
         playerInRange = distance <= interactionRadius;
 
-        // VERIFICACIÓN CORREGIDA
+        UpdateVisualsBasedOnFuseBox();
+
         if (playerInRange && Input.GetKeyDown(KeyCode.E) && !isActivated && !isMoving)
         {
             bool canActivate = true;
@@ -115,6 +123,95 @@ public class Lever2 : MonoBehaviour
         }
     }
 
+    private void UpdateVisualsBasedOnFuseBox()
+    {
+        bool isFuseBoxComplete = false;
+
+        if (requireFuseBoxCompletion && requiredFuseBox2 != null)
+        {
+            isFuseBoxComplete = requiredFuseBox2.IsPuzzleComplete;
+        }
+        else if (!requireFuseBoxCompletion)
+        {
+            isFuseBoxComplete = true;
+        }
+
+        if (isFuseBoxComplete != wasFuseBoxComplete)
+        {
+            if (pointLight != null)
+            {
+                pointLight.color = isFuseBoxComplete ? readyColor : inactiveColor;
+            }
+
+            UpdateMaterialsEmission(isFuseBoxComplete);
+            wasFuseBoxComplete = isFuseBoxComplete;
+
+            if (isFuseBoxComplete)
+            {
+                Debug.Log($"Palanca {leverNumber}: Visuales cambiaron a VERDE - Caja de fusibles completada");
+            }
+        }
+    }
+
+    private void InitializeMaterialSystem()
+    {
+        originalEmissionColors.Clear();
+
+        foreach (Renderer renderer in materialRenderers)
+        {
+            if (renderer != null && renderer.material != null)
+            {
+                if (renderer.material.HasProperty("_EmissionColor"))
+                {
+                    originalEmissionColors.Add(renderer.material.GetColor("_EmissionColor"));
+                }
+                else
+                {
+                    originalEmissionColors.Add(Color.black);
+                }
+
+                SetMaterialEmission(renderer.material, inactiveEmissionColor);
+            }
+        }
+    }
+
+    private void UpdateMaterialsEmission(bool isReady)
+    {
+        Color targetColor = isReady ? readyEmissionColor : inactiveEmissionColor;
+
+        foreach (Renderer renderer in materialRenderers)
+        {
+            if (renderer != null && renderer.material != null)
+            {
+                SetMaterialEmission(renderer.material, targetColor);
+            }
+        }
+    }
+
+    private void SetMaterialEmission(Material material, Color color)
+    {
+        if (material.HasProperty("_EmissionColor"))
+        {
+            material.SetColor("_EmissionColor", color * emissionIntensity);
+            material.EnableKeyword("_EMISSION");
+            material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+        }
+    }
+
+    private void RestoreOriginalMaterials()
+    {
+        for (int i = 0; i < materialRenderers.Count && i < originalEmissionColors.Count; i++)
+        {
+            if (materialRenderers[i] != null && materialRenderers[i].material != null)
+            {
+                if (materialRenderers[i].material.HasProperty("_EmissionColor"))
+                {
+                    materialRenderers[i].material.SetColor("_EmissionColor", originalEmissionColors[i]);
+                }
+            }
+        }
+    }
+
     public void ActivateLever()
     {
         if (isMoving || isActivated) return;
@@ -127,45 +224,39 @@ public class Lever2 : MonoBehaviour
 
         PlaySound(activateSound);
 
-        // CAMBIAR LUZ A VERDE
-        UpdateLightColor();
-
         if (puzzleManager != null)
             puzzleManager.ActivateLever(leverNumber);
     }
 
-    // AGREGAR MÉTODOS PARA EL SISTEMA DE LUCES
     private void InitializeLightSystem()
     {
-        // Si no hay light asignada, buscar una en los hijos o crear una
         if (pointLight == null)
         {
             pointLight = GetComponentInChildren<Light>();
 
             if (pointLight == null)
             {
-                // Crear un nuevo GameObject para la luz
                 GameObject lightGO = new GameObject("LeverLight");
                 lightGO.transform.SetParent(transform);
-                lightGO.transform.localPosition = Vector3.up * 0.5f; // Posición arriba de la palanca
+                lightGO.transform.localPosition = Vector3.up * 0.5f;
 
                 pointLight = lightGO.AddComponent<Light>();
                 pointLight.type = LightType.Point;
             }
         }
 
-        // Configurar la luz
         pointLight.color = inactiveColor;
         pointLight.intensity = lightIntensity;
         pointLight.range = lightRange;
         pointLight.enabled = true;
     }
 
-    private void UpdateLightColor()
+    // CORREGIDO: Usar PlayOneShot para el sonido
+    private void PlaySound(AudioClip clip)
     {
-        if (pointLight != null)
+        if (clip != null && audioSource != null)
         {
-            pointLight.color = isActivated ? activeColor : inactiveColor;
+            audioSource.PlayOneShot(clip); // Cambiado a PlayOneShot
         }
     }
 
@@ -175,17 +266,19 @@ public class Lever2 : MonoBehaviour
         isMoving = false;
         leverPivot.localRotation = initialRotation;
         targetRotation = initialRotation;
-
-        // RESTAURAR LUZ A ROJO
-        UpdateLightColor();
+        UpdateVisualsBasedOnFuseBox();
     }
 
-    private void PlaySound(AudioClip clip)
+    private void OnDestroy()
     {
-        if (clip != null && audioSource != null)
+        RestoreOriginalMaterials();
+    }
+
+    private void OnDisable()
+    {
+        if (!Application.isPlaying)
         {
-            audioSource.clip = clip;
-            audioSource.Play();
+            RestoreOriginalMaterials();
         }
     }
 
@@ -198,7 +291,6 @@ public class Lever2 : MonoBehaviour
         Vector3 pivotPoint = leverPivot != null ? leverPivot.position : transform.position;
         Gizmos.DrawSphere(pivotPoint, 0.05f);
 
-        // AGREGAR GIZMO PARA LA LUZ
         if (pointLight != null)
         {
             Gizmos.color = pointLight.color;

@@ -26,13 +26,18 @@ public class Lever : MonoBehaviour
     public AudioClip activateSound;
     public float soundMaxDistance = 10f;
 
-    // AGREGAR SISTEMA DE LUCES
     [Header("Sistema de Luces")]
-    public Light pointLight; // Referencia al Point Light
+    public Light pointLight;
     public Color inactiveColor = Color.red;
-    public Color activeColor = Color.green;
+    public Color readyColor = Color.green;
     public float lightIntensity = 2f;
     public float lightRange = 3f;
+
+    [Header("Sistema de Materiales")]
+    public List<Renderer> materialRenderers; // Renderers con los materiales a cambiar
+    public Color inactiveEmissionColor = Color.red;
+    public Color readyEmissionColor = Color.green;
+    public float emissionIntensity = 1f;
 
     private bool isActivated = false;
     private bool isMoving = false;
@@ -41,6 +46,10 @@ public class Lever : MonoBehaviour
     public AudioSource audioSource;
     private Transform player;
     private bool playerInRange = false;
+    private bool wasFuseBoxComplete = false;
+
+    // Para restaurar materiales al salir del play mode
+    private List<Color> originalEmissionColors = new List<Color>();
 
     void Start()
     {
@@ -61,8 +70,8 @@ public class Lever : MonoBehaviour
         audioSource.rolloffMode = AudioRolloffMode.Linear;
         audioSource.maxDistance = soundMaxDistance;
 
-        // INICIALIZAR SISTEMA DE LUCES
         InitializeLightSystem();
+        InitializeMaterialSystem();
     }
 
     void Update()
@@ -73,10 +82,12 @@ public class Lever : MonoBehaviour
         float distance = Vector3.Distance(interactionPoint, player.position);
         playerInRange = distance <= interactionRadius;
 
-        // VERIFICACIÓN CORREGIDA - Esta es la parte importante
+        // ACTUALIZAR COLOR DE LA LUZ Y MATERIALES BASADO EN LA CAJA DE FUSIBLES
+        UpdateVisualsBasedOnFuseBox();
+
+        // VERIFICACIÓN DE ACTIVACIÓN
         if (playerInRange && Input.GetKeyDown(KeyCode.E) && !isActivated && !isMoving)
         {
-            // Verificar si puede activarse
             bool canActivate = true;
 
             if (requireFuseBoxCompletion)
@@ -85,7 +96,6 @@ public class Lever : MonoBehaviour
                 {
                     canActivate = requiredFuseBox.IsPuzzleComplete;
 
-                    // Debug para verificar el estado
                     if (!canActivate)
                     {
                         Debug.Log($"Palanca {leverNumber}: La caja de fusibles no está completa. Porcentaje: {requiredFuseBox.TotalPercent}%");
@@ -117,6 +127,109 @@ public class Lever : MonoBehaviour
         }
     }
 
+    // NUEVO MÉTODO: Actualizar luz y materiales basado en el estado de la caja de fusibles
+    private void UpdateVisualsBasedOnFuseBox()
+    {
+        bool isFuseBoxComplete = false;
+
+        if (requireFuseBoxCompletion && requiredFuseBox != null)
+        {
+            isFuseBoxComplete = requiredFuseBox.IsPuzzleComplete;
+        }
+        else if (!requireFuseBoxCompletion)
+        {
+            // Si no requiere caja de fusibles, siempre está lista
+            isFuseBoxComplete = true;
+        }
+
+        // Cambiar color solo si el estado ha cambiado
+        if (isFuseBoxComplete != wasFuseBoxComplete)
+        {
+            // Actualizar luz
+            if (pointLight != null)
+            {
+                pointLight.color = isFuseBoxComplete ? readyColor : inactiveColor;
+            }
+
+            // Actualizar materiales
+            UpdateMaterialsEmission(isFuseBoxComplete);
+
+            wasFuseBoxComplete = isFuseBoxComplete;
+
+            if (isFuseBoxComplete)
+            {
+                Debug.Log($"Palanca {leverNumber}: Visuales cambiaron a VERDE - Caja de fusibles completada");
+            }
+        }
+    }
+
+    // NUEVO MÉTODO: Inicializar sistema de materiales
+    private void InitializeMaterialSystem()
+    {
+        originalEmissionColors.Clear();
+
+        foreach (Renderer renderer in materialRenderers)
+        {
+            if (renderer != null && renderer.material != null)
+            {
+                // Guardar color de emisión original
+                if (renderer.material.HasProperty("_EmissionColor"))
+                {
+                    originalEmissionColors.Add(renderer.material.GetColor("_EmissionColor"));
+                }
+                else
+                {
+                    originalEmissionColors.Add(Color.black);
+                }
+
+                // Configurar emisión inicial
+                SetMaterialEmission(renderer.material, inactiveEmissionColor);
+            }
+        }
+    }
+
+    // NUEVO MÉTODO: Actualizar emisión de materiales
+    private void UpdateMaterialsEmission(bool isReady)
+    {
+        Color targetColor = isReady ? readyEmissionColor : inactiveEmissionColor;
+
+        foreach (Renderer renderer in materialRenderers)
+        {
+            if (renderer != null && renderer.material != null)
+            {
+                SetMaterialEmission(renderer.material, targetColor);
+            }
+        }
+    }
+
+    // NUEVO MÉTODO: Configurar emisión de material
+    private void SetMaterialEmission(Material material, Color color)
+    {
+        if (material.HasProperty("_EmissionColor"))
+        {
+            material.SetColor("_EmissionColor", color * emissionIntensity);
+
+            // Asegurar que la emisión esté activada
+            material.EnableKeyword("_EMISSION");
+            material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+        }
+    }
+
+    // NUEVO MÉTODO: Restaurar colores originales
+    private void RestoreOriginalMaterials()
+    {
+        for (int i = 0; i < materialRenderers.Count && i < originalEmissionColors.Count; i++)
+        {
+            if (materialRenderers[i] != null && materialRenderers[i].material != null)
+            {
+                if (materialRenderers[i].material.HasProperty("_EmissionColor"))
+                {
+                    materialRenderers[i].material.SetColor("_EmissionColor", originalEmissionColors[i]);
+                }
+            }
+        }
+    }
+
     public void ActivateLever()
     {
         if (isMoving || isActivated) return;
@@ -129,45 +242,39 @@ public class Lever : MonoBehaviour
 
         PlaySound(activateSound);
 
-        // CAMBIAR LUZ A VERDE
-        UpdateLightColor();
-
         if (puzzleManager != null)
             puzzleManager.ActivateLever(leverNumber);
     }
 
-    // AGREGAR MÉTODOS PARA EL SISTEMA DE LUCES
     private void InitializeLightSystem()
     {
-        // Si no hay light asignada, buscar una en los hijos o crear una
         if (pointLight == null)
         {
             pointLight = GetComponentInChildren<Light>();
 
             if (pointLight == null)
             {
-                // Crear un nuevo GameObject para la luz
                 GameObject lightGO = new GameObject("LeverLight");
                 lightGO.transform.SetParent(transform);
-                lightGO.transform.localPosition = Vector3.up * 0.5f; // Posición arriba de la palanca
+                lightGO.transform.localPosition = Vector3.up * 0.5f;
 
                 pointLight = lightGO.AddComponent<Light>();
                 pointLight.type = LightType.Point;
             }
         }
 
-        // Configurar la luz
         pointLight.color = inactiveColor;
         pointLight.intensity = lightIntensity;
         pointLight.range = lightRange;
         pointLight.enabled = true;
     }
 
-    private void UpdateLightColor()
+    // CORREGIDO: Método de sonido usando PlayOneShot
+    private void PlaySound(AudioClip clip)
     {
-        if (pointLight != null)
+        if (clip != null && audioSource != null)
         {
-            pointLight.color = isActivated ? activeColor : inactiveColor;
+            audioSource.PlayOneShot(clip); // Usar PlayOneShot en lugar de Play
         }
     }
 
@@ -178,16 +285,23 @@ public class Lever : MonoBehaviour
         leverPivot.localRotation = initialRotation;
         targetRotation = initialRotation;
 
-        // RESTAURAR LUZ A ROJO
-        UpdateLightColor();
+        // Los visuales se mantienen según el estado de la caja de fusibles
+        UpdateVisualsBasedOnFuseBox();
     }
 
-    private void PlaySound(AudioClip clip)
+    // NUEVO: Restaurar materiales cuando se destruye el objeto (al salir del play mode)
+    private void OnDestroy()
     {
-        if (clip != null && audioSource != null)
+        RestoreOriginalMaterials();
+    }
+
+    // NUEVO: Restaurar materiales cuando se desactiva el script
+    private void OnDisable()
+    {
+        // Solo restaurar si la aplicación se está cerrando o en editor
+        if (!Application.isPlaying)
         {
-            audioSource.clip = clip;
-            audioSource.Play();
+            RestoreOriginalMaterials();
         }
     }
 
@@ -200,7 +314,6 @@ public class Lever : MonoBehaviour
         Vector3 pivotPoint = leverPivot != null ? leverPivot.position : transform.position;
         Gizmos.DrawSphere(pivotPoint, 0.05f);
 
-        // AGREGAR GIZMO PARA LA LUZ
         if (pointLight != null)
         {
             Gizmos.color = pointLight.color;
