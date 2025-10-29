@@ -46,6 +46,7 @@ public class WeaponPulse : Weapon
         StartCoroutine(TimeToShootAgain());
     }
 
+    // Elimina la corrutina ShootAnimationRoutine y el manejo de corrutinas
     private void Shoot()
     {
         // Activar animación de disparo con Trigger
