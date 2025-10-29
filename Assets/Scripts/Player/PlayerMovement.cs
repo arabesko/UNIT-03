@@ -591,12 +591,6 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         SelectModule(_inventory.WeaponSelected);
         myDriver.Initialized(this);
 
-        if (_animatorBasic != null && _animatorBasic.animator != null)
-        {
-            bool isBlasterEquipped = (_weaponSelected != null && _weaponSelected.GetComponent<WeaponPulse>() != null);
-            _animatorBasic.animator.SetBool("IsBlasterEquipped", isBlasterEquipped);
-        }
-
         _elementDetected = null;
 
         
@@ -607,9 +601,13 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     {
         if (_animatorBasic != null && _animatorBasic.animator != null)
         {
-            // Si el arma equipada es el Blaster (WeaponPulse), activar animación
+            int layerIndex = _animatorBasic.animator.GetLayerIndex("Blaster"); // Nombre exacto del layer
             bool isBlasterEquipped = (_weaponSelected != null && _weaponSelected.GetComponent<WeaponPulse>() != null);
-            _animatorBasic.animator.SetBool("IsBlasterEquipped", isBlasterEquipped);
+
+            if (layerIndex != -1)
+            {
+                _animatorBasic.animator.SetLayerWeight(layerIndex, isBlasterEquipped ? 1f : 0f);
+            }
         }
 
         // Si ya está seleccionado este módulo, no hacer nada
