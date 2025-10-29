@@ -208,7 +208,9 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         }
 
         // Iniciar animación de wake al comenzar el juego
-        StartWakeAnimation();
+        //StartWakeAnimation();
+
+        UpdateBlasterLayer();
     }
 
 
@@ -451,42 +453,6 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
             );
         }
     }
-    //private void HandleLevitatingObject()
-    //{
-    //    levitationOffset += Time.deltaTime * levitationFrequency;
-    //    float yOffset = Mathf.Sin(levitationOffset) * levitationAmplitude;
-
-    //    Vector3 targetPosition = _levitationPoint.position + new Vector3(0, yOffset, 0);
-
-    //    float minHeight = transform.position.y + levitationHeightRange.x;
-    //    float maxHeight = transform.position.y + levitationHeightRange.y;
-    //    targetPosition.y = Mathf.Clamp(targetPosition.y, minHeight, maxHeight);
-
-    //    Vector3 horizontalDirection = targetPosition - transform.position;
-    //    horizontalDirection.y = 0;
-
-    //    if (horizontalDirection.magnitude > maxDistanceFromPlayer)
-    //    {
-    //        horizontalDirection = horizontalDirection.normalized * maxDistanceFromPlayer;
-    //        targetPosition = transform.position + horizontalDirection;
-    //        targetPosition.y = Mathf.Clamp(targetPosition.y, minHeight, maxHeight);
-    //    }
-
-    //    _elementLevitated.transform.position = Vector3.Lerp(
-    //        _elementLevitated.transform.position,
-    //        targetPosition,
-    //        Time.deltaTime * 5f
-    //    );
-
-    //    if (levitationRotationSpeed > 0)
-    //    {
-    //        _elementLevitated.transform.Rotate(
-    //            Vector3.up,
-    //            levitationRotationSpeed * Time.deltaTime,
-    //            Space.World
-    //        );
-    //    }
-    //}
 
     private void HandleLevitationSphere()
     {
@@ -587,34 +553,21 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         {
             item.enabled = false;
         }
-        
+
         SelectModule(_inventory.WeaponSelected);
         myDriver.Initialized(this);
 
-        if (_animatorBasic != null && _animatorBasic.animator != null)
-        {
-            bool isBlasterEquipped = (_weaponSelected != null && _weaponSelected.GetComponent<WeaponPulse>() != null);
-            _animatorBasic.animator.SetBool("IsBlasterEquipped", isBlasterEquipped);
-        }
-
         _elementDetected = null;
 
-        
+        // Forzar actualización del layer Blaster
+        UpdateBlasterLayer();
         UpdateCursorState();
     }
 
     private void SelectModule(int index)
     {
-        if (_animatorBasic != null && _animatorBasic.animator != null)
-        {
-            // Si el arma equipada es el Blaster (WeaponPulse), activar animación
-            bool isBlasterEquipped = (_weaponSelected != null && _weaponSelected.GetComponent<WeaponPulse>() != null);
-            _animatorBasic.animator.SetBool("IsBlasterEquipped", isBlasterEquipped);
-        }
-
-        // Si ya está seleccionado este módulo, no hacer nada
-        if (index == _inventory.WeaponSelected)
-            return;
+        // Quitamos la verificación de si ya está seleccionado para forzar actualización
+        // if (index == _inventory.WeaponSelected) return;
 
         // Mejor guardia: si index es >= cantidad, no hacer nada
         if (_inventory == null || index >= _inventory.MyItemsCount()) return;
@@ -629,8 +582,28 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
             moduleUIHighlighter.HighlightObject(index);
         }
 
+        // ACTUALIZAR LAYER BLASTER - ESTA ES LA PARTE CLAVE
+        UpdateBlasterLayer();
+
         // Actualizar estado del cursor
         UpdateCursorState();
+    }
+
+    private void UpdateBlasterLayer()
+    {
+        if (_animatorBasic != null && _animatorBasic.animator != null)
+        {
+            int layerIndex = _animatorBasic.animator.GetLayerIndex("Blaster");
+
+            if (layerIndex != -1)
+            {
+                bool isBlasterEquipped = (_weaponSelected != null && _weaponSelected.GetComponent<WeaponPulse>() != null);
+                _animatorBasic.animator.SetLayerWeight(layerIndex, isBlasterEquipped ? 1f : 0f);
+
+                // Debug para verificar
+                Debug.Log($"UpdateBlasterLayer - Weapon: {_weaponSelected?.name}, IsBlaster: {isBlasterEquipped}, LayerWeight: {(isBlasterEquipped ? 1f : 0f)}");
+            }
+        }
     }
 
 
