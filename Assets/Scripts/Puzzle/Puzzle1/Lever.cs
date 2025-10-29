@@ -23,8 +23,8 @@ public class Lever : MonoBehaviour
     public Vector3 interactionOffset = Vector3.zero;
 
     [Header("Sonidos")]
+    public AudioSource audioSource; // Ahora se asigna manualmente
     public AudioClip activateSound;
-    public float soundMaxDistance = 10f;
 
     [Header("Sistema de Luces")]
     public Light pointLight;
@@ -34,7 +34,7 @@ public class Lever : MonoBehaviour
     public float lightRange = 3f;
 
     [Header("Sistema de Materiales")]
-    public List<Renderer> materialRenderers; // Renderers con los materiales a cambiar
+    public List<Renderer> materialRenderers;
     public Color inactiveEmissionColor = Color.red;
     public Color readyEmissionColor = Color.green;
     public float emissionIntensity = 1f;
@@ -43,12 +43,9 @@ public class Lever : MonoBehaviour
     private bool isMoving = false;
     private Quaternion initialRotation;
     private Quaternion targetRotation;
-    public AudioSource audioSource;
     private Transform player;
     private bool playerInRange = false;
     private bool wasFuseBoxComplete = false;
-
-    // Para restaurar materiales al salir del play mode
     private List<Color> originalEmissionColors = new List<Color>();
 
     void Start()
@@ -61,14 +58,16 @@ public class Lever : MonoBehaviour
         initialRotation = leverPivot.localRotation;
         targetRotation = initialRotation;
 
-        audioSource = GetComponent<AudioSource>();
+        // SOLUCIÓN DEL SONIDO: No crear AudioSource automáticamente, usar el asignado manualmente
         if (audioSource == null)
-            audioSource = gameObject.AddComponent<AudioSource>();
-
-        audioSource.playOnAwake = false;
-        audioSource.spatialBlend = 1f;
-        audioSource.rolloffMode = AudioRolloffMode.Linear;
-        audioSource.maxDistance = soundMaxDistance;
+        {
+            Debug.LogWarning($"Palanca {leverNumber}: No se ha asignado un AudioSource. El sonido no funcionará.");
+        }
+        else
+        {
+            // Configuración mínima para el AudioSource
+            audioSource.playOnAwake = false;
+        }
 
         InitializeLightSystem();
         InitializeMaterialSystem();
@@ -82,10 +81,8 @@ public class Lever : MonoBehaviour
         float distance = Vector3.Distance(interactionPoint, player.position);
         playerInRange = distance <= interactionRadius;
 
-        // ACTUALIZAR COLOR DE LA LUZ Y MATERIALES BASADO EN LA CAJA DE FUSIBLES
         UpdateVisualsBasedOnFuseBox();
 
-        // VERIFICACIÓN DE ACTIVACIÓN
         if (playerInRange && Input.GetKeyDown(KeyCode.E) && !isActivated && !isMoving)
         {
             bool canActivate = true;
@@ -127,7 +124,6 @@ public class Lever : MonoBehaviour
         }
     }
 
-    // NUEVO MÉTODO: Actualizar luz y materiales basado en el estado de la caja de fusibles
     private void UpdateVisualsBasedOnFuseBox()
     {
         bool isFuseBoxComplete = false;
@@ -138,22 +134,17 @@ public class Lever : MonoBehaviour
         }
         else if (!requireFuseBoxCompletion)
         {
-            // Si no requiere caja de fusibles, siempre está lista
             isFuseBoxComplete = true;
         }
 
-        // Cambiar color solo si el estado ha cambiado
         if (isFuseBoxComplete != wasFuseBoxComplete)
         {
-            // Actualizar luz
             if (pointLight != null)
             {
                 pointLight.color = isFuseBoxComplete ? readyColor : inactiveColor;
             }
 
-            // Actualizar materiales
             UpdateMaterialsEmission(isFuseBoxComplete);
-
             wasFuseBoxComplete = isFuseBoxComplete;
 
             if (isFuseBoxComplete)
@@ -163,7 +154,6 @@ public class Lever : MonoBehaviour
         }
     }
 
-    // NUEVO MÉTODO: Inicializar sistema de materiales
     private void InitializeMaterialSystem()
     {
         originalEmissionColors.Clear();
@@ -172,7 +162,6 @@ public class Lever : MonoBehaviour
         {
             if (renderer != null && renderer.material != null)
             {
-                // Guardar color de emisión original
                 if (renderer.material.HasProperty("_EmissionColor"))
                 {
                     originalEmissionColors.Add(renderer.material.GetColor("_EmissionColor"));
@@ -182,13 +171,11 @@ public class Lever : MonoBehaviour
                     originalEmissionColors.Add(Color.black);
                 }
 
-                // Configurar emisión inicial
                 SetMaterialEmission(renderer.material, inactiveEmissionColor);
             }
         }
     }
 
-    // NUEVO MÉTODO: Actualizar emisión de materiales
     private void UpdateMaterialsEmission(bool isReady)
     {
         Color targetColor = isReady ? readyEmissionColor : inactiveEmissionColor;
@@ -202,20 +189,16 @@ public class Lever : MonoBehaviour
         }
     }
 
-    // NUEVO MÉTODO: Configurar emisión de material
     private void SetMaterialEmission(Material material, Color color)
     {
         if (material.HasProperty("_EmissionColor"))
         {
             material.SetColor("_EmissionColor", color * emissionIntensity);
-
-            // Asegurar que la emisión esté activada
             material.EnableKeyword("_EMISSION");
             material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
         }
     }
 
-    // NUEVO MÉTODO: Restaurar colores originales
     private void RestoreOriginalMaterials()
     {
         for (int i = 0; i < materialRenderers.Count && i < originalEmissionColors.Count; i++)
@@ -269,12 +252,21 @@ public class Lever : MonoBehaviour
         pointLight.enabled = true;
     }
 
-    // CORREGIDO: Método de sonido usando PlayOneShot
+    // MÉTODO DE SONIDO SIMPLIFICADO
     private void PlaySound(AudioClip clip)
     {
         if (clip != null && audioSource != null)
         {
-            audioSource.PlayOneShot(clip); // Usar PlayOneShot en lugar de Play
+            // SOLUCIÓN: Usar PlayOneShot y asegurar que el AudioSource esté configurado correctamente
+            audioSource.PlayOneShot(clip);
+            Debug.Log($"Palanca {leverNumber}: Sonido reproducido");
+        }
+        else
+        {
+            if (clip == null)
+                Debug.LogWarning($"Palanca {leverNumber}: No hay AudioClip asignado");
+            if (audioSource == null)
+                Debug.LogWarning($"Palanca {leverNumber}: No hay AudioSource asignado");
         }
     }
 
@@ -284,21 +276,16 @@ public class Lever : MonoBehaviour
         isMoving = false;
         leverPivot.localRotation = initialRotation;
         targetRotation = initialRotation;
-
-        // Los visuales se mantienen según el estado de la caja de fusibles
         UpdateVisualsBasedOnFuseBox();
     }
 
-    // NUEVO: Restaurar materiales cuando se destruye el objeto (al salir del play mode)
     private void OnDestroy()
     {
         RestoreOriginalMaterials();
     }
 
-    // NUEVO: Restaurar materiales cuando se desactiva el script
     private void OnDisable()
     {
-        // Solo restaurar si la aplicación se está cerrando o en editor
         if (!Application.isPlaying)
         {
             RestoreOriginalMaterials();

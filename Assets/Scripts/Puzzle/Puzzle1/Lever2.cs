@@ -23,8 +23,8 @@ public class Lever2 : MonoBehaviour
     public Vector3 interactionOffset = Vector3.zero;
 
     [Header("Sonidos")]
+    public AudioSource audioSource; // Se asigna manualmente
     public AudioClip activateSound;
-    public float soundMaxDistance = 10f;
 
     [Header("Sistema de Luces")]
     public Light pointLight;
@@ -43,7 +43,6 @@ public class Lever2 : MonoBehaviour
     private bool isMoving = false;
     private Quaternion initialRotation;
     private Quaternion targetRotation;
-    public AudioSource audioSource;
     private Transform player;
     private bool playerInRange = false;
     private bool wasFuseBoxComplete = false;
@@ -59,14 +58,15 @@ public class Lever2 : MonoBehaviour
         initialRotation = leverPivot.localRotation;
         targetRotation = initialRotation;
 
-        audioSource = GetComponent<AudioSource>();
+        // SOLUCIÓN DEL SONIDO: Usar solo el AudioSource asignado manualmente
         if (audioSource == null)
-            audioSource = gameObject.AddComponent<AudioSource>();
-
-        audioSource.playOnAwake = false;
-        audioSource.spatialBlend = 1f;
-        audioSource.rolloffMode = AudioRolloffMode.Linear;
-        audioSource.maxDistance = soundMaxDistance;
+        {
+            Debug.LogWarning($"Palanca {leverNumber}: No se ha asignado un AudioSource. El sonido no funcionará.");
+        }
+        else
+        {
+            audioSource.playOnAwake = false;
+        }
 
         InitializeLightSystem();
         InitializeMaterialSystem();
@@ -251,12 +251,20 @@ public class Lever2 : MonoBehaviour
         pointLight.enabled = true;
     }
 
-    // CORREGIDO: Usar PlayOneShot para el sonido
+    // MÉTODO DE SONIDO SIMPLIFICADO
     private void PlaySound(AudioClip clip)
     {
         if (clip != null && audioSource != null)
         {
-            audioSource.PlayOneShot(clip); // Cambiado a PlayOneShot
+            audioSource.PlayOneShot(clip);
+            Debug.Log($"Palanca {leverNumber}: Sonido reproducido");
+        }
+        else
+        {
+            if (clip == null)
+                Debug.LogWarning($"Palanca {leverNumber}: No hay AudioClip asignado");
+            if (audioSource == null)
+                Debug.LogWarning($"Palanca {leverNumber}: No hay AudioSource asignado");
         }
     }
 

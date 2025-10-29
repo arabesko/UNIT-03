@@ -44,7 +44,7 @@ public class ChapterTitleController : MonoBehaviour
     public bool enableReplayWithP = true;
 
     // internals
-    private AudioSource _audioSource;
+    public AudioSource _audioSource;
     private Coroutine _activeDisplayCoroutine;
     private Coroutine _delayCoroutine;
     private Dictionary<GameObject, CanvasGroup> _cgCache = new Dictionary<GameObject, CanvasGroup>();
@@ -160,7 +160,7 @@ public class ChapterTitleController : MonoBehaviour
         if (_activeDisplayCoroutine != null) { StopCoroutine(_activeDisplayCoroutine); _activeDisplayCoroutine = null; }
 
         TitleModel model = new TitleModel(panel, t);
-        TitlePlayer player = new TitlePlayer(this);
+        TitlePlayer player = new TitlePlayer(this, _audioSource);
         _activeDisplayCoroutine = StartCoroutine(RunPlayer(player, model));
     }
 
@@ -347,7 +347,13 @@ public class ChapterTitleController : MonoBehaviour
     private class TitlePlayer
     {
         private ChapterTitleController _owner;
-        public TitlePlayer(ChapterTitleController owner) { _owner = owner; }
+        private AudioSource _audioSource;
+
+        public TitlePlayer(ChapterTitleController owner, AudioSource audioSource)
+        {
+            _owner = owner;
+            _audioSource = audioSource;
+        }
 
         public IEnumerator Play(TitleModel model)
         {
@@ -355,25 +361,25 @@ public class ChapterTitleController : MonoBehaviour
             CanvasGroup cg = _owner.GetOrAddCanvasGroup(model.panel);
             model.panel.SetActive(true);
 
-            if (_owner.enterClip != null) _owner._audioSource.PlayOneShot(_owner.enterClip);
+            if (_owner.enterClip != null) _audioSource.PlayOneShot(_owner.enterClip);
             yield return _owner.EnterSequence(cg, model);
 
             if (_owner.loopClip != null)
             {
-                _owner._audioSource.clip = _owner.loopClip;
-                _owner._audioSource.loop = true;
-                _owner._audioSource.Play();
+                _audioSource.clip = _owner.loopClip;
+                _audioSource.loop = true;
+                _audioSource.Play();
             }
 
             yield return _owner.VisibleSequence(cg, model);
 
             if (_owner.loopClip != null)
             {
-                _owner._audioSource.loop = false;
-                _owner._audioSource.Stop();
+                _audioSource.loop = false;
+                _audioSource.Stop();
             }
 
-            if (_owner.exitClip != null) _owner._audioSource.PlayOneShot(_owner.exitClip);
+            if (_owner.exitClip != null) _audioSource.PlayOneShot(_owner.exitClip);
             yield return _owner.ExitSequence(cg, model);
 
             model.panel.SetActive(false);
