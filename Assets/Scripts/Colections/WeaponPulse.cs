@@ -3,6 +3,10 @@ using UnityEngine;
 
 public class WeaponPulse : Weapon
 {
+    PlayerMovement playerMovement;
+    [SerializeField] public AnimatorBasic _animatorBasic;
+
+
     [Header("Bullet Settings")]
     [SerializeField] private GameObject _myBulletPrebaf;
     [SerializeField] private Transform _instancePoint;
@@ -44,6 +48,16 @@ public class WeaponPulse : Weapon
 
     private void Shoot()
     {
+        // Activar animación de disparo con Trigger
+        if (_animatorBasic != null && _animatorBasic.animator != null)
+        {
+            int layerIndex = _animatorBasic.animator.GetLayerIndex("Blaster");
+            if (layerIndex != -1)
+            {
+                _animatorBasic.animator.SetTrigger("Shoot");
+            }
+        }
+
         // posición y dirección
         Vector3 spawnPos = _instancePoint.position;
         Vector3 forwardDir = _instancePoint.forward;
