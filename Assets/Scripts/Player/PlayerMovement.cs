@@ -159,13 +159,13 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     void Awake()
     {
         // Manejar DontDestroyOnLoad de forma más robusta
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        if (players.Length > 1)
-        {
-            // Si ya existe un jugador, destruir este duplicado
-            Destroy(gameObject);
-            return;
-        }
+        //GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        //if (players.Length > 1)
+        //{
+        //    // Si ya existe un jugador, destruir este duplicado
+        //    Destroy(gameObject);
+        //    return;
+        //}
 
         DontDestroyOnLoad(gameObject);
         Controller = GetComponent<CharacterController>();
