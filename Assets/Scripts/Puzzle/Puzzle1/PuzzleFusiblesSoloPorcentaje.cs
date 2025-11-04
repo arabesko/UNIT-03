@@ -72,11 +72,11 @@ public class PuzzleFusiblesSoloPorcentaje : MonoBehaviour
         assignment.isOccupied = true;
         insertedFuses.Add(fuse.gameObject);
 
-        if (fuse._player != null && fuse._player.colectables.Contains(fuse.gameObject))
-        {
-            fuse._player.colectables.Remove(fuse.gameObject);
+        //if (fuse._player != null && fuse._player.colectables.Contains(fuse.gameObject))
+        //{
+        //    fuse._player.colectables.Remove(fuse.gameObject);
             fuse._player.NoLevitate();
-        }
+        //}
 
         Rigidbody rb = fuse.GetComponent<Rigidbody>();
         if (rb != null)

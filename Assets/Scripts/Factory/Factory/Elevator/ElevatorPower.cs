@@ -111,11 +111,11 @@ public class ElevatorPower : MonoBehaviour
                 //    UIBattery._isUIActivate = false;
 
                 StartCoroutine(OpenCloseBoxBattery(_pointB));
-                if (_playerScript != null)
-                {
-                    _playerScript.colectables.Remove(_battery);
+                //if (_playerScript != null)
+                //{
+                //    _playerScript.colectables.Remove(_battery);
                     _playerScript.NoLevitate();
-                }
+                //}
 
                 _rbBattery.isKinematic = true;
                 _isInstalling = true;

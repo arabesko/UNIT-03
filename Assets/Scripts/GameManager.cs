@@ -107,14 +107,14 @@ public class GameManager : MonoBehaviour
                 }
 
                 // Limpiar lista de coleccionables
-                for (int i = 0; i < playerMovement.colectables.Count; i++)
-                {
-                    if (playerMovement.colectables[i] == null)
-                    {
-                        playerMovement.colectables.RemoveAt(i);
-                        i = 0;
-                    }
-                }
+                //for (int i = 0; i < playerMovement.colectables.Count; i++)
+                //{
+                //    if (playerMovement.colectables[i] == null)
+                //    {
+                //        playerMovement.colectables.RemoveAt(i);
+                //        i = 0;
+                //    }
+                //}
             }
         }
 

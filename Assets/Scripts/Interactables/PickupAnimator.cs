@@ -11,6 +11,11 @@ public class PickupAnimator : MonoBehaviour
 
     private Vector3 startLocalPos;
 
+    [Header("Otros")]
+    public GameObject electricity;
+    public GameObject light;
+
+
     void Start()
     {
         // Guardamos la posición LOCAL inicial, no la world
