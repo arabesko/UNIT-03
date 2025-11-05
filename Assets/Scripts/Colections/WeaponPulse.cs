@@ -26,12 +26,13 @@ public class WeaponPulse : Weapon
         _isReadyToShootAgain = true;
         StopAllCoroutines(); // Limpiar cualquier corrutina previa
         nameModule = "Blaster";
+       
     }
 
     public override void Initialized(PlayerMovement player)
     {
         base.Initialized(player);
-
+        _instancePoint = GameReference.Instance.player.GetComponent<PlayerMovement>().instancePointBlaster;
     }
 
     public override void PowerElement()

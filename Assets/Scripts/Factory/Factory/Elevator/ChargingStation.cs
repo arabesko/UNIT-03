@@ -270,10 +270,10 @@ public class ChargingStation : MonoBehaviour
             currentBattery.isBeingMoved = false;
             isChargingInProgress = false; // La carga ha terminado
 
-            if (_playerScript != null && !_playerScript.colectables.Contains(currentBattery.gameObject))
-            {
-                _playerScript.colectables.Add(currentBattery.gameObject);
-            }
+            //if (_playerScript != null && !_playerScript.colectables.Contains(currentBattery.gameObject))
+            //{
+            //    _playerScript.colectables.Add(currentBattery.gameObject);
+            //}
 
             shouldMoveObject = true;
         }
@@ -289,11 +289,11 @@ public class ChargingStation : MonoBehaviour
             {
                 if (_playerScript != null)
                 {
-                    if (_playerScript.colectables.Contains(battery.gameObject))
-                    {
-                        _playerScript.colectables.Remove(battery.gameObject);
+                    //if (_playerScript.colectables.Contains(battery.gameObject))
+                    //{
+                    //    _playerScript.colectables.Remove(battery.gameObject);
                         _playerScript.NoLevitate();
-                    }
+                    //}
                 }
 
                 isMovingBattery = true;
@@ -315,10 +315,10 @@ public class ChargingStation : MonoBehaviour
             }
             else if (battery != null && battery.isCharged)
             {
-                if (_playerScript != null && !_playerScript.colectables.Contains(battery.gameObject))
-                {
-                    _playerScript.colectables.Add(battery.gameObject);
-                }
+                //if (_playerScript != null && !_playerScript.colectables.Contains(battery.gameObject))
+                //{
+                //    _playerScript.colectables.Add(battery.gameObject);
+                //}
             }
         }
         else if (other.CompareTag("Player"))
