@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Connect : MonoBehaviour
+public class ActivateNucleo : MonoBehaviour
 {
     [SerializeField] AudioSource _audioSource;
     [SerializeField] AudioClip _audioClipConnect;
@@ -12,10 +12,11 @@ public class Connect : MonoBehaviour
     [SerializeField] float _speedRotation;
     [SerializeField] float offsetY = -90;
 
-    [SerializeField] private Desconect _enchufe; //Conexion con el objeto que se levita
+    [SerializeField] private ElementPuzzle _myNucleo; //Conexion con el objeto que se levita
     public PlayerMovement _playerMovement;
 
     [SerializeField] private Train _myTrain;
+
     [SerializeField] bool _moduleActivate = false;
 
     private void Start()
@@ -25,37 +26,38 @@ public class Connect : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        
-        if (other.GetComponent<Desconect>() != null && _moduleActivate == false)
+
+        if (other.GetComponent<Nucleos>() != null && _moduleActivate == false)
         {
-            _enchufe = other.GetComponent<Desconect>();
+            _myNucleo = other.GetComponent<ElementPuzzle>();
             _playerMovement.NoLevitate();
-            _enchufe.GetComponent<Rigidbody>().isKinematic = true;
+            _myNucleo.isLevitable = false;
+            _myNucleo.GetComponent<Rigidbody>().isKinematic = true;
             StartCoroutine(MoveConnector());
-            _myTrain.Energize();
-            _moduleActivate = false;
+            _moduleActivate = true;
         }
     }
 
     public IEnumerator MoveConnector()
     {
+        print("Se ejecuto");
         bool isFar = true;
         Vector3 dir = Vector3.zero;
         while (isFar)
         {
-            dir = (_finalPoint.position - _enchufe.transform.position).normalized;
-            _enchufe.transform.position += dir * _speed * Time.deltaTime;
+            dir = (_finalPoint.position - _myNucleo.transform.position).normalized;
+            _myNucleo.transform.position += dir * _speed * Time.deltaTime;
 
-            RotateTowards(_finalPoint, _enchufe.transform);
-            print(Vector3.Distance(_finalPoint.transform.position, _enchufe.transform.position));
-            if (Vector3.Distance(_finalPoint.transform.position, _enchufe.transform.position) <= 0.1f)
+            RotateTowards(_finalPoint, _myNucleo.transform);
+            if (Vector3.Distance(_finalPoint.transform.position, _myNucleo.transform.position) <= 0.1f)
             {
                 isFar = false;
             }
-
             yield return null;
         }
+
         _audioSource.PlayOneShot(_audioClipConnect);
+        _myTrain.AddNucleo();
     }
 
     private void RotateTowards(Transform target, Transform myTrans)
