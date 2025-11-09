@@ -6,9 +6,20 @@ public class Train : MonoBehaviour
 {
     [SerializeField] int _maxNucleos;
     [SerializeField] private int _nNucleos;
-    [SerializeField] private bool _isTriainWithNucleos;
-    [SerializeField] private bool _isTriainEnergizede;
+    [SerializeField] private bool _isTrainWithNucleos;
+    [SerializeField] private bool _isTrainEnergizede;
     [SerializeField] private bool _isRevoInside;
+
+    [SerializeField] private GameObject _redLight;
+    [SerializeField] private GameObject _greenLight;
+
+    public GameObject _modelo3D;
+    [SerializeField] private Transform _pointA;
+    [SerializeField] private Transform _pointB;
+    [SerializeField] private AudioClip _soundMagneto;
+    [SerializeField] private AudioSource _audioSource;
+
+    [SerializeField] private float _speed;
 
 
     public void AddNucleo()
@@ -16,19 +27,28 @@ public class Train : MonoBehaviour
         _nNucleos++;
         if(_nNucleos >= _maxNucleos)
         {
-            _isTriainWithNucleos = true;
+            _isTrainWithNucleos = true;
+
+            if (_isTrainEnergizede && _isTrainWithNucleos)
+            {
+                ActivateMagnete();
+            }
         }
     }
 
     public void Energize()
     {
-        _isTriainEnergizede = true;
+        _isTrainEnergizede = true;
+        if (_isTrainEnergizede && _isTrainWithNucleos)
+        {
+            ActivateMagnete();
+        }
     }
 
     public void RevoInsideTrain()
     {
         _isRevoInside = true;
-        if (_isTriainEnergizede && _isTriainWithNucleos && _isRevoInside)
+        if (_isTrainEnergizede && _isTrainWithNucleos && _isRevoInside)
         {
             NivelDrivingTrains();
         }
@@ -39,4 +59,34 @@ public class Train : MonoBehaviour
         //Empieza parte 2 del nivel 2
     }
 
+    private void ActivateMagnete()
+    {
+        _redLight.SetActive(false);
+        _greenLight.SetActive(true);
+        StartCoroutine(MoveMagneteTrain());
+    }
+
+
+    private IEnumerator MoveMagneteTrain()
+    {
+        Vector3 dir = Vector3.zero;
+        _audioSource.PlayOneShot(_soundMagneto);
+        Vector3 target = _pointB.position;
+        //bool isFar = true;
+        while (true)
+        {
+            dir = (target - _modelo3D.transform.position).normalized;
+            _modelo3D.transform.position += dir * _speed * Time.deltaTime;
+
+            //_modelo3D.transform.position = Vector3.Lerp(_modelo3D.transform.position, target, _speed * Time.deltaTime);
+
+
+            if (Vector3.Distance(_modelo3D.transform.position, target) <= 0.1f)
+            {
+                target = (target == _pointB.position)? _pointA.position : _pointB.position;
+                //isFar = false;
+            }
+            yield return null;
+        }
+    }
 }

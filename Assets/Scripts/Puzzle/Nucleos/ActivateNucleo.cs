@@ -40,7 +40,6 @@ public class ActivateNucleo : MonoBehaviour
 
     public IEnumerator MoveConnector()
     {
-        print("Se ejecuto");
         bool isFar = true;
         Vector3 dir = Vector3.zero;
         while (isFar)
@@ -58,6 +57,7 @@ public class ActivateNucleo : MonoBehaviour
 
         _audioSource.PlayOneShot(_audioClipConnect);
         _myTrain.AddNucleo();
+        _myNucleo.gameObject.transform.parent = _myTrain._modelo3D.transform; //Deja el nucle destro de los objetos 3D para que se muevan juntos
     }
 
     private void RotateTowards(Transform target, Transform myTrans)
