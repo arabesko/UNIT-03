@@ -47748,7 +47748,6 @@ GameObject:
   - component: {fileID: 475662951}
   - component: {fileID: 475662954}
   - component: {fileID: 475662953}
-  - component: {fileID: 475662952}
   m_Layer: 0
   m_Name: Spot Light LN PASILLO (2)
   m_TagString: Untagged
@@ -47771,21 +47770,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1640529238}
   m_LocalEulerAnglesHint: {x: 25.894, y: -8.837, z: -11.779}
---- !u!114 &475662952
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 475662950}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c8bca95f7c947b4db5fb152a0d693d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  anisotropy: 0.657
-  scattering: 0.07
-  radius: 0
 --- !u!114 &475662953
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -82393,7 +82377,6 @@ GameObject:
   - component: {fileID: 673644003}
   - component: {fileID: 673644006}
   - component: {fileID: 673644005}
-  - component: {fileID: 673644004}
   m_Layer: 0
   m_Name: Spot Light LN PASILLO
   m_TagString: Untagged
@@ -82416,21 +82399,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1640529238}
   m_LocalEulerAnglesHint: {x: 67.14, y: -30.543, z: -28.956}
---- !u!114 &673644004
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 673644002}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c8bca95f7c947b4db5fb152a0d693d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  anisotropy: 0.804
-  scattering: 1
-  radius: 0
 --- !u!114 &673644005
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -116188,7 +116156,7 @@ Transform:
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
   m_LocalRotation: {x: 0.062297326, y: 0.23089124, z: -0.04263215, w: 0.9700468}
-  m_LocalPosition: {x: -16.479359, y: 0.79723704, z: -11.804335}
+  m_LocalPosition: {x: -7.160143, y: -2.0233877, z: -35.505157}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -167751,6 +167719,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -7511558181221131132, guid: 8a8a0b6982b9ef14dad5b4e1fabb2170, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 8a8a0b6982b9ef14dad5b4e1fabb2170, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 59b9773853eac984d8a82a534b8b676b, type: 2}
@@ -190919,7 +190891,6 @@ GameObject:
   - component: {fileID: 1608569181}
   - component: {fileID: 1608569184}
   - component: {fileID: 1608569183}
-  - component: {fileID: 1608569182}
   m_Layer: 0
   m_Name: Spot Light LN PASILLO (5)
   m_TagString: Untagged
@@ -190942,21 +190913,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1640529238}
   m_LocalEulerAnglesHint: {x: 29.651, y: 15.521, z: -0.375}
---- !u!114 &1608569182
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1608569180}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c8bca95f7c947b4db5fb152a0d693d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  anisotropy: 0.804
-  scattering: 1
-  radius: 0
 --- !u!114 &1608569183
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -221607,7 +221563,6 @@ GameObject:
   - component: {fileID: 1927101716}
   - component: {fileID: 1927101719}
   - component: {fileID: 1927101718}
-  - component: {fileID: 1927101717}
   m_Layer: 0
   m_Name: Spot Light LN PASILLO (6)
   m_TagString: Untagged
@@ -221630,21 +221585,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1640529238}
   m_LocalEulerAnglesHint: {x: 25.894, y: -8.837, z: -11.779}
---- !u!114 &1927101717
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1927101715}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c8bca95f7c947b4db5fb152a0d693d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  anisotropy: 0.657
-  scattering: 0.07
-  radius: 0
 --- !u!114 &1927101718
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -259218,7 +259158,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5020083832746278344, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -141.1
+      value: -121.92
       objectReference: {fileID: 0}
     - target: {fileID: 5020083832746278344, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
       propertyPath: m_LocalPosition.y
@@ -259226,7 +259166,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5020083832746278344, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -73.4
+      value: -90.39
       objectReference: {fileID: 0}
     - target: {fileID: 5020083832746278344, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
       propertyPath: m_LocalRotation.w
@@ -259266,19 +259206,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5021947403454780570, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.052898526
+      value: -0.052898034
       objectReference: {fileID: 0}
     - target: {fileID: 5021947403454780570, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.0055263285
+      value: -0.0055264207
       objectReference: {fileID: 0}
     - target: {fileID: 5021947403454780570, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.99317956
+      value: 0.9931792
       objectReference: {fileID: 0}
     - target: {fileID: 5021947403454780570, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.10375783
+      value: -0.10376049
       objectReference: {fileID: 0}
     - target: {fileID: 5054777939896020226, guid: 000f5d9b342af3445a8af357431d66e3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
