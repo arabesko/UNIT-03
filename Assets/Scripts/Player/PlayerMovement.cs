@@ -951,6 +951,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         if (_currentHealth <= 0f)
         {
             _isDeath = true;
+            SelectModule(0);
             StartCoroutine(RespawnWithVolumeFade());
         }
     }
