@@ -8,12 +8,22 @@ public class Gas : MonoBehaviour
     [SerializeField] float _timeBetweenAttack;
     [SerializeField] float _timeAttack;
     [SerializeField] float _damage;
+    [SerializeField] AudioSource _audioSource;
+    [SerializeField] PlayerMovement _playerMovement;
+
     void Start()
+    {
+        _particleSystem.Stop();
+        StartGas();
+    }
+
+    public void StartGas()
     {
         if (_timeAttack == 0)
         {
             _particleSystem.Play();
-        } else
+        }
+        else
         {
             StartCoroutine(TimeAttack());
         }
@@ -22,8 +32,10 @@ public class Gas : MonoBehaviour
     IEnumerator TimeAttack()
     {
         _particleSystem.Play();
+        _audioSource.Play();
         yield return new WaitForSeconds(_timeAttack);
         _particleSystem.Stop();
+        _audioSource.Stop();
         StartCoroutine(TimeBetweenAttack());
     }
 
@@ -40,7 +52,6 @@ public class Gas : MonoBehaviour
         {
             print("Colision player");
             playerMovement.Damage(_damage);
-            
         }
     }
 }
