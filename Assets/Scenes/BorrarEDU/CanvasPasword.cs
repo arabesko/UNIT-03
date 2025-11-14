@@ -11,11 +11,13 @@ public class CanvasPasword : MonoBehaviour
     [SerializeField] private string _pasword; //Es la contraseña
 
     [SerializeField] private AudioSource _audioSource;
-    [SerializeField] private AudioClip _audioPaswordYES;
+    
     [SerializeField] private AudioClip _audioPaswordNO;
     [SerializeField] private AudioClip _audioKeyPress;
 
     [SerializeField] private List<Button> _myButtons;
+
+    [SerializeField] KeyOpenDoor _keyOpenDoor;
 
     public void WriteNumeber(int number)
     {
@@ -28,7 +30,8 @@ public class CanvasPasword : MonoBehaviour
             if (_textPaswordAdd.Trim() == _pasword.Trim())
             {
                 //Clave correcta
-                _audioSource.PlayOneShot(_audioPaswordYES);
+                
+                _keyOpenDoor._isCorrectKey = true;
             }
             else
             {
@@ -43,15 +46,16 @@ public class CanvasPasword : MonoBehaviour
         }
     }
 
-    private IEnumerator TimeToErasePasw()
+    public IEnumerator TimeToErasePasw()
     {
         yield return new WaitForSeconds(1.5f);
         _textPaswordAdd = "";
         _textPasword.text = "";
         MyButtonsActivate(true);
+        _keyOpenDoor.HideKeyBoard();
     }
 
-    private void MyButtonsActivate(bool isActivate)
+    public void MyButtonsActivate(bool isActivate)
     {
         foreach (Button item in _myButtons)
         {
