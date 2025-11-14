@@ -131,6 +131,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
 
     [Header("Conexion camara")]
     public Transform puntoCamaraFBX;
+    public Transform cameraTargetGO;
 
 
     public bool IsInvisible

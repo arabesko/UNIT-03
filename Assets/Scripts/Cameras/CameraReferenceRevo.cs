@@ -12,6 +12,7 @@ public class CameraReferenceRevo : MonoBehaviour
         {
             var camera = GetComponent<CinemachineFreeLook>();
             camera.Follow = myPlayer.puntoCamaraFBX;
+            camera.LookAt = myPlayer.cameraTargetGO;
         }
     }
 }
