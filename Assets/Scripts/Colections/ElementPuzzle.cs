@@ -22,6 +22,7 @@ public class ElementPuzzle : PuzzleMother
 
     void Start()
     {
+        if (_player == null) _player = GameReference.Instance.player.GetComponent<PlayerMovement>();
         foreach (var part in _MyParts)
         {
             _MyPartsBackup.Add(part.material);
