@@ -40,6 +40,7 @@ public class KeyOpenDoor : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.E))
             {
+                Cursor.visible = true;
                 _canvas.SetActive(true);
             }
 
@@ -58,7 +59,7 @@ public class KeyOpenDoor : MonoBehaviour
 
     public void HideKeyBoard()
     {
-        
+        Cursor.visible = false;
         _canvas.SetActive(false);
     }
 

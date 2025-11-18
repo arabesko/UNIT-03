@@ -15,6 +15,7 @@ public class Desconect : MonoBehaviour
         {
             _myElementPuzzle.isLevitable = true;
             Destroy(_myJoint);
+            print("cae");
         }
     }
 }

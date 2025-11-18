@@ -47,7 +47,6 @@ public class Connect : MonoBehaviour
             _enchufe.transform.position += dir * _speed * Time.deltaTime;
 
             RotateTowards(_finalPoint, _enchufe.transform);
-            print(Vector3.Distance(_finalPoint.transform.position, _enchufe.transform.position));
             if (Vector3.Distance(_finalPoint.transform.position, _enchufe.transform.position) <= 0.1f)
             {
                 isFar = false;
