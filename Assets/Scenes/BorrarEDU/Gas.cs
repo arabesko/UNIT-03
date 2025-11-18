@@ -10,9 +10,11 @@ public class Gas : MonoBehaviour
     [SerializeField] float _damage;
     [SerializeField] AudioSource _audioSource;
     [SerializeField] PlayerMovement _playerMovement;
+    [SerializeField] bool _canDamage;
 
     void Start()
     {
+        _playerMovement = GameReference.Instance.player.GetComponent<PlayerMovement>();
         _particleSystem.Stop();
         StartGas();
     }
@@ -22,6 +24,7 @@ public class Gas : MonoBehaviour
         if (_timeAttack == 0)
         {
             _particleSystem.Play();
+            _canDamage = true;
         }
         else
         {
@@ -33,7 +36,9 @@ public class Gas : MonoBehaviour
     {
         _particleSystem.Play();
         _audioSource.Play();
+        _canDamage = true;
         yield return new WaitForSeconds(_timeAttack);
+        _canDamage = false;
         _particleSystem.Stop();
         _audioSource.Stop();
         StartCoroutine(TimeBetweenAttack());
@@ -50,8 +55,7 @@ public class Gas : MonoBehaviour
         PlayerMovement playerMovement = other.GetComponent<PlayerMovement>();
         if (playerMovement != null)
         {
-            print("Colision player");
-            playerMovement.Damage(_damage);
+            if (_canDamage) playerMovement.Damage(_damage);
         }
     }
 }

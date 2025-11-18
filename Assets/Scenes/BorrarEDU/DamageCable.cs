@@ -7,6 +7,7 @@ public class DamageCable : MonoBehaviour
     [SerializeField] float _damage;
     [SerializeField] PlayerMovement _playerMovement;
 
+
     private void OnTriggerEnter(Collider other)
     {
         PlayerMovement playerMovement = other.GetComponent<PlayerMovement>();
