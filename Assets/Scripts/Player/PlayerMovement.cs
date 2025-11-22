@@ -529,6 +529,8 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
 
     public void AddModules(Transform _position)
     {
+        if (_elementDetected == null) return;
+
         var myDriver = _elementDetected.GetComponent<IModules>();
         if (myDriver == null) return;
 
@@ -556,6 +558,12 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
             item.enabled = false;
         }
 
+        //VINCULACIÓN UI
+        if (moduleUIHighlighter != null)
+        {
+            moduleUIHighlighter.SyncWithInventory(_inventory);
+        }
+
         SelectModule(_inventory.WeaponSelected);
         myDriver.Initialized(this);
 
@@ -568,19 +576,22 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
 
     private void SelectModule(int index)
     {
-        // Quitamos la verificación de si ya está seleccionado para forzar actualización
-        // if (index == _inventory.WeaponSelected) return;
-
-        // Mejor guardia: si index es >= cantidad, no hacer nada
         if (_inventory == null || index >= _inventory.MyItemsCount()) return;
 
         _weaponSelected = _inventory.SelectWeapon(index);
         _weaponSelected.GetComponent<Weapon>().MyStart();
 
-        // SINCRONIZAR UI por si cambió algo
+        if (_weaponSelected != null)
+        {
+            Weapon w = _weaponSelected.GetComponent<Weapon>();
+            if (w != null) w.MyStart();
+
+            // Caso especial para Blaster (Pulse)
+            UpdateBlasterLayer();
+        }
+
         if (moduleUIHighlighter != null)
         {
-            moduleUIHighlighter.SyncWithInventory(_inventory);
             moduleUIHighlighter.HighlightObject(index);
         }
 
