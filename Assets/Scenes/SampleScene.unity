@@ -22268,7 +22268,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -748, y: 450}
+  m_AnchoredPosition: {x: -748.00006, y: 450}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &249600256
@@ -130550,7 +130550,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2008595198}
-  - {fileID: 1403369137}
   - {fileID: 164681615}
   - {fileID: 965254691}
   - {fileID: 759909080}
@@ -136020,6 +136019,7 @@ GameObject:
   - component: {fileID: 1403369136}
   - component: {fileID: 1403369135}
   - component: {fileID: 1403369134}
+  - component: {fileID: 1403369138}
   m_Layer: 5
   m_Name: "CanvasM\xF3dulosProyector"
   m_TagString: Untagged
@@ -136113,13 +136113,25 @@ RectTransform:
   - {fileID: 132429004}
   - {fileID: 307277214}
   - {fileID: 952916033}
-  m_Father: {fileID: 1310846953}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1403369138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1403369133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f7cc69bb46c16c42a6b118416e976da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1403571645
 GameObject:
   m_ObjectHideFlags: 0
@@ -167482,26 +167494,13 @@ MonoBehaviour:
   - {fileID: 153446288}
   - {fileID: 1033740031}
   - {fileID: 279812720}
-  uiBackgroundObjects:
-  - {fileID: 2147418391}
-  - {fileID: 284435585}
-  - {fileID: 1654880585}
   highlightBorders:
   - {fileID: 1241533890}
   - {fileID: 88430565}
   - {fileID: 261913495}
-  defaultScaleMultiplier: 1.01
-  perObjectMultiplier: []
-  scaleDuration: 0.2
-  backgroundScaleMultiplier: 1.00001
-  highlightBackgroundColor: 1
-  backgroundHighlightColor: {r: 0.15, g: 0.9, b: 1, a: 1}
-  backgroundColorDuration: 0.12
-  deactivateAtStart: 1
-  activateOnEnable: 0
-  highlightOnEnable: 1
-  highlightIndexOnEnable: 0
-  highlightDelay: 0.05
+  animationDuration: 0.2
+  selectedScale: 1.3
+  normalScale: 1
 --- !u!65 &1776987918
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -227156,6 +227155,7 @@ SceneRoots:
   - {fileID: 547933280}
   - {fileID: 1203203914}
   - {fileID: 8145052834373453316}
+  - {fileID: 1403369137}
   - {fileID: 1310846953}
   - {fileID: 752472225}
   - {fileID: 631331588997032022}
