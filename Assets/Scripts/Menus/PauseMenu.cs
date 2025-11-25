@@ -8,6 +8,7 @@ public class PauseMenu : MonoBehaviour
     public bool isPaused = false;
     public GameObject optionsPanel;
     public PlayerMovement playerMovement; // Referencia al script del jugador
+    public GameObject _canvasDoor;
 
     void Start()
     {
@@ -26,6 +27,10 @@ public class PauseMenu : MonoBehaviour
 
     void Update()
     {
+        //Impide que se abra la pausa cuando el codigo esta en proceso. Da errores la pausa.
+        if (_canvasDoor != null && _canvasDoor.gameObject.activeSelf) return;
+
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (optionsPanel != null && optionsPanel.activeSelf)
@@ -44,7 +49,7 @@ public class PauseMenu : MonoBehaviour
     {
         if (pausePanel != null) pausePanel.SetActive(true);
         if (optionsPanel != null) optionsPanel.SetActive(false);
-        //Time.timeScale = 0f;
+        Time.timeScale = 0f;
         isPaused = true;
 
         // Forzar mostrar cursor al pausar
