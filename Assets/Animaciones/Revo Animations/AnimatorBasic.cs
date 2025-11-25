@@ -15,6 +15,7 @@ public class AnimatorBasic : MonoBehaviour
 
     [SerializeField] public Animator animator;
 
+
     void Update()
     {
         //print(_playerMovement.pct);

@@ -44,7 +44,7 @@ public class PauseMenu : MonoBehaviour
     {
         if (pausePanel != null) pausePanel.SetActive(true);
         if (optionsPanel != null) optionsPanel.SetActive(false);
-        Time.timeScale = 0f;
+        //Time.timeScale = 0f;
         isPaused = true;
 
         // Forzar mostrar cursor al pausar
