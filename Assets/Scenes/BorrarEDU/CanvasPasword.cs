@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -37,6 +38,8 @@ public class CanvasPasword : MonoBehaviour
             {
                 //Clave incorrecta
                 _audioSource.PlayOneShot(_audioPaswordNO);
+                _textPaswordAdd = "";
+                _textPasword.text = "";
                 StartCoroutine(TimeToErasePasw());
             }
         }
@@ -46,8 +49,14 @@ public class CanvasPasword : MonoBehaviour
         }
     }
 
+    public void ExitPasw()
+    {
+        _keyOpenDoor.HideKeyBoard();
+    }
+
     public IEnumerator TimeToErasePasw()
     {
+        print("corrutina erasespaw");
         yield return new WaitForSeconds(1.5f);
         _textPaswordAdd = "";
         _textPasword.text = "";

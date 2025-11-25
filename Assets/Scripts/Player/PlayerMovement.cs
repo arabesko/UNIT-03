@@ -133,6 +133,9 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
     public Transform puntoCamaraFBX;
     public Transform cameraTargetGO;
 
+    
+   
+
 
     public bool IsInvisible
     {
@@ -157,6 +160,9 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         get { return _canWeaponChange; }
         set { _canWeaponChange = value; }
     }
+
+    [Header("Inhabilitacion de juego")]
+    public bool _canDo = false;
 
     void Awake()
     {
@@ -210,7 +216,7 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         }
 
         // Iniciar animación de wake al comenzar el juego
-        //StartWakeAnimation();
+        StartWakeAnimation();
 
         UpdateBlasterLayer();
     }
@@ -228,11 +234,19 @@ public class PlayerMovement : MonoBehaviour, IDamagiable
         }
     }
 
+    public void CanDo()
+    {
+        _canDo = true;
+    }
 
+    public void CantDo()
+    {
+        _canDo = false;
+    }
 
     void LateUpdate()
     {
-        
+        if (!_canDo) return;
 
         HandleTimers();
         HandleAimBone();
