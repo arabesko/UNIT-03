@@ -38,8 +38,6 @@ public class CanvasPasword : MonoBehaviour
             {
                 //Clave incorrecta
                 _audioSource.PlayOneShot(_audioPaswordNO);
-                _textPaswordAdd = "";
-                _textPasword.text = "";
                 StartCoroutine(TimeToErasePasw());
             }
         }
@@ -51,12 +49,12 @@ public class CanvasPasword : MonoBehaviour
 
     public void ExitPasw()
     {
+        Cursor.lockState = CursorLockMode.None;        
         _keyOpenDoor.HideKeyBoard();
     }
 
     public IEnumerator TimeToErasePasw()
     {
-        print("corrutina erasespaw");
         yield return new WaitForSeconds(1.5f);
         _textPaswordAdd = "";
         _textPasword.text = "";

@@ -16,6 +16,7 @@ public class KeyOpenDoor : MonoBehaviour
     [SerializeField] private AudioClip _audioPaswordYES;
 
     [SerializeField] PlayerMovement _playerMovement;
+    bool _keyAvalable = true;
 
     bool _isCursor;
 
@@ -46,13 +47,14 @@ public class KeyOpenDoor : MonoBehaviour
     {
         if (_isInArea)
         {
-            if (Input.GetKeyDown(KeyCode.E))
+            if (Input.GetKeyDown(KeyCode.E) && _keyAvalable)
             {
                 _isCursor = Cursor.visible;
                 _playerMovement.CantDo();
                 Cursor.visible = true;
                 _canvas.SetActive(true);
-
+                Cursor.lockState = CursorLockMode.None;
+                _keyAvalable = false;
             }
 
             //if (Input.GetKeyDown(KeyCode.Escape))
@@ -89,6 +91,6 @@ public class KeyOpenDoor : MonoBehaviour
             yield return null;
         }
         
-        Destroy(this, 2);
+       
     }
 }
