@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -44,6 +45,12 @@ public class CanvasPasword : MonoBehaviour
         {
             _textPasword.text = _textPaswordAdd;
         }
+    }
+
+    public void ExitPasw()
+    {
+        Cursor.lockState = CursorLockMode.None;        
+        _keyOpenDoor.HideKeyBoard();
     }
 
     public IEnumerator TimeToErasePasw()

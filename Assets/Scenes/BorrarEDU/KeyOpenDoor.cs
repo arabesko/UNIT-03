@@ -15,6 +15,16 @@ public class KeyOpenDoor : MonoBehaviour
     [SerializeField] private AudioSource _audioSource;
     [SerializeField] private AudioClip _audioPaswordYES;
 
+    [SerializeField] PlayerMovement _playerMovement;
+    bool _keyAvalable = true;
+
+    bool _isCursor;
+
+    private void Start()
+    {
+        _playerMovement = GameReference.Instance.player.gameObject.GetComponent<PlayerMovement>();
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         PlayerMovement playerMovement = other.GetComponent<PlayerMovement>();
@@ -30,7 +40,6 @@ public class KeyOpenDoor : MonoBehaviour
         if (playerMovement != null)
         {
             _isInArea = false;
-            HideKeyBoard();
         }
     }
 
@@ -38,16 +47,20 @@ public class KeyOpenDoor : MonoBehaviour
     {
         if (_isInArea)
         {
-            if (Input.GetKeyDown(KeyCode.E))
+            if (Input.GetKeyDown(KeyCode.E) && _keyAvalable)
             {
+                _isCursor = Cursor.visible;
+                _playerMovement.CantDo();
                 Cursor.visible = true;
                 _canvas.SetActive(true);
+                Cursor.lockState = CursorLockMode.None;
+                _keyAvalable = false;
             }
 
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                HideKeyBoard();
-            }
+            //if (Input.GetKeyDown(KeyCode.Escape))
+            //{
+            //    HideKeyBoard();
+            //}
         }
 
         if (_isCorrectKey)
@@ -59,7 +72,8 @@ public class KeyOpenDoor : MonoBehaviour
 
     public void HideKeyBoard()
     {
-        Cursor.visible = false;
+        _playerMovement.CanDo();
+        Cursor.visible = _isCursor;
         _canvas.SetActive(false);
     }
 
@@ -77,6 +91,6 @@ public class KeyOpenDoor : MonoBehaviour
             yield return null;
         }
         
-        Destroy(this, 2);
+       
     }
 }
