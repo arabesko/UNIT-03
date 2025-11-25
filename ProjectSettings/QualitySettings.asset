@@ -126,16 +126,16 @@ QualitySettings:
     realtimeReflectionProbes: 0
     billboardsFaceCameraPosition: 0
     useLegacyDetailDistribution: 1
-    vSyncCount: 0
+    vSyncCount: 1
     realtimeGICPUUsage: 25
     lodBias: 0.7
     maximumLODLevel: 0
     enableLODCrossFade: 1
-    streamingMipmapsActive: 0
+    streamingMipmapsActive: 1
     streamingMipmapsAddAllCameras: 1
-    streamingMipmapsMemoryBudget: 512
+    streamingMipmapsMemoryBudget: 256
     streamingMipmapsRenderersPerFrame: 512
-    streamingMipmapsMaxLevelReduction: 2
+    streamingMipmapsMaxLevelReduction: 3
     streamingMipmapsMaxFileIORequests: 1024
     particleRaycastBudget: 64
     asyncUploadTimeSlice: 2
@@ -301,4 +301,7 @@ QualitySettings:
     terrainMaxTrees: 50
     excludedTargetPlatforms: []
   m_TextureMipmapLimitGroupNames: []
-  m_PerPlatformDefaultQuality: {}
+  m_PerPlatformDefaultQuality:
+    Android: 0
+    Server: 0
+    Standalone: 0

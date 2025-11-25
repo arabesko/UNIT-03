@@ -8,6 +8,6 @@ public class OptimizarFPS : MonoBehaviour
         QualitySettings.vSyncCount = 0;
 
         // Esto le dice a la GPU: "Solo trabaja hasta llegar a 60, luego descansa"
-        Application.targetFrameRate = 75;
+        Application.targetFrameRate = 60;
     }
 }
