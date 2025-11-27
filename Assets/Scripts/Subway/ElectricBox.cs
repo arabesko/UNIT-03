@@ -1,17 +1,17 @@
 using UnityEngine;
+using UnityEngine;
 
 public class ElectricBox : MonoBehaviour
 {
     [Header("Referencias de la Trampa")]
-    [SerializeField] private GameObject deathZone; // Referencia al trigger de muerte
-    [SerializeField] private ParticleSystem electricParticles; // Referencia al sistema de partículas
+    [SerializeField] private GameObject deathZone;
+    [SerializeField] private ParticleSystem electricParticles;
     [SerializeField] private ParticleSystem electricParticles2;
     [SerializeField] private ParticleSystem electricParticles3;
     [SerializeField] private ParticleSystem electricParticles4;
-    //[SerializeField] private Renderer boxRenderer; // Opcional: para cambiar el material
 
-    //[Header("Configuración")]
-    //[SerializeField] private Material damagedMaterial; // Opcional: material cuando se destruye
+    [Header("Sonido")]
+    [SerializeField] private AudioSource electricSound; // Sonido eléctrico
 
     public void DisableTrap()
     {
@@ -19,27 +19,24 @@ public class ElectricBox : MonoBehaviour
         if (deathZone != null)
             deathZone.SetActive(false);
 
-        // Desactivar partículas
+        // Detener partículas
         if (electricParticles != null)
             electricParticles.Stop();
 
-        // Desactivar partículas
         if (electricParticles2 != null)
             electricParticles2.Stop();
 
-        // Desactivar partículas
         if (electricParticles3 != null)
             electricParticles3.Stop();
 
-        // Desactivar partículas
         if (electricParticles4 != null)
             electricParticles4.Stop();
 
-        // Opcional: cambiar apariencia de la caja
-        /*if (boxRenderer != null && damagedMaterial != null)
-            boxRenderer.material = damagedMaterial;*/
+        // Detener sonido
+        if (electricSound != null && electricSound.isPlaying)
+            electricSound.Stop();
 
-        // Desactivar este script para evitar interacciones futuras
+        // Desactivar script
         enabled = false;
     }
 }
