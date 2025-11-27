@@ -4,12 +4,14 @@ using UnityEngine.SceneManagement;
 public class PlayerUtilities : MonoBehaviour
 {
     [Header("Teletransportación")]
+    public Transform puntoF1;
     public Transform puntoF2;
     public Transform puntoF3;
     public Transform puntoF4;
 
     [Header("Configuración")]
-    public KeyCode reiniciarTecla = KeyCode.F1;
+    //public KeyCode reiniciarTecla = KeyCode.F1;
+    public KeyCode teleportF1 = KeyCode.F1;
     public KeyCode teleportF2 = KeyCode.F2;
     public KeyCode teleportF3 = KeyCode.F3;
     public KeyCode teleportF4 = KeyCode.F4;
@@ -24,9 +26,10 @@ public class PlayerUtilities : MonoBehaviour
     void Update()
     {
         // Reiniciar juego
-        if (Input.GetKeyDown(reiniciarTecla))
+        if (Input.GetKeyDown(teleportF1) && puntoF1 != null)
         {
-            ReiniciarJuego();
+            //ReiniciarJuego();
+            Teleport(puntoF1);
         }
 
         // Teletransportación

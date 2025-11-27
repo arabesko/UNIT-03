@@ -22055,7 +22055,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -748.00006, y: 450}
+  m_AnchoredPosition: {x: -748, y: 450}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &249600256
@@ -92472,8 +92472,8 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.1
-  far clip plane: 150
-  field of view: 42.2
+  far clip plane: 1000000
+  field of view: 42.5
   orthographic: 0
   orthographic size: 10
   m_Depth: -1
@@ -92499,8 +92499,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.99859476, z: 0, w: -0.05299604}
-  m_LocalPosition: {x: -143.58, y: 11.9, z: -103.72003}
+  m_LocalRotation: {x: 0.057539575, y: -0.23419544, z: 0.01388675, w: 0.97038597}
+  m_LocalPosition: {x: -139.59818, y: 9.852063, z: -82.90605}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -193999,10 +193999,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01517b7fc3655f449b9e69c1535c37de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  puntoF1: {fileID: 2005114454}
   puntoF2: {fileID: 459730799}
   puntoF3: {fileID: 546980530}
   puntoF4: {fileID: 90377363}
-  reiniciarTecla: 282
+  teleportF1: 282
   teleportF2: 283
   teleportF3: 284
   teleportF4: 285
