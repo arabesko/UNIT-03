@@ -7,6 +7,7 @@ public class GameReference : MonoBehaviour
 {
     public static GameReference Instance;
     public GameObject player;
+    public ProjectorController _projectorController;
 
     private void Awake()
     {

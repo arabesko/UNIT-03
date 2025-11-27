@@ -54,19 +54,15 @@ public class KeyOpenDoor : MonoBehaviour
                 Cursor.visible = true;
                 _canvas.SetActive(true);
                 Cursor.lockState = CursorLockMode.None;
-                _keyAvalable = false;
+                
             }
-
-            //if (Input.GetKeyDown(KeyCode.Escape))
-            //{
-            //    HideKeyBoard();
-            //}
         }
 
         if (_isCorrectKey)
         {
             StartCoroutine(MoveDoor());
             _isCorrectKey = false;
+            _keyAvalable = false;
         }
     }
 
@@ -90,7 +86,5 @@ public class KeyOpenDoor : MonoBehaviour
             if (Vector3.Distance(_door.transform.position,_pointB.position) <= 0.2f) goingPoint = false;
             yield return null;
         }
-        
-       
     }
 }

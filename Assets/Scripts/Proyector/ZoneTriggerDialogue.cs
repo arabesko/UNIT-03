@@ -8,6 +8,11 @@ public class ZoneTriggerDialogue : MonoBehaviour
 
     private bool hasTriggered = false;
 
+    private void Start()
+    {
+        projectorController = GameReference.Instance._projectorController;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (hasTriggered && onlyOnce) return;
