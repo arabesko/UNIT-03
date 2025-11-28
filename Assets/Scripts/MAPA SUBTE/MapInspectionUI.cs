@@ -10,13 +10,13 @@ public class MapInspectionUI : MonoBehaviour
     [SerializeField] private GameObject mapCompletedMessage;
 
     [Header("Configuración 3D")]
-    [Tooltip("El objeto padre que rota (MapPivot).")]
     [SerializeField] private Transform mapPivot;
-
-    [Tooltip("Arrastra aquí tus 3 objetos del mapa (Parte1, Parte2, Parte3).")]
     [SerializeField] private GameObject[] mapFragments;
 
+    [Header("Velocidades")]
     [SerializeField] private float rotationSpeed = 5f;
+    [Tooltip("Qué tan rápido vuelve a su lugar original (más alto = más rápido)")]
+    [SerializeField] private float resetSmoothSpeed = 2f;
 
     [Header("Textos")]
     [TextArea][SerializeField] private string incompleteDesc = "Un fragmento de mapa del subte. Parece incompleto.";
@@ -24,7 +24,6 @@ public class MapInspectionUI : MonoBehaviour
 
     private void Start()
     {
-        // Inicialización
         inspectionPanel.SetActive(false);
         if (mapCompletedMessage) mapCompletedMessage.SetActive(false);
         if (hudCounterText) hudCounterText.gameObject.SetActive(false);
@@ -34,16 +33,13 @@ public class MapInspectionUI : MonoBehaviour
 
     public void UpdateMapFragments(int currentPieces)
     {
-        // 1. Activar/Desactivar piezas
         UpdateFragmentsVisibility(currentPieces);
 
-        // 2. FORZAR CENTRADO AUTOMÁTICO (La Solución)
         if (currentPieces > 0)
         {
             AutoCenterMap();
         }
 
-        // 3. Actualizar Textos
         descriptionText.text = (currentPieces >= mapFragments.Length) ? completeDesc : incompleteDesc;
 
         if (hudCounterText != null)
@@ -62,14 +58,11 @@ public class MapInspectionUI : MonoBehaviour
         }
     }
 
-    // --- MAGIA MATEMÁTICA AQUÍ ---
     private void AutoCenterMap()
     {
-        // 1. Reseteamos la rotación del pivote temporalmente para que los cálculos sean rectos (sin ángulo).
         Quaternion originalRotation = mapPivot.rotation;
         mapPivot.rotation = Quaternion.identity;
 
-        // 2. Calculamos los límites (Bounds) de todo lo que sea visible.
         Bounds combinedBounds = new Bounds(mapPivot.position, Vector3.zero);
         bool hasBounds = false;
 
@@ -80,37 +73,21 @@ public class MapInspectionUI : MonoBehaviour
                 Renderer r = fragment.GetComponent<Renderer>();
                 if (r != null)
                 {
-                    if (!hasBounds)
-                    {
-                        combinedBounds = r.bounds;
-                        hasBounds = true;
-                    }
-                    else
-                    {
-                        combinedBounds.Encapsulate(r.bounds);
-                    }
+                    if (!hasBounds) { combinedBounds = r.bounds; hasBounds = true; }
+                    else { combinedBounds.Encapsulate(r.bounds); }
                 }
             }
         }
 
-        // 3. Si encontramos geometría visible, la movemos.
         if (hasBounds)
         {
-            // El centro actual de la geometría en el mundo
             Vector3 currentCenter = combinedBounds.center;
-
-            // La diferencia entre donde está el pivote y donde está el centro geométrico
             Vector3 correctionOffset = mapPivot.position - currentCenter;
-
-            // Movemos CADA PIEZA individualmente por esa diferencia.
-            // Esto alinea el centro visual con el pivote físico.
             foreach (var fragment in mapFragments)
             {
                 fragment.transform.position += correctionOffset;
             }
         }
-
-        // 4. Restauramos la rotación que tenía (si la hubiera, aunque al abrir suele ser 0)
         mapPivot.rotation = originalRotation;
     }
 
@@ -121,10 +98,7 @@ public class MapInspectionUI : MonoBehaviour
 
         if (isOpen)
         {
-            // Al abrir, reseteamos la rotación para que se vea de frente siempre
             mapPivot.localRotation = Quaternion.identity;
-
-            // Recalculamos el centro por si acaso
             AutoCenterMap();
         }
     }
@@ -140,15 +114,22 @@ public class MapInspectionUI : MonoBehaviour
 
     private void HideMapMessage() => mapCompletedMessage.SetActive(false);
 
+    // --- ROTACIÓN MANUAL ---
     public void RotateObject(float x, float y)
     {
-        // Rotación fijada al objeto (Space.World relativo a cámara suele ser mejor, 
-        // pero Space.Self es más estable si la cámara se mueve raro).
-
-        // Eje vertical (Y)
         mapPivot.Rotate(Vector3.up, -x * rotationSpeed, Space.Self);
-
-        // Eje horizontal (X)
         mapPivot.Rotate(Vector3.right, y * rotationSpeed, Space.Self);
+    }
+
+    // --- RESET AUTOMÁTICO SUAVE ---
+    public void SmoothResetToDefault()
+    {
+        // Interpolamos suavemente (Slerp) desde la rotación actual hacia Identity (0,0,0)
+        // Usamos unscaledDeltaTime porque el juego está en pausa (TimeScale = 0)
+        mapPivot.localRotation = Quaternion.Slerp(
+            mapPivot.localRotation,
+            Quaternion.identity,
+            Time.unscaledDeltaTime * resetSmoothSpeed
+        );
     }
 }
