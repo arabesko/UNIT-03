@@ -1,56 +1,56 @@
 using UnityEngine;
 using TMPro;
 
-// VISTA: Maneja TODO lo visual del menú de inspección (Canvas World Space + Objeto 3D).
 public class MapInspectionUI : MonoBehaviour
 {
-    [Header("Elementos del Canvas World Space")]
-    [SerializeField] private GameObject inspectionPanel; // El panel negro de fondo + Descripción
+    [Header("Elementos UI")]
+    [SerializeField] private GameObject inspectionPanel;
     [SerializeField] private TextMeshProUGUI descriptionText;
-    [SerializeField] private TextMeshProUGUI hudCounterText; // El texto "1/3" del HUD normal
+    [SerializeField] private TextMeshProUGUI hudCounterText;
     [SerializeField] private GameObject mapCompletedMessage;
 
-    [Header("El Objeto 3D Interactivo")]
+    [Header("Configuración 3D")]
+    [Tooltip("El objeto padre que rota (MapPivot).")]
     [SerializeField] private Transform mapPivot;
+
+    [Tooltip("Arrastra aquí tus 3 objetos del mapa (Parte1, Parte2, Parte3).")]
     [SerializeField] private GameObject[] mapFragments;
+
     [SerializeField] private float rotationSpeed = 5f;
 
-    [Header("Descripciones")]
+    [Header("Textos")]
     [TextArea][SerializeField] private string incompleteDesc = "Un fragmento de mapa del subte. Parece incompleto.";
-    [TextArea][SerializeField] private string completeDesc = "Mapa del subte. Muestra una salida de emergencia y un código de acceso al dorso.";
+    [TextArea][SerializeField] private string completeDesc = "Mapa completo. Salida y código al dorso.";
 
     private void Start()
     {
+        // Inicialización
         inspectionPanel.SetActive(false);
-        mapCompletedMessage.SetActive(false);
+        if (mapCompletedMessage) mapCompletedMessage.SetActive(false);
+        if (hudCounterText) hudCounterText.gameObject.SetActive(false);
 
-        // ESTADO INICIAL DEL HUD: OCULTO
-        // Como empezamos con 0 piezas, lo apagamos para que no se vea "0/3"
-        if (hudCounterText != null) hudCounterText.gameObject.SetActive(false);
-
-        // Ocultar fragmentos 3D
         UpdateFragmentsVisibility(0);
     }
 
-    // Método central para actualizar todo según el progreso
     public void UpdateMapFragments(int currentPieces)
     {
-        // 1. Actualizar qué partes del mapa 3D se ven
+        // 1. Activar/Desactivar piezas
         UpdateFragmentsVisibility(currentPieces);
 
-        // 2. Actualizar Texto de Descripción (para cuando aprietes M)
+        // 2. FORZAR CENTRADO AUTOMÁTICO (La Solución)
+        if (currentPieces > 0)
+        {
+            AutoCenterMap();
+        }
+
+        // 3. Actualizar Textos
         descriptionText.text = (currentPieces >= mapFragments.Length) ? completeDesc : incompleteDesc;
 
-        // 3. ACTUALIZACIÓN DEL HUD INTELIGENTE
         if (hudCounterText != null)
         {
-            // Solo mostramos el HUD si tenemos piezas (> 0) Y no hemos terminado
-            // Si quieres que el HUD desaparezca al terminar, usa la linea de abajo tal cual.
-            // Si quieres que se quede fijo en 3/3, quita la parte de "&& currentPieces < mapFragments.Length"
             bool showHud = currentPieces > 0 && currentPieces < mapFragments.Length;
-
             hudCounterText.gameObject.SetActive(showHud);
-            hudCounterText.text = $"COMPLETAR MAPA {currentPieces}/{mapFragments.Length}";
+            hudCounterText.text = $"{currentPieces}/{mapFragments.Length}";
         }
     }
 
@@ -62,29 +62,93 @@ public class MapInspectionUI : MonoBehaviour
         }
     }
 
-    public void ShowMapCompletedMessage()
+    // --- MAGIA MATEMÁTICA AQUÍ ---
+    private void AutoCenterMap()
     {
-        mapCompletedMessage.SetActive(true);
-        Invoke(nameof(HideMapMessage), 3f);
-    }
+        // 1. Reseteamos la rotación del pivote temporalmente para que los cálculos sean rectos (sin ángulo).
+        Quaternion originalRotation = mapPivot.rotation;
+        mapPivot.rotation = Quaternion.identity;
 
-    private void HideMapMessage() => mapCompletedMessage.SetActive(false);
+        // 2. Calculamos los límites (Bounds) de todo lo que sea visible.
+        Bounds combinedBounds = new Bounds(mapPivot.position, Vector3.zero);
+        bool hasBounds = false;
+
+        foreach (var fragment in mapFragments)
+        {
+            if (fragment.activeSelf)
+            {
+                Renderer r = fragment.GetComponent<Renderer>();
+                if (r != null)
+                {
+                    if (!hasBounds)
+                    {
+                        combinedBounds = r.bounds;
+                        hasBounds = true;
+                    }
+                    else
+                    {
+                        combinedBounds.Encapsulate(r.bounds);
+                    }
+                }
+            }
+        }
+
+        // 3. Si encontramos geometría visible, la movemos.
+        if (hasBounds)
+        {
+            // El centro actual de la geometría en el mundo
+            Vector3 currentCenter = combinedBounds.center;
+
+            // La diferencia entre donde está el pivote y donde está el centro geométrico
+            Vector3 correctionOffset = mapPivot.position - currentCenter;
+
+            // Movemos CADA PIEZA individualmente por esa diferencia.
+            // Esto alinea el centro visual con el pivote físico.
+            foreach (var fragment in mapFragments)
+            {
+                fragment.transform.position += correctionOffset;
+            }
+        }
+
+        // 4. Restauramos la rotación que tenía (si la hubiera, aunque al abrir suele ser 0)
+        mapPivot.rotation = originalRotation;
+    }
 
     public void ToggleInspectionMode(bool isOpen)
     {
-        // Esto activa el panel negro Y la descripción que está dentro de él
         inspectionPanel.SetActive(isOpen);
         mapPivot.gameObject.SetActive(isOpen);
 
         if (isOpen)
         {
+            // Al abrir, reseteamos la rotación para que se vea de frente siempre
             mapPivot.localRotation = Quaternion.identity;
+
+            // Recalculamos el centro por si acaso
+            AutoCenterMap();
         }
     }
 
+    public void ShowMapCompletedMessage()
+    {
+        if (mapCompletedMessage)
+        {
+            mapCompletedMessage.SetActive(true);
+            Invoke(nameof(HideMapMessage), 3f);
+        }
+    }
+
+    private void HideMapMessage() => mapCompletedMessage.SetActive(false);
+
     public void RotateObject(float x, float y)
     {
-        mapPivot.Rotate(Vector3.up, -x * rotationSpeed, Space.World);
-        mapPivot.Rotate(Vector3.right, y * rotationSpeed, Space.World);
+        // Rotación fijada al objeto (Space.World relativo a cámara suele ser mejor, 
+        // pero Space.Self es más estable si la cámara se mueve raro).
+
+        // Eje vertical (Y)
+        mapPivot.Rotate(Vector3.up, -x * rotationSpeed, Space.Self);
+
+        // Eje horizontal (X)
+        mapPivot.Rotate(Vector3.right, y * rotationSpeed, Space.Self);
     }
 }

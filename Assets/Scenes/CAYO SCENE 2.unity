@@ -3163,8 +3163,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: COMPLETAR MAPA 1/3
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
+  m_sharedMaterial: {fileID: 2140032, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5004,15 +5004,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inspectionPanel: {fileID: 1944260433}
-  descriptionText: {fileID: 0}
+  descriptionText: {fileID: 1185354219}
   hudCounterText: {fileID: 350444539}
   mapCompletedMessage: {fileID: 689198887}
-  mapPivot: {fileID: 923971784}
+  mapPivot: {fileID: 700063367}
   mapFragments:
   - {fileID: 168034472}
   - {fileID: 1955705461}
   - {fileID: 1252487433}
-  rotationSpeed: 10
+  rotationSpeed: 3
   incompleteDesc: Un fragmento de mapa del subte. Parece incompleto.
   completeDesc: "Mapa del subte. Muestra una salida de emergencia y un c\xF3digo
     de acceso por detras."
@@ -5078,7 +5078,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &689198888
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5087,15 +5087,15 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 689198887}
   m_LocalRotation: {x: -0, y: 0.00000040233135, z: -6.617445e-24, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1255.7065}
-  m_LocalScale: {x: 0.67631674, y: 0.67631674, z: 0.6763167}
+  m_LocalPosition: {x: 0, y: 0, z: -1259.4}
+  m_LocalScale: {x: 0.6763168, y: 0.67631674, z: 0.6763168}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1066180687}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 137.61644, y: 33.30056}
+  m_AnchoredPosition: {x: 136.5, y: 34.3}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &689198889
@@ -5120,8 +5120,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "COMPLETADO \n"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
+  m_sharedMaterial: {fileID: 2140032, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5246,7 +5246,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &700063367
 Transform:
   m_ObjectHideFlags: 0
@@ -5255,15 +5255,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 700063366}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.18288232, z: -0, w: -0.9831348}
-  m_LocalPosition: {x: -0.19, y: -0.06274129, z: -0}
-  m_LocalScale: {x: 0.20033593, y: 0.04387483, z: 0.017994845}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 17.401407, y: 20, z: -733.23474}
+  m_LocalScale: {x: 280.35867, y: 61.400322, z: 25.182756}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 168034473}
   - {fileID: 1955705462}
   - {fileID: 1252487434}
-  m_Father: {fileID: 923971784}
+  m_Father: {fileID: 1066180687}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &729753654
 GameObject:
@@ -6650,38 +6650,6 @@ Transform:
   - {fileID: 543450653154738851}
   m_Father: {fileID: 173670512}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &923971783
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 923971784}
-  m_Layer: 0
-  m_Name: MAPPIVOT
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &923971784
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 923971783}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.18288232, z: -0, w: -0.9831348}
-  m_LocalPosition: {x: 259, y: 6.502232, z: -823}
-  m_LocalScale: {x: 1399.4427, y: 1399.4426, z: 1399.4427}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 700063367}
-  m_Father: {fileID: 1066180687}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &952916032
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7664,7 +7632,7 @@ RectTransform:
   m_Children:
   - {fileID: 689198888}
   - {fileID: 350444538}
-  - {fileID: 923971784}
+  - {fileID: 700063367}
   - {fileID: 1944260434}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -8344,7 +8312,7 @@ GameObject:
   - component: {fileID: 1185354220}
   - component: {fileID: 1185354219}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Descripcion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8358,15 +8326,15 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1185354217}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 18.5}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 18.4}
+  m_LocalScale: {x: 0.74368, y: 0.74368, z: 0.74368}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1944260434}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0.8, y: 25.3}
+  m_AnchoredPosition: {x: 1.1, y: 27.034016}
   m_SizeDelta: {x: 77.76, y: -86.47}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1185354219
@@ -8392,8 +8360,8 @@ MonoBehaviour:
   m_text: "Mapa del subte. Muestra una salida de emergencia y un c\xF3digo de acceso
     por detras."
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
+  m_sharedMaterial: {fileID: 2140032, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -13589,7 +13557,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1944260434
 RectTransform:
   m_ObjectHideFlags: 0
