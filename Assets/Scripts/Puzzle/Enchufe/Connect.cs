@@ -39,6 +39,7 @@ public class Connect : MonoBehaviour
 
     public IEnumerator MoveConnector()
     {
+        _enchufe.myElementPuzzle.isLevitable = false;
         bool isFar = true;
         Vector3 dir = Vector3.zero;
         while (isFar)
@@ -55,6 +56,7 @@ public class Connect : MonoBehaviour
             yield return null;
         }
         _audioSource.PlayOneShot(_audioClipConnect);
+        
     }
 
     private void RotateTowards(Transform target, Transform myTrans)

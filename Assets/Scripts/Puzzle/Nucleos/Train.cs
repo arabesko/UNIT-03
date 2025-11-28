@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Train : MonoBehaviour
 {
+    [Header("Nucleos")]
     [SerializeField] int _maxNucleos;
     [SerializeField] private int _nNucleos;
     [SerializeField] private bool _isTrainWithNucleos;
@@ -20,6 +21,14 @@ public class Train : MonoBehaviour
     [SerializeField] private AudioSource _audioSource;
 
     [SerializeField] private float _speed;
+
+    [Header("Puerta Tren")]
+    [SerializeField] GameObject _puertaIZ;
+    [SerializeField] GameObject _puertaDER;
+    [SerializeField] Transform _puntoA_PuertaDER;
+    [SerializeField] Transform _puntoB_PuertaDER;
+    [SerializeField] AudioClip _soundDoor;
+    [SerializeField] private float _speedOpenDoor;
 
 
     public void AddNucleo()
@@ -64,8 +73,28 @@ public class Train : MonoBehaviour
         _redLight.SetActive(false);
         _greenLight.SetActive(true);
         StartCoroutine(MoveMagneteTrain());
+        StartCoroutine(OpenTheDoor());
     }
 
+    private IEnumerator OpenTheDoor()
+    {
+        Vector3 dir = Vector3.zero;
+        _audioSource.PlayOneShot(_soundDoor);
+        bool sw_move = true;
+
+        while (sw_move)
+        {
+            dir = (_puntoB_PuertaDER.position - _puertaDER.transform.position).normalized;
+            _puertaDER.transform.position += dir * _speedOpenDoor * Time.deltaTime;
+            _puertaIZ.transform.position += -dir * _speedOpenDoor * Time.deltaTime;
+
+            if (Vector3.Distance(_puertaDER.transform.position, _puntoB_PuertaDER.position) <= 0.1f)
+            {
+                sw_move = false;
+            }
+            yield return null;
+        }
+    }
 
     private IEnumerator MoveMagneteTrain()
     {
