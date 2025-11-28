@@ -46,7 +46,7 @@ public class MapInspectionUI : MonoBehaviour
         {
             bool showHud = currentPieces > 0 && currentPieces < mapFragments.Length;
             hudCounterText.gameObject.SetActive(showHud);
-            hudCounterText.text = $"{currentPieces}/{mapFragments.Length}";
+            hudCounterText.text = $"COMPLETAR MAPA {currentPieces}/{mapFragments.Length}";
         }
     }
 

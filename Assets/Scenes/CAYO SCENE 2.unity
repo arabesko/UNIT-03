@@ -1289,7 +1289,7 @@ GameObject:
   - component: {fileID: 121249665}
   - component: {fileID: 121249664}
   - component: {fileID: 121249663}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1323,6 +1323,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a577ebab2221f5d43bde523023eac9b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactKey: 101
 --- !u!65 &121249664
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1342,7 +1343,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 4, y: 4, z: 4}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &121249665
 MeshRenderer:
@@ -1926,7 +1927,7 @@ GameObject:
   - component: {fileID: 177953587}
   - component: {fileID: 177953586}
   - component: {fileID: 177953585}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1960,6 +1961,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a577ebab2221f5d43bde523023eac9b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactKey: 101
 --- !u!65 &177953586
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1979,7 +1981,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 4, y: 4, z: 4}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &177953587
 MeshRenderer:
@@ -5013,6 +5015,7 @@ MonoBehaviour:
   - {fileID: 1955705461}
   - {fileID: 1252487433}
   rotationSpeed: 3
+  resetSmoothSpeed: 2
   incompleteDesc: Un fragmento de mapa del subte. Parece incompleto.
   completeDesc: "Mapa del subte. Muestra una salida de emergencia y un c\xF3digo
     de acceso por detras."
@@ -5030,6 +5033,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   totalPieces: 3
   inventoryKey: 109
+  autoResetDelay: 2
   inspectionUI: {fileID: 678954108}
   audioSource: {fileID: 678954107}
   collectSound: {fileID: 0}
@@ -11575,7 +11579,7 @@ GameObject:
   - component: {fileID: 1619299451}
   - component: {fileID: 1619299450}
   - component: {fileID: 1619299449}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11609,6 +11613,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a577ebab2221f5d43bde523023eac9b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactKey: 101
 --- !u!65 &1619299450
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -11628,7 +11633,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 4, y: 4, z: 4}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1619299451
 MeshRenderer:
@@ -13312,7 +13317,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1927713256}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TROZO MAPAS
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19727,6 +19732,6 @@ SceneRoots:
   - {fileID: 1776453392}
   - {fileID: 1310846953}
   - {fileID: 1167785735}
-  - {fileID: 1066180687}
   - {fileID: 678954110}
+  - {fileID: 1066180687}
   - {fileID: 1927713256}
